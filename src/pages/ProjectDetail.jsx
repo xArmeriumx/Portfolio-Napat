@@ -41,12 +41,63 @@ export default function ProjectDetail() {
               ))}
             </div>
 
+            {project.description ? (
+              <>
+                <h3 style={{ marginTop: 16 }}>Overview</h3>
+                <p
+                  className="muted"
+                  style={{ marginTop: 6, whiteSpace: "pre-line" }}
+                >
+                  {project.description.trim()}
+                </p>
+              </>
+            ) : null}
+
+            {/* Technologies */}
+            {project.technologies?.length ? (
+              <>
+                <h3 style={{ marginTop: 16 }}>Technologies</h3>
+                <div className="pillRow" style={{ marginTop: 10 }}>
+                  {project.technologies.map((t) => (
+                    <span key={t} className="pill">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </>
+            ) : null}
+
+            {/* Key Features */}
+            {project.keyFeatures?.length ? (
+              <>
+                <h3 style={{ marginTop: 16 }}>Key Features</h3>
+                <ul className="bullets">
+                  {project.keyFeatures.map((f) => (
+                    <li key={f}>{f}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+
+            {/* เดิม: Highlights */}
             <h3 style={{ marginTop: 16 }}>Highlights</h3>
             <ul className="bullets">
               {project.highlights.map((h) => (
                 <li key={h}>{h}</li>
               ))}
             </ul>
+
+            {/* Responsibilities (ถ้ามี) */}
+            {project.responsibilities?.length ? (
+              <>
+                <h3 style={{ marginTop: 16 }}>Responsibilities</h3>
+                <ul className="bullets">
+                  {project.responsibilities.map((r) => (
+                    <li key={r}>{r}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
 
             <div className="projectBtns" style={{ marginTop: 16 }}>
               {project.links.repo ? (

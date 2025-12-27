@@ -2,16 +2,43 @@ export const projects = [
   {
     slug: "clean-water-monitoring",
     title: "Clean Water Monitoring (FYP)",
-    stack: "React • Chart.js • MQTT • Firebase",
+    //stack: "React • Chart.js • MQTT • Firebase",
     image: `${import.meta.env.BASE_URL}images/p1-clean-water.jpg`,
-    role: ["Frontend", "Dashboard", "Data Viz"],
+    role: [
+      // "React",
+      // "Chart.js",
+      // "MQTT",
+      // "Firebase",
+      // "ChakraUI",
+      // "LeafletJS",
+      // "IoT Technology",
+    ],
 
-    // 👉 เพิ่ม
     description: `
 Final Year Project for real-time water quality monitoring.
 System collects sensor data via MQTT and visualizes results
 on dashboards with alerts and historical logs.
     `,
+
+    // ✅ ใหม่: Technologies
+    technologies: [
+      "React",
+      "Chart.js",
+      "MQTT",
+      "Firebase",
+      "ChakraUI",
+      "LeafletJS",
+      "IoT Technology",
+    ],
+
+    // ✅ ใหม่: Key Features
+    keyFeatures: [
+      "Real-time sensor dashboard with charts",
+      "Water quality logs & filtering",
+      "Location mapping for monitoring points",
+      "Lab document upload & tracking",
+      "Issue reporting workflow",
+    ],
 
     highlights: [
       "Real-time dashboards + logs",
@@ -19,7 +46,6 @@ on dashboards with alerts and historical logs.
       "Lab documents + issue reporting",
     ],
 
-    // 👉 เพิ่ม (optional)
     responsibilities: [
       "Design dashboard layout",
       "Implement real-time data updates",
@@ -28,11 +54,13 @@ on dashboards with alerts and historical logs.
 
     links: { demo: "", repo: "" },
   },
+
   {
     slug: "uat-testkit",
     title: "UAT / Test Case & Bug Report Template",
     stack: "System Analyst • Software Tester",
-    image: "/images/p2-uat.png",
+    // ✅ แก้ให้เข้ากับ GitHub Pages เหมือนกัน
+    image: `${import.meta.env.BASE_URL}images/p2-uat.png`,
     role: ["System Analyst", "Tester"],
 
     description: `
@@ -40,6 +68,20 @@ Template set for UAT, test case design, and bug reporting
 used in real projects to improve communication between
 dev, tester, and business.
     `,
+
+    technologies: [
+      "UAT",
+      "Test Case Design",
+      "Bug Reporting",
+      "Regression Testing",
+    ],
+
+    keyFeatures: [
+      "Test case template with acceptance criteria",
+      "Bug report format: steps / expected vs actual / severity",
+      "Regression checklist for release validation",
+      "Reusable structure for teams & clients",
+    ],
 
     highlights: [
       "Test case structure with acceptance criteria",
