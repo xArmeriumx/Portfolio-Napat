@@ -3,7 +3,7 @@ export const projects = [
     slug: "clean-water-monitoring",
     title: "Clean Water Monitoring (FYP)",
     stack: "React • Chart.js • MQTT • Firebase",
-    image: "/images/p1-clean-water.jpg",
+    image: "/Portfolio-Napat/images/p1-clean-water.jpg",
     role: ["Frontend", "Dashboard", "Data Viz"],
 
     // 👉 เพิ่ม
