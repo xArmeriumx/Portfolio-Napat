@@ -10,7 +10,9 @@ export default function ProjectDetail() {
     return (
       <div className="stack">
         <Section title="Project not found">
-          <Link className="btn btnOutline" to="/portfolio">← Back to Portfolio</Link>
+          <Link className="btn btnOutline" to="/portfolio">
+            ← Back to Portfolio
+          </Link>
         </Section>
       </div>
     );
@@ -21,7 +23,11 @@ export default function ProjectDetail() {
       <Section title={project.title}>
         <div className="projectDetail">
           <div className="projectDetail__media">
-            <img className="projectDetail__img" src={project.image} alt={project.title} />
+            <img
+              className="projectImage"
+              src={project.image}
+              alt={project.title}
+            />
           </div>
 
           <div className="projectDetail__info">
@@ -29,7 +35,9 @@ export default function ProjectDetail() {
 
             <div className="pillRow" style={{ marginTop: 10 }}>
               {project.role.map((r) => (
-                <span key={r} className="pill">{r}</span>
+                <span key={r} className="pill">
+                  {r}
+                </span>
               ))}
             </div>
 
@@ -42,12 +50,22 @@ export default function ProjectDetail() {
 
             <div className="projectBtns" style={{ marginTop: 16 }}>
               {project.links.repo ? (
-                <a className="btn btnOutline" href={project.links.repo} target="_blank" rel="noreferrer">
+                <a
+                  className="btn btnOutline"
+                  href={project.links.repo}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Repo
                 </a>
               ) : null}
               {project.links.demo ? (
-                <a className="btn btnOutline" href={project.links.demo} target="_blank" rel="noreferrer">
+                <a
+                  className="btn btnOutline"
+                  href={project.links.demo}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Demo
                 </a>
               ) : null}
