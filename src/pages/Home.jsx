@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
+import { profile } from "../data/profile.js";
 
-const profile = {
-  name: "Napat Pamornsut",
-  headline: "Full Stack Developer",
-  tagline:
-    "Passionate about clean code, practical design, and building meaningful digital experiences.",
-  links: {
-    github: "https://github.com",
-    linkedin: "https://linkedin.com",
-    resume: "#",
-    email: "example@email.com",
-  },
-};
+// const profile = {
+//   name: "Napat Pamornsut",
+//   headline: "Full Stack Developer",
+//   tagline:
+//     "Passionate about clean code, practical design, and building meaningful digital experiences.",
+//   links: {
+//     github: "https://github.com",
+//     linkedin: "https://linkedin.com",
+//     resume: "#",
+//     email: "example@email.com",
+//   },
+// };
 
 export default function Home() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });

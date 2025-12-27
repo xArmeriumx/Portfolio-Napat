@@ -4,15 +4,7 @@ export const projects = [
     title: "Clean Water Monitoring (FYP)",
     //stack: "React • Chart.js • MQTT • Firebase",
     image: `${import.meta.env.BASE_URL}images/p1-clean-water.jpg`,
-    role: [
-      // "React",
-      // "Chart.js",
-      // "MQTT",
-      // "Firebase",
-      // "ChakraUI",
-      // "LeafletJS",
-      // "IoT Technology",
-    ],
+    role: ["Fullstack Developer", "IoT Developer"],
 
     description: `
 Final Year Project for real-time water quality monitoring.
@@ -56,18 +48,60 @@ on dashboards with alerts and historical logs.
   },
 
   {
+    slug: "stock-management-system",
+    title: "Stock Management System",
+    //stack: "React • Node.js • PostgreSQL • JWT",
+    image: `${import.meta.env.BASE_URL}images/p2-stock-management.jpg`,
+    role: ["UX/UI Design", "System Analyst"],
+
+    description: `
+A comprehensive inventory management system designed for restaurants 
+and food service businesses. Features product categorization, expiration 
+tracking, purchase order management, and real-time notifications for 
+stock alerts and expiring items.
+  `,
+
+    technologies: ["Figma", "Adobe XD"],
+
+    keyFeatures: [
+      "Multi-category product management – Fresh Food, Dried Food, Vegetables/Fruits, Condiments",
+      "Real-time stock tracking – Product images, units, expiration dates, and supplier details",
+      "Expiration alerts – Automatic notifications for items expiring in 2 days",
+      "Role-based access control – Admin and Head Chef permissions with different views",
+      "Purchase order workflow – Create, track, and manage supplier orders",
+      "Notification center – Alert system for low stock and expiring products",
+    ],
+
+    highlights: [
+      "Product catalog with images & categories",
+      "Expiration tracking with 2-day alerts",
+      "Purchase order management",
+      "Role-based dashboards (Admin/Chef)",
+    ],
+
+    responsibilities: [
+      "Design database schema for products, categories, and orders",
+      "Implement authentication & authorization system",
+      "Build responsive UI for product management",
+      "Create notification system for stock alerts",
+      "Develop purchase order workflow",
+    ],
+
+    links: { demo: "", repo: "" },
+  },
+
+  {
     slug: "uat-testkit",
     title: "UAT / Test Case & Bug Report Template",
     stack: "System Analyst • Software Tester",
-    // ✅ แก้ให้เข้ากับ GitHub Pages เหมือนกัน
-    image: `${import.meta.env.BASE_URL}images/p2-uat.png`,
+    image: `${import.meta.env.BASE_URL}images/p3-uat.png`,
     role: ["System Analyst", "Tester"],
 
     description: `
 Template set for UAT, test case design, and bug reporting
 used in real projects to improve communication between
 dev, tester, and business.
-    `,
+  `,
 
     technologies: [
       "UAT",

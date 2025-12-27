@@ -4,7 +4,7 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <div className="navInner">
-        <div className="brand">Napat Dev();</div>
+        <div className="brand">Napat.Dev();</div>
 
         <nav className="navLinks">
           <NavLink
