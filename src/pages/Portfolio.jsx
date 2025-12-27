@@ -1,5 +1,6 @@
-import Section from '../components/ui/Section.jsx'
-import { projects } from '../data/projects.js'
+import Section from "../components/ui/Section.jsx";
+import { projects } from "../data/projects.js";
+import { Link } from "react-router-dom";
 
 export default function Portfolio() {
   return (
@@ -18,7 +19,9 @@ export default function Portfolio() {
 
                 <div className="pillRow">
                   {p.role.map((r) => (
-                    <span key={r} className="pill">{r}</span>
+                    <span key={r} className="pill">
+                      {r}
+                    </span>
                   ))}
                 </div>
 
@@ -30,18 +33,28 @@ export default function Portfolio() {
 
                 <div className="projectBtns">
                   {p.links.repo ? (
-                    <a className="btn btnOutline" href={p.links.repo} target="_blank" rel="noreferrer">
+                    <a
+                      className="btn btnOutline"
+                      href={p.links.repo}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Repo
                     </a>
                   ) : null}
                   {p.links.demo ? (
-                    <a className="btn btnOutline" href={p.links.demo} target="_blank" rel="noreferrer">
+                    <a
+                      className="btn btnOutline"
+                      href={p.links.demo}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Demo
                     </a>
                   ) : null}
-                  <button className="btn btnOutline" type="button" disabled>
+                  <Link className="btn btnOutline" to={`/portfolio/${p.slug}`}>
                     Detail →
-                  </button>
+                  </Link>
                 </div>
               </div>
             </article>
@@ -49,5 +62,5 @@ export default function Portfolio() {
         </div>
       </Section>
     </div>
-  )
+  );
 }

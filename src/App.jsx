@@ -3,8 +3,8 @@ import Navbar from './components/nav/Navbar.jsx'
 import Home from './pages/Home.jsx'
 import About from './pages/About.jsx'
 import Portfolio from './pages/Portfolio.jsx'
+import ProjectDetail from './pages/ProjectDetail.jsx'
 import Footer from "./components/layout/Footer";
-// ...
 
 
 
@@ -18,6 +18,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/portfolio/:slug" element={<ProjectDetail />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Footer />
