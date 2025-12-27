@@ -1,6 +1,6 @@
-import Section from '../components/ui/Section.jsx'
-import Card from '../components/ui/Card.jsx'
-import { profile } from '../data/profile.js'
+import Section from "../components/ui/Section.jsx";
+import Card from "../components/ui/Card.jsx";
+import { profile } from "../data/profile.js";
 
 export default function About() {
   return (
@@ -27,7 +27,9 @@ export default function About() {
         <Card>
           <ul className="list">
             <li>Location: {profile.contact.location}</li>
-            {profile.contact.phone ? <li>Phone: {profile.contact.phone}</li> : null}
+            {profile.contact.phone ? (
+              <li>Phone: {profile.contact.phone}</li>
+            ) : null}
             <li>Email: {profile.links.email}</li>
             <li>GitHub: {profile.links.github}</li>
           </ul>
@@ -44,5 +46,5 @@ export default function About() {
         </div>
       </Section>
     </div>
-  )
+  );
 }
