@@ -179,3 +179,13 @@ body{
 
 .bullets{ margin: 12px 0 0; padding-left: 18px; color: var(--muted); line-height: 1.8; }
 .projectBtns{ margin-top: 14px; display:flex; gap: 10px; flex-wrap:wrap; }
+
+.footer{
+  margin-top: 40px;
+  padding: 16px 0;
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+  border-top: 1px solid #1f2937;
+}
+
