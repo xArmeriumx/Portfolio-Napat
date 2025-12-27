@@ -1,0 +1,181 @@
+@import './theme.css';
+@import './grid-bg.css';
+
+*{ box-sizing: border-box; }
+html, body, #root{ height:100%; }
+
+body{
+  margin:0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+.app{ min-height:100vh; position:relative; }
+.main{
+  width: min(100%, var(--maxw));
+  margin: 0 auto;
+  padding: 92px 16px 60px;
+}
+
+.stack{ display:flex; flex-direction:column; gap: 24px; }
+.muted{ color: var(--muted); }
+
+.list{ margin:0; padding-left: 18px; line-height: 1.9; color: var(--text); }
+
+.navbar{
+  position: fixed;
+  top:0; left:0; right:0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  background: rgba(11,11,13,0.55);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.navInner{
+  width: min(100%, var(--maxw));
+  margin: 0 auto;
+  padding: 14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+}
+.brand{
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  color: var(--accent);
+  font-size: 18px;
+}
+.navLinks a{
+  padding: 10px 14px;
+  text-decoration: none;
+  font-weight: 800;
+  color: rgba(255,255,255,0.85);
+  border-bottom: 2px solid transparent;
+}
+.navLinks a.active{
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.section{ margin-top: 4px; }
+.sectionHead{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.sectionTitle{ margin:0; color: var(--accent); letter-spacing: 0.2px; }
+.sectionLine{ height:2px; flex:1; background: var(--accentLine); }
+
+.card{
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius2);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.hero{
+  min-height: 70vh;
+  display:grid;
+  place-items:center;
+  text-align:center;
+}
+.heroInner{ max-width: 860px; }
+.heroKicker{
+  color: var(--accent);
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  margin-bottom: 10px;
+}
+.heroTitle{
+  margin: 0 0 10px;
+  font-size: clamp(40px, 7vw, 78px);
+  color: var(--accent);
+}
+.heroRole{
+  font-size: clamp(18px, 2.8vw, 34px);
+  font-weight: 900;
+}
+.cursor{ color: var(--accent); }
+.heroDesc{
+  margin: 16px auto 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.heroBtns{
+  margin-top: 18px;
+  display:flex;
+  gap: 10px;
+  justify-content:center;
+  flex-wrap: wrap;
+}
+
+.btn{
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 2px solid rgba(245,197,66,0.65);
+  background: transparent;
+  color: var(--accent);
+  font-weight: 900;
+  text-decoration:none;
+  cursor:pointer;
+}
+.btnSolid{ background: rgba(245,197,66,0.12); }
+.btn:disabled{ opacity: 0.55; cursor:not-allowed; }
+
+.skillsGrid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.skillBox{
+  border-radius: 18px;
+  border: 2px solid rgba(245,197,66,0.65);
+  background: rgba(0,0,0,0.20);
+  padding: 18px 16px;
+  display:grid;
+  place-items:center;
+  min-height: 90px;
+}
+.skillText{ font-weight: 900; }
+
+.portfolioList{
+  display:grid;
+  gap: 18px;
+}
+.projectCard{
+  border-radius: var(--radius2);
+  border: 2px solid rgba(245,197,66,0.65);
+  background: rgba(255,255,255,0.04);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+.projectImageWrap{
+  border-radius: 18px;
+  overflow:hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.25);
+}
+.projectImage{
+  width:100%;
+  display:block;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+.projectBody{ margin-top: 14px; }
+.projectTitle{ margin:0; font-size: 20px; font-weight: 900; }
+.projectStack{ margin-top: 6px; color: var(--muted); }
+
+.pillRow{ margin-top: 10px; display:flex; gap: 8px; flex-wrap:wrap; }
+.pill{
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 999px;
+  padding: 4px 10px;
+  color: rgba(255,255,255,0.85);
+}
+
+.bullets{ margin: 12px 0 0; padding-left: 18px; color: var(--muted); line-height: 1.8; }
+.projectBtns{ margin-top: 14px; display:flex; gap: 10px; flex-wrap:wrap; }
