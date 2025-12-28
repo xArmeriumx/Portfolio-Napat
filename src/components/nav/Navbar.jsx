@@ -6,7 +6,7 @@ export default function Navbar() {
       <div className="navInner">
         <div
           className="brand"
-          onClick={() => (window.location.href = "/")}
+          onClick={() => (window.location.href = "/Portfolio-Napat/#")}
           style={{ cursor: "pointer" }}
         >
           Napat.Dev();
