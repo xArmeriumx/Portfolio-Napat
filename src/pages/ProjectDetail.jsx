@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import Section from "../components/ui/Section.jsx";
 import { projects } from "../data/projects.js";
 
@@ -8,13 +9,18 @@ import { projects } from "../data/projects.js";
 ======================================== */
 function NotFoundView() {
   return (
-    <div className="stack">
-      <Section title="Project not found">
-        <Link className="btn" to="/portfolio">
-          ← Back to Portfolio
-        </Link>
-      </Section>
-    </div>
+    <>
+      <Helmet>
+        <title>Project Not Found | Napat Pamornsut</title>
+      </Helmet>
+      <div className="stack">
+        <Section title="Project not found">
+          <Link className="btn" to="/portfolio" aria-label="Back to portfolio">
+            ← Back to Portfolio
+          </Link>
+        </Section>
+      </div>
+    </>
   );
 }
 
@@ -36,7 +42,7 @@ function ImageGallery({ images, title, selectedIndex, onSelect }) {
 
       {/* Thumbnails */}
       {hasMultipleImages && (
-        <div className="galleryThumbs">
+        <div className="galleryThumbs" role="tablist" aria-label="Image gallery">
           {images.map((img, index) => (
             <img
               key={index}
@@ -44,6 +50,9 @@ function ImageGallery({ images, title, selectedIndex, onSelect }) {
               alt={`${title} thumbnail ${index + 1}`}
               className={`galleryThumb ${selectedIndex === index ? "active" : ""}`}
               onClick={() => onSelect(index)}
+              role="tab"
+              aria-selected={selectedIndex === index}
+              aria-label={`View image ${index + 1}`}
             />
           ))}
         </div>
@@ -68,7 +77,7 @@ function InfoSection({ title, children }) {
 /* ========================================
    ActionButtons - ปุ่ม Repo / Demo / Back
 ======================================== */
-function ActionButtons({ links }) {
+function ActionButtons({ links, title }) {
   return (
     <div className="projectBtns">
       {links.repo && (
@@ -77,6 +86,7 @@ function ActionButtons({ links }) {
           href={links.repo}
           target="_blank"
           rel="noreferrer"
+          aria-label={`View ${title} repository`}
         >
           Repo
         </a>
@@ -88,12 +98,13 @@ function ActionButtons({ links }) {
           href={links.demo}
           target="_blank"
           rel="noreferrer"
+          aria-label={`View ${title} demo`}
         >
           Demo
         </a>
       )}
 
-      <Link className="btn" to="/portfolio">
+      <Link className="btn" to="/portfolio" aria-label="Back to portfolio">
         ← Back
       </Link>
     </div>
@@ -126,85 +137,97 @@ export default function ProjectDetail() {
     links,
   } = project;
 
+  const metaDescription = description?.trim().substring(0, 160) || `${title} - Project by Napat Pamornsut`;
+
   return (
-    <div className="stack">
-      <Section title={title}>
-        <div className="projectDetail">
-          {/* ========== Media Section ========== */}
-          <ImageGallery
-            images={projectImages}
-            title={title}
-            selectedIndex={selectedImageIndex}
-            onSelect={setSelectedImageIndex}
-          />
+    <>
+      <Helmet>
+        <title>{title} | Napat Pamornsut</title>
+        <meta name="description" content={metaDescription} />
+        <meta property="og:title" content={`${title} - Portfolio`} />
+        <meta property="og:description" content={metaDescription} />
+      </Helmet>
 
-          {/* ========== Info Section ========== */}
-          <div className="projectDetail__info">
-            {/* Stack */}
-            {stack && <p className="projectStack">{stack}</p>}
+      <div className="stack">
+        <Section title={title}>
+          <div className="projectDetail">
+            {/* ========== Media Section ========== */}
+            <ImageGallery
+              images={projectImages}
+              title={title}
+              selectedIndex={selectedImageIndex}
+              onSelect={setSelectedImageIndex}
+            />
 
-            {/* Role Tags */}
-            {role?.length > 0 && (
-              <div className="pillRow">
-                {role.map((r) => (
-                  <span key={r} className="pill">{r}</span>
-                ))}
-              </div>
-            )}
+            {/* ========== Info Section ========== */}
+            <div className="projectDetail__info">
+              {/* Stack */}
+              {stack && <p className="projectStack">{stack}</p>}
 
-            {/* Overview */}
-            <InfoSection title="Overview">
-              {description && (
-                <p className="muted" style={{ whiteSpace: "pre-line" }}>
-                  {description.trim()}
-                </p>
-              )}
-            </InfoSection>
-
-            {/* Technologies */}
-            <InfoSection title="Technologies">
-              {technologies?.length > 0 && (
+              {/* Role Tags */}
+              {role?.length > 0 && (
                 <div className="pillRow">
-                  {technologies.map((t) => (
-                    <span key={t} className="pill">{t}</span>
+                  {role.map((r) => (
+                    <span key={r} className="pill">{r}</span>
                   ))}
                 </div>
               )}
-            </InfoSection>
 
-            {/* Key Features */}
-            <InfoSection title="Key Features">
-              {keyFeatures?.length > 0 && (
-                <ul className="bullets">
-                  {keyFeatures.map((f, i) => <li key={i}>{f}</li>)}
-                </ul>
-              )}
-            </InfoSection>
+              {/* Overview */}
+              <InfoSection title="Overview">
+                {description && (
+                  <p className="muted" style={{ whiteSpace: "pre-line" }}>
+                    {description.trim()}
+                  </p>
+                )}
+              </InfoSection>
 
-            {/* Highlights */}
-            <InfoSection title="Highlights">
-              {highlights?.length > 0 && (
-                <ul className="bullets">
-                  {highlights.map((h, i) => <li key={i}>{h}</li>)}
-                </ul>
-              )}
-            </InfoSection>
+              {/* Technologies */}
+              <InfoSection title="Technologies">
+                {technologies?.length > 0 && (
+                  <div className="pillRow">
+                    {technologies.map((t) => (
+                      <span key={t} className="pill">{t}</span>
+                    ))}
+                  </div>
+                )}
+              </InfoSection>
 
-            {/* Responsibilities */}
-            <InfoSection title="Responsibilities">
-              {responsibilities?.length > 0 && (
-                <ul className="bullets">
-                  {responsibilities.map((r, i) => <li key={i}>{r}</li>)}
-                </ul>
-              )}
-            </InfoSection>
+              {/* Key Features */}
+              <InfoSection title="Key Features">
+                {keyFeatures?.length > 0 && (
+                  <ul className="bullets">
+                    {keyFeatures.map((f, i) => <li key={i}>{f}</li>)}
+                  </ul>
+                )}
+              </InfoSection>
 
-            {/* Action Buttons */}
-            <ActionButtons links={links} />
+              {/* Highlights */}
+              <InfoSection title="Highlights">
+                {highlights?.length > 0 && (
+                  <ul className="bullets">
+                    {highlights.map((h, i) => <li key={i}>{h}</li>)}
+                  </ul>
+                )}
+              </InfoSection>
+
+              {/* Responsibilities */}
+              <InfoSection title="Responsibilities">
+                {responsibilities?.length > 0 && (
+                  <ul className="bullets">
+                    {responsibilities.map((r, i) => <li key={i}>{r}</li>)}
+                  </ul>
+                )}
+              </InfoSection>
+
+              {/* Action Buttons */}
+              <ActionButtons links={links} title={title} />
+            </div>
           </div>
-        </div>
-      </Section>
-    </div>
+        </Section>
+      </div>
+    </>
   );
 }
+
 

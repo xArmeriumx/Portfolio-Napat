@@ -1,10 +1,17 @@
+import { Helmet } from "react-helmet-async";
 import Section from "../components/ui/Section.jsx";
 import Card from "../components/ui/Card.jsx";
 import { profile } from "../data/profile.js";
 
 export default function About() {
   return (
-    <div className="stack">
+    <>
+      <Helmet>
+        <title>About | {profile.name}</title>
+        <meta name="description" content={profile.about} />
+      </Helmet>
+
+      <div className="stack">
       <Section title="About Me">
         <Card>
           <p className="muted" style={{ margin: 0, lineHeight: 1.8 }}>
@@ -56,5 +63,7 @@ export default function About() {
         </div>
       </Section>
     </div>
+    </>
   );
 }
+

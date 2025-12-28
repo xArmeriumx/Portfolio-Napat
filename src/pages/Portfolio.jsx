@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import Section from "../components/ui/Section.jsx";
 import { projects } from "../data/projects.js";
 
@@ -47,6 +48,7 @@ function ProjectCard({ project }) {
               href={links.repo}
               target="_blank"
               rel="noreferrer"
+              aria-label={`View ${title} repository`}
             >
               Repo
             </a>
@@ -58,12 +60,13 @@ function ProjectCard({ project }) {
               href={links.demo}
               target="_blank"
               rel="noreferrer"
+              aria-label={`View ${title} demo`}
             >
               Demo
             </a>
           )}
 
-          <Link className="btn" to={`/portfolio/${slug}`}>
+          <Link className="btn" to={`/portfolio/${slug}`} aria-label={`View ${title} details`}>
             View Detail →
           </Link>
         </div>
@@ -78,15 +81,23 @@ function ProjectCard({ project }) {
 ======================================== */
 export default function Portfolio() {
   return (
-    <div className="stack">
-      <Section title="Portfolio">
-        <div className="portfolioList">
-          {projects.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
-          ))}
-        </div>
-      </Section>
-    </div>
+    <>
+      <Helmet>
+        <title>Portfolio | Napat Pamornsut</title>
+        <meta name="description" content="Explore my portfolio of web development projects including frontend, system analysis, and software testing work." />
+      </Helmet>
+
+      <div className="stack">
+        <Section title="Portfolio">
+          <div className="portfolioList">
+            {projects.map((project) => (
+              <ProjectCard key={project.slug} project={project} />
+            ))}
+          </div>
+        </Section>
+      </div>
+    </>
   );
 }
+
 
