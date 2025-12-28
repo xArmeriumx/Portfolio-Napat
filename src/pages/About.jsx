@@ -51,6 +51,7 @@ export default function About() {
                 src={skill.logo}
                 alt={skill.name}
                 className="skillIcon"
+                loading="lazy"
                 style={{
                   width: "32px",
                   height: "32px",

@@ -36,6 +36,7 @@ function ImageGallery({ images, title, selectedIndex, onSelect }) {
         className="projectImage"
         src={currentImage}
         alt={`${title} - Image ${selectedIndex + 1}`}
+        loading="lazy"
       />
 
       {/* Thumbnails */}
@@ -51,6 +52,7 @@ function ImageGallery({ images, title, selectedIndex, onSelect }) {
               role="tab"
               aria-selected={selectedIndex === index}
               aria-label={`View image ${index + 1}`}
+              loading="lazy"
             />
           ))}
         </div>
