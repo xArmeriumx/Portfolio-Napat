@@ -8,6 +8,8 @@ import Footer from "./components/layout/Footer";
 
 
 
+import NotFound from './pages/NotFound.jsx'
+
 export default function App() {
   return (
     <div className="app">
@@ -19,7 +21,7 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/portfolio/:slug" element={<ProjectDetail />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </main>
