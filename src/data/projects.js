@@ -1,7 +1,7 @@
 export const projects = [
   {
     slug: "clean-water-monitoring",
-    title: "Clean Water Monitoring (FYP)",
+    title: "Clean Water Monitoring",
     //stack: "React • Chart.js • MQTT • Firebase",
     image: `${import.meta.env.BASE_URL}images/p1-clean-water.jpg`,
     role: ["Fullstack Developer", "IoT Developer"],
@@ -44,7 +44,7 @@ on dashboards with alerts and historical logs.
       "Handle data visualization & filtering",
     ],
 
-    links: { demo: "", repo: "" },
+    links: { demo: "https://cleanwatermonitoring.com/", repo: "" },
   },
 
   {
@@ -88,6 +88,55 @@ stock alerts and expiring items.
     ],
 
     links: { demo: "", repo: "" },
+  },
+
+  {
+    slug: "mentos-pharmacy-store",
+    title: "Mentos Pharmacy Store",
+    image: `${import.meta.env.BASE_URL}images/p3-phamacy.png`,
+    role: ["Project Management", "Frontend Developer", "System Analyst"],
+
+    description: `
+An e-commerce pharmacy system for selling medicines and health supplements online. 
+Features product catalog with categories, shopping cart management, order processing, 
+and admin dashboard for inventory and customer management.
+  `,
+
+    // Technologies
+    technologies: ["PHP", "MySQL", "HTML", "CSS", "JavaScript", "Bootstrap"],
+
+    // Key Features
+    keyFeatures: [
+      "Product catalog with multiple categories (vitamins, supplements, medicines, health products)",
+      "Shopping cart system with add/remove/update quantity functionality",
+      "Order management - track orders from cart to checkout",
+      "Product search and filtering by category",
+      "Admin dashboard for managing orders, products, customers",
+      "Inventory management - add, edit, delete products with images and pricing",
+      "Customer management system",
+      "Responsive design for mobile and desktop",
+    ],
+
+    highlights: [
+      "Complete e-commerce flow (browse → cart → checkout)",
+      "Admin panel for inventory & order management",
+      "Category-based product organization",
+      "Real-time cart total calculation",
+    ],
+
+    responsibilities: [
+      "Design database schema for products, orders, customers, and categories",
+      "Implement shopping cart functionality with session management",
+      "Build admin dashboard for product and order management",
+      "Create responsive UI for product listing and cart pages",
+      "Develop order processing and checkout workflow",
+      "Handle product CRUD operations with image upload",
+    ],
+
+    links: {
+      demo: "",
+      repo: "https://github.com/NapatPamornsuT/Phamazy",
+    },
   },
 
   {

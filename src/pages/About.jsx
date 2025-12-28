@@ -16,8 +16,8 @@ export default function About() {
       <Section title="Education">
         <Card>
           <ul className="list">
-            {profile.education.map((x) => (
-              <li key={x}>{x}</li>
+            {profile.education.map((x, idx) => (
+              <li key={idx}>{x}</li>
             ))}
           </ul>
         </Card>
@@ -38,9 +38,19 @@ export default function About() {
 
       <Section title="Skills">
         <div className="skillsGrid">
-          {profile.skills.map((s) => (
-            <div key={s} className="skillBox">
-              <div className="skillText">{s}</div>
+          {profile.skills.map((skill) => (
+            <div key={skill.name} className="skillBox">
+              <img
+                src={skill.logo}
+                alt={skill.name}
+                className="skillIcon"
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  objectFit: "contain",
+                }}
+              />
+              <div className="skillText">{skill.name}</div>
             </div>
           ))}
         </div>
