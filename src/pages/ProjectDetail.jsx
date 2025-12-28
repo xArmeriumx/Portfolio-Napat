@@ -15,11 +15,12 @@ function ImageGallery({ images, title, selectedIndex, onSelect }) {
   return (
     <div className="projectDetail__media">
       {/* รูปหลัก */}
+      {/* รูปหลัก - Eager Load for LCP */}
       <img
         className="projectImage"
         src={currentImage}
         alt={`${title} - Image ${selectedIndex + 1}`}
-        loading="lazy"
+        fetchPriority="high"
       />
 
       {/* Thumbnails */}
