@@ -14,7 +14,11 @@
         // e.g. https://www.foo.com/bar/baz changes to https://www.foo.com/?p=/bar/baz
         // The script in index.html will take the new url and replace the
         // history state with the full original url.
-        var pathSegmentsToKeep = 0;
+
+        // Adaptation for dynamic handling:
+        // If we are on GitHub Pages (subdirectory), keep 1 segment.
+        // If we are on Vercel or Custom Domain (root), keep 0 segments.
+        var pathSegmentsToKeep = window.location.pathname.startsWith('/Portfolio-Napat') ? 1 : 0;
 
         var l = window.location;
         l.replace(
