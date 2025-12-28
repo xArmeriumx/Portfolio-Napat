@@ -4,8 +4,13 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <div className="navInner">
-        <div className="brand">Napat.Dev();</div>
-
+        <div
+          className="brand"
+          onClick={() => (window.location.href = "/")}
+          style={{ cursor: "pointer" }}
+        >
+          Napat.Dev();
+        </div>
         <nav className="navLinks">
           <NavLink
             to="/"
