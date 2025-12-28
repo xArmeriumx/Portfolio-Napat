@@ -1,7 +1,6 @@
 export const profile = {
   name: "Napat Pamornsut",
-  headline:
-    "Frontend Developer | Backend Developer | System Analyst | Software Tester",
+  headline: "Frontend Developer | System Analyst | Software Tester",
   tagline:
     "Turning complex requirements into intuitive interfaces. I combine frontend expertise, analytical thinking, and testing rigor to deliver solutions that users love and businesses trust.",
   links: {

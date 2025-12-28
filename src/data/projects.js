@@ -155,7 +155,7 @@ and admin dashboard for inventory and customer management.
     slug: "uat-testkit",
     title: "UAT / Test Case & Bug Report Template",
     stack: "System Analyst • Software Tester",
-    images: [`${import.meta.env.BASE_URL}images/p3-uat.png`],
+    images: [`${import.meta.env.BASE_URL}images/p4-testcase.png`],
     role: ["System Analyst", "Tester"],
 
     description: `
@@ -190,6 +190,9 @@ dev, tester, and business.
       "Create reusable test templates",
     ],
 
-    links: { demo: "", repo: "" },
+    links: {
+      demo: "https://docs.google.com/spreadsheets/d/13whAR8OIRtAWtpryLZRYJNYpehcxDzX5HF77uCd_tqA/edit?pli=1&gid=844435360#gid=844435360",
+      repo: "",
+    },
   },
 ];
