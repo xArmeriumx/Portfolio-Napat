@@ -1,17 +1,17 @@
-import { Helmet } from "react-helmet-async";
+import { usePageMeta } from "../hooks/usePageMeta.js";
 import Section from "../components/ui/Section.jsx";
 import Card from "../components/ui/Card.jsx";
 import { profile } from "../data/profile.js";
 
 export default function About() {
-  return (
-    <>
-      <Helmet>
-        <title>About | {profile.name}</title>
-        <meta name="description" content={profile.about} />
-      </Helmet>
+  // SEO Meta Tags
+  usePageMeta({
+    title: `About | ${profile.name}`,
+    description: profile.about,
+  });
 
-      <div className="stack">
+  return (
+    <div className="stack">
       <Section title="About Me">
         <Card>
           <p className="muted" style={{ margin: 0, lineHeight: 1.8 }}>
@@ -34,9 +34,9 @@ export default function About() {
         <Card>
           <ul className="list">
             <li>Location: {profile.contact.location}</li>
-            {profile.contact.phone ? (
+            {profile.contact.phone && (
               <li>Phone: {profile.contact.phone}</li>
-            ) : null}
+            )}
             <li>Email: {profile.links.email}</li>
             <li>GitHub: {profile.links.github}</li>
           </ul>
@@ -63,7 +63,7 @@ export default function About() {
         </div>
       </Section>
     </div>
-    </>
   );
 }
+
 

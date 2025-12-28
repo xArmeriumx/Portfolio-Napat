@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
-import { Helmet } from "react-helmet-async";
+import { usePageMeta } from "../hooks/usePageMeta.js";
 import { profile } from "../data/profile.js";
 
 export default function Home() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // SEO Meta Tags
+  usePageMeta({
+    title: `${profile.name} | ${profile.headline}`,
+    description: profile.tagline,
+    ogTitle: `${profile.name} - Portfolio`,
+  });
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -23,20 +30,11 @@ export default function Home() {
   };
 
   return (
-    <>
-      <Helmet>
-        <title>{profile.name} | {profile.headline}</title>
-        <meta name="description" content={profile.tagline} />
-        <meta property="og:title" content={`${profile.name} - Portfolio`} />
-        <meta property="og:description" content={profile.tagline} />
-        <meta property="og:type" content="website" />
-      </Helmet>
-
-      <section className="hero" style={parallaxStyle}>
-        <div className="heroInner">
-          {/* Floating decorative blobs */}
-          <div className="heroBlob heroBlob--left" aria-hidden="true" />
-          <div className="heroBlob heroBlob--right" aria-hidden="true" />
+    <section className="hero" style={parallaxStyle}>
+      <div className="heroInner">
+        {/* Floating decorative blobs */}
+        <div className="heroBlob heroBlob--left" aria-hidden="true" />
+        <div className="heroBlob heroBlob--right" aria-hidden="true" />
 
           <div className="heroContent">
             {/* Kicker */}
@@ -129,8 +127,8 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </>
   );
 }
+
 
 

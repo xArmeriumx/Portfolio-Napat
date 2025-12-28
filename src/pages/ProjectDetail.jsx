@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
+import { usePageMeta } from "../hooks/usePageMeta.js";
 import Section from "../components/ui/Section.jsx";
 import { projects } from "../data/projects.js";
 
@@ -8,19 +8,17 @@ import { projects } from "../data/projects.js";
    NotFoundView - แสดงเมื่อไม่พบโปรเจค
 ======================================== */
 function NotFoundView() {
+  // SEO for 404
+  usePageMeta({ title: "Project Not Found | Napat Pamornsut" });
+
   return (
-    <>
-      <Helmet>
-        <title>Project Not Found | Napat Pamornsut</title>
-      </Helmet>
-      <div className="stack">
-        <Section title="Project not found">
-          <Link className="btn" to="/portfolio" aria-label="Back to portfolio">
-            ← Back to Portfolio
-          </Link>
-        </Section>
-      </div>
-    </>
+    <div className="stack">
+      <Section title="Project not found">
+        <Link className="btn" to="/portfolio" aria-label="Back to portfolio">
+          ← Back to Portfolio
+        </Link>
+      </Section>
+    </div>
   );
 }
 
@@ -119,6 +117,14 @@ export default function ProjectDetail() {
   const project = projects.find((p) => p.slug === slug);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
+  // SEO Meta Tags (must be called before early return)
+  const metaDescription = project?.description?.trim().substring(0, 160) || `Project by Napat Pamornsut`;
+  usePageMeta({
+    title: project ? `${project.title} | Napat Pamornsut` : "Project Not Found | Napat Pamornsut",
+    description: metaDescription,
+    ogTitle: project ? `${project.title} - Portfolio` : undefined,
+  });
+
   // ไม่พบโปรเจค
   if (!project) return <NotFoundView />;
 
@@ -137,97 +143,87 @@ export default function ProjectDetail() {
     links,
   } = project;
 
-  const metaDescription = description?.trim().substring(0, 160) || `${title} - Project by Napat Pamornsut`;
-
   return (
-    <>
-      <Helmet>
-        <title>{title} | Napat Pamornsut</title>
-        <meta name="description" content={metaDescription} />
-        <meta property="og:title" content={`${title} - Portfolio`} />
-        <meta property="og:description" content={metaDescription} />
-      </Helmet>
+    <div className="stack">
+      <Section title={title}>
+        <div className="projectDetail">
+          {/* ========== Media Section ========== */}
+          <ImageGallery
+            images={projectImages}
+            title={title}
+            selectedIndex={selectedImageIndex}
+            onSelect={setSelectedImageIndex}
+          />
 
-      <div className="stack">
-        <Section title={title}>
-          <div className="projectDetail">
-            {/* ========== Media Section ========== */}
-            <ImageGallery
-              images={projectImages}
-              title={title}
-              selectedIndex={selectedImageIndex}
-              onSelect={setSelectedImageIndex}
-            />
+          {/* ========== Info Section ========== */}
+          <div className="projectDetail__info">
+            {/* Stack */}
+            {stack && <p className="projectStack">{stack}</p>}
 
-            {/* ========== Info Section ========== */}
-            <div className="projectDetail__info">
-              {/* Stack */}
-              {stack && <p className="projectStack">{stack}</p>}
+            {/* Role Tags */}
+            {role?.length > 0 && (
+              <div className="pillRow">
+                {role.map((r) => (
+                  <span key={r} className="pill">{r}</span>
+                ))}
+              </div>
+            )}
 
-              {/* Role Tags */}
-              {role?.length > 0 && (
+            {/* Overview */}
+            <InfoSection title="Overview">
+              {description && (
+                <p className="muted" style={{ whiteSpace: "pre-line" }}>
+                  {description.trim()}
+                </p>
+              )}
+            </InfoSection>
+
+            {/* Technologies */}
+            <InfoSection title="Technologies">
+              {technologies?.length > 0 && (
                 <div className="pillRow">
-                  {role.map((r) => (
-                    <span key={r} className="pill">{r}</span>
+                  {technologies.map((t) => (
+                    <span key={t} className="pill">{t}</span>
                   ))}
                 </div>
               )}
+            </InfoSection>
 
-              {/* Overview */}
-              <InfoSection title="Overview">
-                {description && (
-                  <p className="muted" style={{ whiteSpace: "pre-line" }}>
-                    {description.trim()}
-                  </p>
-                )}
-              </InfoSection>
+            {/* Key Features */}
+            <InfoSection title="Key Features">
+              {keyFeatures?.length > 0 && (
+                <ul className="bullets">
+                  {keyFeatures.map((f, i) => <li key={i}>{f}</li>)}
+                </ul>
+              )}
+            </InfoSection>
 
-              {/* Technologies */}
-              <InfoSection title="Technologies">
-                {technologies?.length > 0 && (
-                  <div className="pillRow">
-                    {technologies.map((t) => (
-                      <span key={t} className="pill">{t}</span>
-                    ))}
-                  </div>
-                )}
-              </InfoSection>
+            {/* Highlights */}
+            <InfoSection title="Highlights">
+              {highlights?.length > 0 && (
+                <ul className="bullets">
+                  {highlights.map((h, i) => <li key={i}>{h}</li>)}
+                </ul>
+              )}
+            </InfoSection>
 
-              {/* Key Features */}
-              <InfoSection title="Key Features">
-                {keyFeatures?.length > 0 && (
-                  <ul className="bullets">
-                    {keyFeatures.map((f, i) => <li key={i}>{f}</li>)}
-                  </ul>
-                )}
-              </InfoSection>
+            {/* Responsibilities */}
+            <InfoSection title="Responsibilities">
+              {responsibilities?.length > 0 && (
+                <ul className="bullets">
+                  {responsibilities.map((r, i) => <li key={i}>{r}</li>)}
+                </ul>
+              )}
+            </InfoSection>
 
-              {/* Highlights */}
-              <InfoSection title="Highlights">
-                {highlights?.length > 0 && (
-                  <ul className="bullets">
-                    {highlights.map((h, i) => <li key={i}>{h}</li>)}
-                  </ul>
-                )}
-              </InfoSection>
-
-              {/* Responsibilities */}
-              <InfoSection title="Responsibilities">
-                {responsibilities?.length > 0 && (
-                  <ul className="bullets">
-                    {responsibilities.map((r, i) => <li key={i}>{r}</li>)}
-                  </ul>
-                )}
-              </InfoSection>
-
-              {/* Action Buttons */}
-              <ActionButtons links={links} title={title} />
-            </div>
+            {/* Action Buttons */}
+            <ActionButtons links={links} title={title} />
           </div>
-        </Section>
-      </div>
-    </>
+        </div>
+      </Section>
+    </div>
   );
 }
+
 
 

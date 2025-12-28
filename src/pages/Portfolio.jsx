@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
+import { usePageMeta } from "../hooks/usePageMeta.js";
 import Section from "../components/ui/Section.jsx";
 import { projects } from "../data/projects.js";
 
@@ -80,24 +80,21 @@ function ProjectCard({ project }) {
    - แสดงรายการโปรเจคทั้งหมด
 ======================================== */
 export default function Portfolio() {
-  return (
-    <>
-      <Helmet>
-        <title>Portfolio | Napat Pamornsut</title>
-        <meta name="description" content="Explore my portfolio of web development projects including frontend, system analysis, and software testing work." />
-      </Helmet>
+  // SEO Meta Tags
+  usePageMeta({
+    title: "Portfolio | Napat Pamornsut",
+    description: "Explore my portfolio of web development projects including frontend, system analysis, and software testing work.",
+  });
 
-      <div className="stack">
-        <Section title="Portfolio">
-          <div className="portfolioList">
-            {projects.map((project) => (
-              <ProjectCard key={project.slug} project={project} />
-            ))}
-          </div>
-        </Section>
-      </div>
-    </>
+  return (
+    <div className="stack">
+      <Section title="Portfolio">
+        <div className="portfolioList">
+          {projects.map((project) => (
+            <ProjectCard key={project.slug} project={project} />
+          ))}
+        </div>
+      </Section>
+    </div>
   );
 }
-
-
