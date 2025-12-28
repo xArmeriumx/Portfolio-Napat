@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Section from "../components/ui/Section.jsx";
 import { projects } from "../data/projects.js";
@@ -5,6 +6,9 @@ import { projects } from "../data/projects.js";
 export default function ProjectDetail() {
   const { slug } = useParams();
   const project = projects.find((p) => p.slug === slug);
+
+  // State สำหรับเลือกรูปภาพ
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   if (!project) {
     return (
@@ -18,20 +22,73 @@ export default function ProjectDetail() {
     );
   }
 
+  // รองรับทั้ง images (array) และ image (string เดิม)
+  const projectImages =
+    project.images || (project.image ? [project.image] : []);
+  const currentImage = projectImages[selectedImageIndex] || projectImages[0];
+
   return (
     <div className="stack">
       <Section title={project.title}>
         <div className="projectDetail">
           <div className="projectDetail__media">
+            {/* รูปภาพหลัก */}
             <img
               className="projectImage"
-              src={project.image}
-              alt={project.title}
+              src={currentImage}
+              alt={`${project.title} - Image ${selectedImageIndex + 1}`}
             />
+
+            {/* Gallery Thumbnails - แสดงถ้ามีมากกว่า 1 รูป */}
+            {projectImages.length > 1 && (
+              <div
+                style={{
+                  display: "flex",
+                  gap: "8px",
+                  marginTop: "12px",
+                  overflowX: "auto",
+                  padding: "4px 0",
+                }}
+              >
+                {projectImages.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt={`${project.title} thumbnail ${index + 1}`}
+                    onClick={() => setSelectedImageIndex(index)}
+                    style={{
+                      width: "80px",
+                      height: "80px",
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      border:
+                        selectedImageIndex === index
+                          ? "3px solid #3b82f6"
+                          : "2px solid #e5e7eb",
+                      opacity: selectedImageIndex === index ? 1 : 0.6,
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (selectedImageIndex !== index) {
+                        e.target.style.opacity = 0.8;
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (selectedImageIndex !== index) {
+                        e.target.style.opacity = 0.6;
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="projectDetail__info">
-            <div className="projectStack">{project.stack}</div>
+            {project.stack && (
+              <div className="projectStack">{project.stack}</div>
+            )}
 
             <div className="pillRow" style={{ marginTop: 10 }}>
               {project.role.map((r) => (
@@ -72,28 +129,32 @@ export default function ProjectDetail() {
               <>
                 <h3 style={{ marginTop: 16 }}>Key Features</h3>
                 <ul className="bullets">
-                  {project.keyFeatures.map((f) => (
-                    <li key={f}>{f}</li>
+                  {project.keyFeatures.map((f, idx) => (
+                    <li key={idx}>{f}</li>
                   ))}
                 </ul>
               </>
             ) : null}
 
-            {/* เดิม: Highlights */}
-            <h3 style={{ marginTop: 16 }}>Highlights</h3>
-            <ul className="bullets">
-              {project.highlights.map((h) => (
-                <li key={h}>{h}</li>
-              ))}
-            </ul>
+            {/* Highlights */}
+            {project.highlights?.length ? (
+              <>
+                <h3 style={{ marginTop: 16 }}>Highlights</h3>
+                <ul className="bullets">
+                  {project.highlights.map((h, idx) => (
+                    <li key={idx}>{h}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
 
-            {/* Responsibilities (ถ้ามี) */}
+            {/* Responsibilities */}
             {project.responsibilities?.length ? (
               <>
                 <h3 style={{ marginTop: 16 }}>Responsibilities</h3>
                 <ul className="bullets">
-                  {project.responsibilities.map((r) => (
-                    <li key={r}>{r}</li>
+                  {project.responsibilities.map((r, idx) => (
+                    <li key={idx}>{r}</li>
                   ))}
                 </ul>
               </>

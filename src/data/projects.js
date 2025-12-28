@@ -2,8 +2,14 @@ export const projects = [
   {
     slug: "clean-water-monitoring",
     title: "Clean Water Monitoring",
-    //stack: "React • Chart.js • MQTT • Firebase",
-    image: `${import.meta.env.BASE_URL}images/p1-clean-water.jpg`,
+    // ✅ เปลี่ยนจาก image เป็น images (array) - รูปแรกจะแสดงในหน้าแรก
+    images: [
+      `${import.meta.env.BASE_URL}images/p1-clean-water.jpg`,
+      // เพิ่มรูปเพิ่มเติมได้ที่นี่
+      `${import.meta.env.BASE_URL}images/p1-clean-water1.jpg`,
+      `${import.meta.env.BASE_URL}images/p1-clean-water2.jpg`,
+      `${import.meta.env.BASE_URL}images/p1-clean-water3.jpg`,
+    ],
     role: ["Fullstack Developer", "IoT Developer"],
 
     description: `
@@ -12,7 +18,6 @@ System collects sensor data via MQTT and visualizes results
 on dashboards with alerts and historical logs.
     `,
 
-    // ✅ ใหม่: Technologies
     technologies: [
       "React",
       "Chart.js",
@@ -23,7 +28,6 @@ on dashboards with alerts and historical logs.
       "IoT Technology",
     ],
 
-    // ✅ ใหม่: Key Features
     keyFeatures: [
       "Real-time sensor dashboard with charts",
       "Water quality logs & filtering",
@@ -50,8 +54,13 @@ on dashboards with alerts and historical logs.
   {
     slug: "stock-management-system",
     title: "Stock Management System",
-    //stack: "React • Node.js • PostgreSQL • JWT",
-    image: `${import.meta.env.BASE_URL}images/p2-stock-management.jpg`,
+    images: [
+      `${import.meta.env.BASE_URL}images/p2-stock-management.jpg`,
+      `${import.meta.env.BASE_URL}images/p2-stock-management1.jpg`,
+      `${import.meta.env.BASE_URL}images/p2-stock-management2.jpg`,
+      `${import.meta.env.BASE_URL}images/p2-stock-management3.jpg`,
+      `${import.meta.env.BASE_URL}images/p2-stock-management4.jpg`,
+    ],
     role: ["UX/UI Design", "System Analyst"],
 
     description: `
@@ -93,7 +102,12 @@ stock alerts and expiring items.
   {
     slug: "mentos-pharmacy-store",
     title: "Mentos Pharmacy Store",
-    image: `${import.meta.env.BASE_URL}images/p3-phamacy.png`,
+    images: [
+      `${import.meta.env.BASE_URL}images/p3-phamacy.png`,
+      // เพิ่มรูปเพิ่มเติมได้
+      `${import.meta.env.BASE_URL}images/p3-phamacy1.png`,
+      `${import.meta.env.BASE_URL}images/p3-phamacy2.png`,
+    ],
     role: ["Project Management", "Frontend Developer", "System Analyst"],
 
     description: `
@@ -102,10 +116,8 @@ Features product catalog with categories, shopping cart management, order proces
 and admin dashboard for inventory and customer management.
   `,
 
-    // Technologies
     technologies: ["PHP", "MySQL", "HTML", "CSS", "JavaScript", "Bootstrap"],
 
-    // Key Features
     keyFeatures: [
       "Product catalog with multiple categories (vitamins, supplements, medicines, health products)",
       "Shopping cart system with add/remove/update quantity functionality",
@@ -143,7 +155,7 @@ and admin dashboard for inventory and customer management.
     slug: "uat-testkit",
     title: "UAT / Test Case & Bug Report Template",
     stack: "System Analyst • Software Tester",
-    image: `${import.meta.env.BASE_URL}images/p3-uat.png`,
+    images: [`${import.meta.env.BASE_URL}images/p3-uat.png`],
     role: ["System Analyst", "Tester"],
 
     description: `
