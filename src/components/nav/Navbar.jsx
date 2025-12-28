@@ -1,16 +1,13 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 
 export default function Navbar() {
   return (
     <header className="navbar">
       <div className="navInner">
-        <div
-          className="brand"
-          onClick={() => (window.location.href = "/Portfolio-Napat/#")}
-          style={{ cursor: "pointer" }}
-        >
+        <Link to="/" className="brand">
           Napat.Dev();
-        </div>
+        </Link>
+
         <nav className="navLinks">
           <NavLink
             to="/"
@@ -36,3 +33,4 @@ export default function Navbar() {
     </header>
   );
 }
+
