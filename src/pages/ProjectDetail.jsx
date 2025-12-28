@@ -3,24 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { usePageMeta } from "../hooks/usePageMeta.js";
 import Section from "../components/ui/Section.jsx";
 import { projects } from "../data/projects.js";
-
-/* ========================================
-   NotFoundView - แสดงเมื่อไม่พบโปรเจค
-======================================== */
-function NotFoundView() {
-  // SEO for 404
-  usePageMeta({ title: "Project Not Found | Napat Pamornsut" });
-
-  return (
-    <div className="stack">
-      <Section title="Project not found">
-        <Link className="btn" to="/portfolio" aria-label="Back to portfolio">
-          ← Back to Portfolio
-        </Link>
-      </Section>
-    </div>
-  );
-}
+import NotFound from "./NotFound.jsx";
 
 /* ========================================
    ImageGallery - แสดงรูปภาพและ Thumbnails
@@ -127,9 +110,10 @@ export default function ProjectDetail() {
     ogTitle: project ? `${project.title} - Portfolio` : undefined,
   });
 
-  // ไม่พบโปรเจค
-  if (!project) return <NotFoundView />;
-
+  // ถ้าไม่เจอโปรเจค ให้แสดง NotFound
+  if (!project) {
+    return <NotFound />;
+  }
   // รองรับทั้ง images (array) และ image (string)
   const projectImages = project.images || (project.image ? [project.image] : []);
 
