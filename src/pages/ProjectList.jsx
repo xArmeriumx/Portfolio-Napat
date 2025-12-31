@@ -82,8 +82,8 @@ function ProjectCard({ project }) {
 export default function ProjectList() {
   // SEO Meta Tags
   usePageMeta({
-    title: "Portfolio | Napat Pamornsut",
-    description: "Explore my portfolio of web development projects including frontend, system analysis, and software testing work.",
+    title: "Projects | Napat Pamornsut",
+    description: "Explore my projects including web development, fullstack, system analysis, and software testing work.",
   });
 
   return (

@@ -9,7 +9,7 @@ export default function Home() {
   usePageMeta({
     title: `${profile.name} | ${profile.headline}`,
     description: profile.tagline,
-    ogTitle: `${profile.name} - Portfolio`,
+    ogTitle: `${profile.name} - Projects`,
   });
 
   useEffect(() => {

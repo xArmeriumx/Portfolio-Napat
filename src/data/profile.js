@@ -1,8 +1,8 @@
 export const profile = {
   name: "Napat Pamornsut",
-  headline: "Frontend Developer | System Analyst | Software Tester",
+  headline: "Fullstack Developer | Automation Tester | System Analyst",
   tagline:
-    "Turning complex requirements into intuitive interfaces. I combine frontend expertise, analytical thinking, and testing rigor to deliver solutions that users love and businesses trust.",
+    "Building end-to-end solutions from frontend to backend, with automated testing to ensure quality. I combine development skills, analytical thinking, and testing expertise to deliver reliable software.",
   links: {
     github: "https://github.com/NapatPamornsuT",
     linkedin: "#",
@@ -14,13 +14,14 @@ export const profile = {
     phone: "+66959710313",
   },
   about:
-    "I'm a multidisciplinary developer with hands-on experience in UI development, requirement gathering, system analysis, UAT, and end-user support. I enjoy bridging business needs and technical implementation, and I'm comfortable working with documentation, wireframes, test cases, and real-world constraints.",
+    "I'm a fullstack developer with experience in frontend development, backend APIs, automated testing, and system analysis. I enjoy building complete solutions and ensuring quality through test automation.",
   education: [
     "King Mongkut's University of Technology North Bangkok",
     "Department of Computer and Information Sciences, Faculty of Applied Science",
     "GPAX: 2.91 / 4.00",
   ],
   skills: [
+    // Frontend
     {
       name: "HTML",
       logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg",
@@ -34,32 +35,38 @@ export const profile = {
       logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
     },
     {
-      name: "React.js",
+      name: "React",
       logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+    },
+    {
+      name: "Vite",
+      logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg",
+    },
+    {
+      name: "Chakra UI",
+      logo: "https://avatars.githubusercontent.com/u/54212428?s=200&v=4",
+    },
+    // Backend
+    {
+      name: "Node.js",
+      logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
+    },
+    {
+      name: "Express",
+      logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg",
     },
     {
       name: "REST API",
       logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swagger/swagger-original.svg",
     },
+    // Testing
     {
-      name: "ChakraUI",
-      logo: "https://avatars.githubusercontent.com/u/54212428?s=200&v=4",
+      name: "Playwright",
+      logo: "https://playwright.dev/img/playwright-logo.svg",
     },
     {
-      name: "Next.js",
-      logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg",
-    },
-    {
-      name: "Vite.js",
-      logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg",
-    },
-    {
-      name: "Test Case",
+      name: "Test Automation",
       logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytest/pytest-original.svg",
-    },
-    {
-      name: "Bug Report",
-      logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jira/jira-original.svg",
     },
   ],
 };
