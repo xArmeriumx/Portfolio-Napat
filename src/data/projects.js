@@ -195,4 +195,58 @@ dev, tester, and business.
       repo: "",
     },
   },
+
+  {
+    slug: "automate-test-pipeline",
+    title: "Automated Test Pipeline",
+    images: [
+      `${import.meta.env.BASE_URL}images/p5-testcase.png`,
+      // เพิ่มรูปเพิ่มเติมได้
+    ],
+    role: ["Automation Tester"],
+
+    description: `
+End-to-end automated testing system for the Clean Water Monitoring project.
+Utilizes Playwright for UI and API testing with automatic result export
+to Google Sheets and comprehensive test case documentation in Thai.
+    `,
+
+    technologies: [
+      "Playwright",
+      "Node.js",
+      "TypeScript",
+      "Google Sheets API",
+    ],
+
+    keyFeatures: [
+      "Cross-browser testing (Chrome, Firefox, Safari)",
+      "API testing with authentication flow",
+      "Automated Google Sheets result upload",
+      "Thai language test case documentation",
+      "One-click pipeline execution",
+      "Health check for services before running tests",
+      "Parallel test execution with 8 workers",
+    ],
+
+    highlights: [
+      "64 test cases covering Auth, Users, Locations, Issues APIs",
+      "Auto upload to Google Sheets with formatting",
+      "Pipeline: Run Tests → Export CSV → Upload Sheets",
+      "Cross-browser support (Chromium, Firefox, WebKit)",
+    ],
+
+    responsibilities: [
+      "Design test architecture using Page Object Model",
+      "Implement API tests for all backend endpoints",
+      "Create automated pipeline with Node.js scripts",
+      "Integrate Google Sheets API for result reporting",
+      "Configure Playwright for multi-browser testing",
+      "Write test case descriptions in Thai for client communication",
+    ],
+
+    links: {
+      demo: "https://docs.google.com/spreadsheets/d/1J2LEMbimPGh7JnK3hQky7QK2_lMaML8s8mQ_osI3Li0k4",
+      repo: "",
+    },
+  },
 ];
