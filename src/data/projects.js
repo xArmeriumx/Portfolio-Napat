@@ -154,9 +154,9 @@ and admin dashboard for inventory and customer management.
   {
     slug: "uat-testkit",
     title: "UAT / Test Case & Bug Report Template",
-    stack: "System Analyst • Software Tester",
+    //stack: "System Analyst • Software Tester",
     images: [`${import.meta.env.BASE_URL}images/p4-testcase.png`],
-    role: ["System Analyst", "Tester"],
+    role: ["System Analyst", "Software Tester"],
 
     description: `
 Template set for UAT, test case design, and bug reporting
@@ -201,6 +201,7 @@ dev, tester, and business.
     title: "Automated Test Pipeline",
     images: [
       `${import.meta.env.BASE_URL}images/p5-testcase.png`,
+      `${import.meta.env.BASE_URL}images/p5-testcase1.png`,
       // เพิ่มรูปเพิ่มเติมได้
     ],
     role: ["Automation Tester"],
@@ -245,7 +246,7 @@ to Google Sheets and comprehensive test case documentation in Thai.
     ],
 
     links: {
-      demo: "https://docs.google.com/spreadsheets/d/1J2LEMbimPGh7JnK3hQky7QK2_lMaML8s8mQ_osI3Li0k4",
+      demo: "https://docs.google.com/spreadsheets/d/1J2LEMbimPGh7JnK3hQky7QK2_lML8s8mQ_osI3Li0k4/edit?gid=0#gid=0",
       repo: "",
     },
   },

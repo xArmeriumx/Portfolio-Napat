@@ -88,7 +88,7 @@ function ActionButtons({ links, title }) {
         </a>
       )}
 
-      <Link className="btn" to="/portfolio" aria-label="Back to portfolio">
+      <Link className="btn" to="/projects" aria-label="Back to projects">
         ← Back
       </Link>
     </div>

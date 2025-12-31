@@ -5,7 +5,7 @@ export default function Navbar() {
     <header className="navbar">
       <div className="navInner">
         <Link to="/" className="brand">
-          Napat.Dev();
+          Napat-Dev();
         </Link>
 
         <nav className="navLinks">
@@ -23,10 +23,10 @@ export default function Navbar() {
             About
           </NavLink>
           <NavLink
-            to="/portfolio"
+            to="/projects"
             className={({ isActive }) => (isActive ? "active" : "")}
           >
-            Portfolio
+            Projects
           </NavLink>
         </nav>
       </div>

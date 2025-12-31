@@ -66,7 +66,7 @@ function ProjectCard({ project }) {
             </a>
           )}
 
-          <Link className="btn" to={`/portfolio/${slug}`} aria-label={`View ${title} details`}>
+          <Link className="btn" to={`/projects/${slug}`} aria-label={`View ${title} details`}>
             View Detail →
           </Link>
         </div>
@@ -76,10 +76,10 @@ function ProjectCard({ project }) {
 }
 
 /* ========================================
-   Portfolio Page
+   ProjectList Page
    - แสดงรายการโปรเจคทั้งหมด
 ======================================== */
-export default function Portfolio() {
+export default function ProjectList() {
   // SEO Meta Tags
   usePageMeta({
     title: "Portfolio | Napat Pamornsut",
