@@ -3,6 +3,36 @@ import Section from "../components/ui/Section.jsx";
 import Card from "../components/ui/Card.jsx";
 import { profile } from "../data/profile.js";
 
+/* ========================================
+   SkillCategory Component
+   - แสดง skills แยกตามหมวด
+======================================== */
+function SkillCategory({ category, skills }) {
+  return (
+    <div className="skillCategory">
+      <h3 className="skillCategoryTitle">{category}</h3>
+      <div className="skillsGrid">
+        {skills.map((skill) => (
+          <div key={skill.name} className="skillBox">
+            <img
+              src={skill.logo}
+              alt={skill.name}
+              className="skillIcon"
+              loading="lazy"
+              style={{
+                width: "32px",
+                height: "32px",
+                objectFit: "contain",
+              }}
+            />
+            <div className="skillText">{skill.name}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function About() {
   // SEO Meta Tags
   usePageMeta({
@@ -44,27 +74,16 @@ export default function About() {
       </Section>
 
       <Section title="Skills">
-        <div className="skillsGrid">
-          {profile.skills.map((skill) => (
-            <div key={skill.name} className="skillBox">
-              <img
-                src={skill.logo}
-                alt={skill.name}
-                className="skillIcon"
-                loading="lazy"
-                style={{
-                  width: "32px",
-                  height: "32px",
-                  objectFit: "contain",
-                }}
-              />
-              <div className="skillText">{skill.name}</div>
-            </div>
+        <div className="skillCategoriesContainer">
+          {profile.skillCategories.map((cat) => (
+            <SkillCategory
+              key={cat.category}
+              category={cat.category}
+              skills={cat.skills}
+            />
           ))}
         </div>
       </Section>
     </div>
   );
 }
-
-
