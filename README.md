@@ -2,26 +2,26 @@
 
 Personal portfolio website showcasing my projects, skills, and experience.
 
-## 🌐 Live Demo
+## Live Demo
 
 [https://napat-dev.vercel.app](https://napat-dev.vercel.app)
 
-## ✨ Features
+## Features
 
-- **Responsive Design** - Works on all devices
-- **Project Showcase** - Detailed project pages with image galleries
-- **Skills Section** - Organized by category (Frontend, Backend, Testing)
-- **SEO Optimized** - Custom meta tags for each page
-- **Fast Performance** - Built with Vite for optimal loading
+- Responsive Design - Works on all devices
+- Project Showcase - Detailed project pages with image galleries
+- Skills Section - Organized by category (Frontend, Backend, Testing)
+- SEO Optimized - Custom meta tags for each page
+- Fast Performance - Built with Vite for optimal loading
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **React** - UI Library
 - **Vite** - Build Tool
 - **React Router** - Navigation
 - **CSS** - Custom styling
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
@@ -32,7 +32,7 @@ src/
 └── styles/         # CSS files
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ```bash
 # Install dependencies
@@ -45,11 +45,11 @@ npm run dev
 npm run build
 ```
 
-## 📦 Deployment
+## Deployment
 
 - **Vercel** - Auto-deploy from main branch
 - **GitHub Pages** - Manual deploy with `npm run build`
 
-## 📄 License
+## License
 
 MIT
