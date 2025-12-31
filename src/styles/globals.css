@@ -500,8 +500,8 @@ body {
   font-size: 15px;
 }
 
-/* ========== PORTFOLIO - Clean Cards ========== */
-.portfolioList {
+/* ========== PROJECTS - Clean Cards ========== */
+.projectList {
   display: grid;
   gap: 24px;
 }

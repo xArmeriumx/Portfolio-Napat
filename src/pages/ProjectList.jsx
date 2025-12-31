@@ -88,8 +88,8 @@ export default function ProjectList() {
 
   return (
     <div className="stack">
-      <Section title="Portfolio">
-        <div className="portfolioList">
+      <Section title="Projects">
+        <div className="projectList">
           {projects.map((project) => (
             <ProjectCard key={project.slug} project={project} />
           ))}

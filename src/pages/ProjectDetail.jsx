@@ -108,7 +108,7 @@ export default function ProjectDetail() {
   usePageMeta({
     title: project ? `${project.title} | Napat Pamornsut` : "Project Not Found | Napat Pamornsut",
     description: metaDescription,
-    ogTitle: project ? `${project.title} - Portfolio` : undefined,
+    ogTitle: project ? `${project.title} - Projects` : undefined,
   });
 
   // ถ้าไม่เจอโปรเจค ให้แสดง NotFound
