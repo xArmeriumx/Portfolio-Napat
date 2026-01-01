@@ -200,6 +200,7 @@ dev, tester, and business.
     slug: "automate-test-pipeline",
     title: "Automated Test Pipeline",
     images: [
+      `${import.meta.env.BASE_URL}images/p5-testcase2.png`,
       `${import.meta.env.BASE_URL}images/p5-testcase.png`,
       `${import.meta.env.BASE_URL}images/p5-testcase1.png`,
       // เพิ่มรูปเพิ่มเติมได้
