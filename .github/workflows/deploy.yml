@@ -18,33 +18,33 @@ concurrency:
 jobs:
   # Job 1: Lint & Build
   build:
-    name: 🔨 Build & Lint
+    name: Build & Lint
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 Checkout Code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: 📦 Setup Node.js
+      - name:  Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'npm'
 
-      - name: 📥 Install Dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: 🔍 Lint Code
+      - name: Lint Code
         run: npm run lint
         continue-on-error: true
 
-      - name: 🏗️ Build Production
+      - name: Build Production
         run: npm run build
         env:
           GITHUB_PAGES: true
 
-      - name: 📊 Build Summary
+      - name: Build Summary
         run: |
-          echo "### 🎉 Build Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "###  Build Successful!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
@@ -59,7 +59,7 @@ jobs:
 
   # Job 2: Deploy to GitHub Pages
   deploy:
-    name: 🚀 Deploy to GitHub Pages
+    name:  Deploy to GitHub Pages
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -67,12 +67,12 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: 🚀 Deploy to GitHub Pages
+      - name:  Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: 📊 Deploy Summary
+      - name:  Deploy Summary
         run: |
-          echo "### 🚀 Deployment Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "###  Deployment Complete!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Live URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY

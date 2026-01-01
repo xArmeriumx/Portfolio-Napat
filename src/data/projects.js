@@ -204,35 +204,37 @@ dev, tester, and business.
       `${import.meta.env.BASE_URL}images/p5-testcase1.png`,
       // เพิ่มรูปเพิ่มเติมได้
     ],
-    role: ["Automation Tester"],
+    role: ["Automation Tester", "DevOps"],
 
     description: `
 End-to-end automated testing system for the Clean Water Monitoring project.
-Utilizes Playwright for UI and API testing with automatic result export
-to Google Sheets and comprehensive test case documentation in Thai.
+Utilizes Playwright for UI and API testing with GitHub Actions CI/CD pipeline
+for automatic test execution and result export to Google Sheets.
     `,
 
     technologies: [
       "Playwright",
       "Node.js",
       "TypeScript",
+      "GitHub Actions",
       "Google Sheets API",
     ],
 
     keyFeatures: [
+      "CI/CD Pipeline with GitHub Actions - auto run on push/PR",
       "Cross-browser testing (Chrome, Firefox, Safari)",
       "API testing with authentication flow",
       "Automated Google Sheets result upload",
       "Thai language test case documentation",
-      "One-click pipeline execution",
+      "One-click pipeline execution (manual trigger)",
       "Health check for services before running tests",
-      "Parallel test execution with 8 workers",
+      "Secure credential management with GitHub Secrets",
     ],
 
     highlights: [
       "64 test cases covering Auth, Users, Locations, Issues APIs",
+      "CI/CD with GitHub Actions (auto run on push)",
       "Auto upload to Google Sheets with formatting",
-      "Pipeline: Run Tests → Export CSV → Upload Sheets",
       "Cross-browser support (Chromium, Firefox, WebKit)",
     ],
 
@@ -240,14 +242,15 @@ to Google Sheets and comprehensive test case documentation in Thai.
       "Design test architecture using Page Object Model",
       "Implement API tests for all backend endpoints",
       "Create automated pipeline with Node.js scripts",
+      "Setup GitHub Actions CI/CD workflow",
       "Integrate Google Sheets API for result reporting",
       "Configure Playwright for multi-browser testing",
-      "Write test case descriptions in Thai for client communication",
+      "Implement secure secrets management",
     ],
 
     links: {
       demo: "https://docs.google.com/spreadsheets/d/1J2LEMbimPGh7JnK3hQky7QK2_lML8s8mQ_osI3Li0k4/edit?gid=0#gid=0",
-      repo: "",
+      repo: "https://github.com/xArmeriumx/-Automate-Test-with-Playwright-Clean-Water-Monitoring-",
     },
   },
 ];
