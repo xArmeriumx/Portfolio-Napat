@@ -1,8 +1,8 @@
 export const profile = {
   name: "Napat Pamornsut",
-  headline: "Fullstack Developer | Automation Tester | System Analyst",
+  headline: "Frontend Developer | Software Tester | System Analyst",
   tagline:
-    "Building end-to-end solutions from frontend to backend, with automated testing to ensure quality. I combine development skills, analytical thinking, and testing expertise to deliver reliable software.",
+    "Building modern web applications with React and JavaScript. I combine frontend development skills, analytical thinking, and testing expertise to deliver reliable software.",
   links: {
     github: "https://github.com/NapatPamornsuT",
     linkedin: "#",
@@ -14,7 +14,7 @@ export const profile = {
     phone: "+66959710313",
   },
   about:
-    "I'm a fullstack developer with experience in frontend development, backend APIs, automated testing, and system analysis. I enjoy building complete solutions and ensuring quality through test automation.",
+    "I'm a frontend developer with experience in React, JavaScript, automated testing, and system analysis. I enjoy building modern web applications and ensuring quality through test automation.",
   education: [
     "King Mongkut's University of Technology North Bangkok",
     "Department of Computer and Information Sciences, Faculty of Applied Science",

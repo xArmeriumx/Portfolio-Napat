@@ -5,11 +5,13 @@ import { profile } from "../data/profile.js";
 export default function Home() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  // SEO Meta Tags
+  // SEO Meta Tags with Thai name keywords
   usePageMeta({
-    title: `${profile.name} | ${profile.headline}`,
+    title: `${profile.name} (ณภัทร ภมรสูตร) | ${profile.headline}`,
     description: profile.tagline,
-    ogTitle: `${profile.name} - Projects`,
+    ogTitle: `${profile.name} - Portfolio`,
+    path: "/",
+    keywords: "Napat Pamornsut, ณภัทร ภมรสูตร, Frontend Developer, Software Tester, System Analyst, React, JavaScript, Bangkok, Thailand"
   });
 
   useEffect(() => {

@@ -36,8 +36,10 @@ function SkillCategory({ category, skills }) {
 export default function About() {
   // SEO Meta Tags
   usePageMeta({
-    title: `About | ${profile.name}`,
+    title: `About | ${profile.name} (ณภัทร ภมรสูตร)`,
     description: profile.about,
+    path: "/about",
+    keywords: "Napat Pamornsut, ณภัทร ภมรสูตร, About, Skills, Education, Bangkok Developer"
   });
 
   return (

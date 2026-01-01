@@ -104,11 +104,15 @@ export default function ProjectDetail() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   // SEO Meta Tags (must be called before early return)
-  const metaDescription = project?.description?.trim().substring(0, 160) || `Project by Napat Pamornsut`;
+  const metaDescription = project?.description?.trim().substring(0, 160) || `Project by Napat Pamornsut (ณภัทร ภมรสูตร)`;
+  const projectImage = project?.images?.[0] || null;
   usePageMeta({
-    title: project ? `${project.title} | Napat Pamornsut` : "Project Not Found | Napat Pamornsut",
+    title: project ? `${project.title} | Napat Pamornsut (ณภัทร ภมรสูตร)` : "Project Not Found | Napat Pamornsut",
     description: metaDescription,
     ogTitle: project ? `${project.title} - Projects` : undefined,
+    path: project ? `/projects/${project.slug}` : "/projects",
+    ogImage: projectImage,
+    keywords: project ? `Napat Pamornsut, ณภัทร ภมรสูตร, ${project.title}, ${project.technologies?.join(', ')}` : undefined
   });
 
   // ถ้าไม่เจอโปรเจค ให้แสดง NotFound

@@ -82,8 +82,10 @@ function ProjectCard({ project }) {
 export default function ProjectList() {
   // SEO Meta Tags
   usePageMeta({
-    title: "Projects | Napat Pamornsut",
-    description: "Explore my projects including web development, fullstack, system analysis, and software testing work.",
+    title: "Projects | Napat Pamornsut (ณภัทร ภมรสูตร)",
+    description: "Explore my projects including web development, frontend, system analysis, and software testing work.",
+    path: "/projects",
+    keywords: "Napat Pamornsut, ณภัทร ภมรสูตร, Projects, Portfolio, Web Development, React, Software Testing"
   });
 
   return (
