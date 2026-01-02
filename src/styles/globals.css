@@ -162,10 +162,9 @@ body {
 
 /* ========== HERO - Elegant Minimalist ========== */
 .hero {
-  min-height: calc(100vh - 60px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
   text-align: center;
   position: relative;
   padding: 20px 16px;
