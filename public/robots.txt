@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://napat-dev.vercel.app/sitemap.xml
+Sitemap: https://napat-dev.com/sitemap.xml

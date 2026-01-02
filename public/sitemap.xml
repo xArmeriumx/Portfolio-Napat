@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://napat-dev.vercel.app/</loc>
+    <loc>https://napat-dev.com/</loc>
     <lastmod>2026-01-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://napat-dev.vercel.app/about</loc>
+    <loc>https://napat-dev.com/about</loc>
     <lastmod>2026-01-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://napat-dev.vercel.app/projects</loc>
+    <loc>https://napat-dev.com/projects</loc>
     <lastmod>2026-01-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://napat-dev.vercel.app/projects/clean-water-monitoring</loc>
+    <loc>https://napat-dev.com/projects/clean-water-monitoring</loc>
     <lastmod>2026-01-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://napat-dev.vercel.app/projects/stock-management-system</loc>
+    <loc>https://napat-dev.com/projects/stock-management-system</loc>
     <lastmod>2026-01-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://napat-dev.vercel.app/projects/mentos-pharmacy-store</loc>
+    <loc>https://napat-dev.com/projects/mentos-pharmacy-store</loc>
     <lastmod>2026-01-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://napat-dev.vercel.app/projects/uat-testkit</loc>
+    <loc>https://napat-dev.com/projects/uat-testkit</loc>
     <lastmod>2026-01-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://napat-dev.vercel.app/projects/automate-test-pipeline</loc>
+    <loc>https://napat-dev.com/projects/automate-test-pipeline</loc>
     <lastmod>2026-01-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

@@ -4,7 +4,7 @@ Personal portfolio website showcasing my projects, skills, and professional expe
 
 ## Live Demo
 
-**Production URL:** [https://napat-dev.vercel.app](https://napat-dev.vercel.app)
+**Production URL:** [https://napat-dev.com](https://napat-dev.com)
 
 ---
 
