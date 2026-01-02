@@ -1,8 +1,8 @@
 export const profile = {
   name: "Napat Pamornsut",
-  headline: "Frontend Developer | Software Tester | System Analyst",
+  headline: "Frontend Developer | Software Tester",
   tagline:
-    "Building web applications that meet requirements, perform reliably, and are ready for real-world use — from development to testing.",
+    "Building reliable web applications with a strong focus on quality, testing, and real usage.",
   links: {
     github: "https://github.com/NapatPamornsuT",
     linkedin: "#",
@@ -14,10 +14,10 @@ export const profile = {
     phone: "",
   },
   about:
-    "I'm a frontend developer with experience in React, JavaScript, automated testing, and system analysis. I enjoy building modern web applications and ensuring quality through test automation.",
+    "I have experience in frontend development and software testing, with a strong focus on quality, validation, and practical usage. I approach development with a testing mindset to ensure reliable and maintainable systems.",
   education: [
     "King Mongkut's University of Technology North Bangkok",
-    "Department of Computer and Information Sciences, Faculty of Applied Science",
+    "B.Sc. in Computer and Information Science — Faculty of Applied Science",
     "GPAX: 2.91 / 4.00",
   ],
   // Skills แยกตามหมวด

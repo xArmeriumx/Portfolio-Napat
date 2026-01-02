@@ -11,7 +11,7 @@ export default function Home() {
     description: profile.tagline,
     ogTitle: `${profile.name} - Portfolio`,
     path: "/",
-    keywords: "Napat Pamornsut, ณภัทร ภมรสูตร, Frontend Developer, Software Tester, System Analyst, React, JavaScript, Bangkok, Thailand"
+    keywords: "Napat Pamornsut, ณภัทร ภมรสูตร, Frontend Developer, Software Tester, React, JavaScript, Bangkok, Thailand"
   });
 
   useEffect(() => {
