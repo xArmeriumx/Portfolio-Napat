@@ -78,7 +78,7 @@ export function usePageMeta({
     setMetaTag("og:type", ogType, true);
     setMetaTag("og:url", fullUrl, true);
     setMetaTag("og:image", imageUrl, true);
-    setMetaTag("og:site_name", "Napat Pamornsut Portfolio", true);
+    setMetaTag("og:site_name", "Napat Pamornsut | Napat-dev.com", true);
     setMetaTag("og:locale", "en_US", true);
 
     // Twitter Card meta tags

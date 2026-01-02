@@ -2,7 +2,7 @@ export const profile = {
   name: "Napat Pamornsut",
   headline: "Frontend Developer | Software Tester | System Analyst",
   tagline:
-    "Building modern web applications with React and JavaScript. I combine frontend development skills, analytical thinking, and testing expertise to deliver reliable software.",
+    "Building web applications that meet requirements, perform reliably, and are ready for real-world use — from development to testing.",
   links: {
     github: "https://github.com/NapatPamornsuT",
     linkedin: "#",
@@ -11,7 +11,7 @@ export const profile = {
   },
   contact: {
     location: "Bangkok, Thailand",
-    phone: "+66959710313",
+    phone: "",
   },
   about:
     "I'm a frontend developer with experience in React, JavaScript, automated testing, and system analysis. I enjoy building modern web applications and ensuring quality through test automation.",
