@@ -17,7 +17,7 @@ function ProjectCard({ project }) {
     <article className="projectCard">
       {/* รูปปก */}
       <div className="projectImageWrap">
-        <img className="projectImage" src={coverImage} alt={title} loading="lazy" />
+        <img className="projectImage" src={coverImage} alt={title} />
       </div>
 
       {/* เนื้อหา */}
