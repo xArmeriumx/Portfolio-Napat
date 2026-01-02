@@ -18,7 +18,7 @@ function SkillCategory({ category, skills }) {
               src={skill.logo}
               alt={skill.name}
               className="skillIcon"
-              loading="lazy"
+              //loading="lazy"
               style={{
                 width: "32px",
                 height: "32px",
