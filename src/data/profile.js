@@ -2,7 +2,7 @@ export const profile = {
   name: "Napat Pamornsut",
   headline: "Frontend Developer | Software Tester",
   tagline:
-    "Building reliable web applications with a strong focus on quality, testing, and real usage.",
+    "Building reliable web applications with a strong focus on quality, testing, and real usage. Experienced in translating requirements into practical, testable solutions.",
   links: {
     github: "https://github.com/NapatPamornsuT",
     linkedin: "#",
