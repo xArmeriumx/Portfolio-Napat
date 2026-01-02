@@ -3,7 +3,7 @@ export default function Footer() {
 
   return (
     <footer className="footer">
-      © {year} Napat Pamornsut | napat-dev.com · All rights reserved
+      © {year} Napat Pamornsut · All rights reserved
     </footer>
   );
 }
