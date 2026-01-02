@@ -120,13 +120,7 @@ export default function Home() {
               )}
             </div>
 
-            {/* Scroll Indicator */}
-            <div className="scrollIndicator" aria-hidden="true">
-              <div className="scrollIndicatorBox">
-                <div className="scrollIndicatorDot" />
-              </div>
             </div>
-          </div>
         </div>
       </section>
   );
