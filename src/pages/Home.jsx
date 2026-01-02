@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { usePageMeta } from "../hooks/usePageMeta.js";
 import { profile } from "../data/profile.js";
 
@@ -121,13 +120,11 @@ export default function Home() {
               )}
             </div>
 
-            {/* Arrow to About */}
-            <div className="heroNextArrow heroAnimated heroAnimated--delay4">
-              <Link to="/about" className="arrowLink" aria-label="Go to About page">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </Link>
+            {/* Scroll Indicator */}
+            <div className="scrollIndicator" aria-hidden="true">
+              <div className="scrollIndicatorBox">
+                <div className="scrollIndicatorDot" />
+              </div>
             </div>
           </div>
         </div>
