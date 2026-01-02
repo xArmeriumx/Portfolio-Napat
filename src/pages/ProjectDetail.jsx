@@ -36,7 +36,7 @@ function ImageGallery({ images, title, selectedIndex, onSelect }) {
               role="tab"
               aria-selected={selectedIndex === index}
               aria-label={`View image ${index + 1}`}
-              loading="lazy"
+              //loading="lazy"
             />
           ))}
         </div>
