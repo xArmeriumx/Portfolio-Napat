@@ -451,10 +451,10 @@ body {
 }
 
 .btnSolid {
-  background: #d14d4d;
-  border-color: #d14d4d;
+  background: #c43c3c;
+  border-color: #c43c3c;
   color: #ffffff;
-  box-shadow: 0 4px 8px rgba(209, 77, 77, 0.15), 0 2px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 8px rgba(196, 60, 60, 0.15), 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .btnSolid:hover {
