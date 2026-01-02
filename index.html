@@ -20,6 +20,7 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+  <link rel="manifest" href="/manifest.json" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
@@ -27,9 +28,9 @@
   <meta property="og:title" content="Napat Pamornsut (ณภัทร ภมรสูตร) | Frontend Developer & Software Tester" />
   <meta property="og:description"
     content="ณภัทร ภมรสูตร (Napat Pamornsut) – Frontend Developer, Software Tester, and System Analyst. Building end-to-end solutions with React, Node.js, and Playwright." />
-  <meta property="og:image" content="https://napat-dev.vercel.app/images/og-image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
+  <meta property="og:image" content="https://napat-dev.vercel.app/favicon.png" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
   <meta property="og:site_name" content="Napat Pamornsut Portfolio" />
   <meta property="og:locale" content="en_US" />
 
@@ -39,7 +40,7 @@
   <meta name="twitter:title" content="Napat Pamornsut (ณภัทร ภมรสูตร) | Frontend Developer & Software Tester" />
   <meta name="twitter:description"
     content="ณภัทร ภมรสูตร (Napat Pamornsut) – Frontend Developer, Software Tester, and System Analyst. Building end-to-end solutions with React, Node.js, and Playwright." />
-  <meta name="twitter:image" content="https://napat-dev.vercel.app/images/og-image.png" />
+  <meta name="twitter:image" content="https://napat-dev.vercel.app/favicon.png" />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,7 +49,18 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
     rel="stylesheet">
 
-  <!-- JSON-LD Structured Data -->
+  <!-- JSON-LD Structured Data - WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Napat Pamornsut Portfolio",
+    "alternateName": ["ณภัทร ภมรสูตร", "Napat Dev", "napat-dev"],
+    "url": "https://napat-dev.vercel.app/"
+  }
+  </script>
+
+  <!-- JSON-LD Structured Data - Person -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -56,7 +68,7 @@
     "name": "Napat Pamornsut",
     "alternateName": "ณภัทร ภมรสูตร",
     "url": "https://napat-dev.vercel.app/",
-    "image": "https://napat-dev.vercel.app/images/og-image.png",
+    "image": "https://napat-dev.vercel.app/favicon.png",
     "jobTitle": ["Frontend Developer", "Software Tester", "System Analyst"],
     "worksFor": {
       "@type": "Organization",
