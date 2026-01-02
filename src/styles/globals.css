@@ -458,9 +458,9 @@ body {
 }
 
 .btnSolid:hover {
-  background: #b93e3e;
-  border-color: #b93e3e;
-  box-shadow: 0 8px 16px rgba(209, 77, 77, 0.25), 0 4px 8px rgba(0, 0, 0, 0.12);
+  background: #a83232;
+  border-color: #a83232;
+  box-shadow: 0 8px 16px rgba(196, 60, 60, 0.25), 0 4px 8px rgba(0, 0, 0, 0.12);
 }
 
 .btn:disabled {
