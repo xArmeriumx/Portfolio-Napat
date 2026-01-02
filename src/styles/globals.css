@@ -162,15 +162,19 @@ body {
 
 /* ========== HERO - Elegant Minimalist ========== */
 .hero {
-  min-height: 70vh;
-  display: grid;
-  place-items: center;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   position: relative;
+  padding: 20px 16px;
 }
 
 .heroInner {
   max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
