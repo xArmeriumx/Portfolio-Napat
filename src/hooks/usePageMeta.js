@@ -63,7 +63,7 @@ export function usePageMeta({
 
     // Full URL for this page
     const fullUrl = `${BASE_URL}${path}`;
-    const imageUrl = ogImage || `${BASE_URL}/images/og-image.png`;
+    const imageUrl = ogImage || `${BASE_URL}/favicon.png`;
 
     // Primary meta tags
     setMetaTag("description", description);
