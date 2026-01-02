@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { usePageMeta } from "../hooks/usePageMeta.js";
 import { profile } from "../data/profile.js";
 
@@ -121,14 +120,11 @@ export default function Home() {
               )}
             </div>
 
-            {/* View Projects Button */}
-            <div className="heroNextBtn heroAnimated heroAnimated--delay4">
-              <Link to="/projects" className="btnSubtle">
-                View My Projects
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </Link>
+            {/* Scroll Indicator */}
+            <div className="scrollIndicator" aria-hidden="true">
+              <div className="scrollIndicatorBox">
+                <div className="scrollIndicatorDot" />
+              </div>
             </div>
           </div>
         </div>

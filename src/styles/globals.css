@@ -266,38 +266,65 @@ body {
   animation-delay: 0.4s;
 }
 
-/* Hero Next Button */
-.heroNextBtn {
-  margin-top: 48px;
+/* Scroll Indicator */
+.scrollIndicator {
+  margin-top: 60px;
+  animation: fadeIn 1s ease-out 1s both, bounce 2s ease-in-out 1s infinite;
 }
 
-.btnSubtle {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 999px;
-  background: transparent;
-  color: #86868b;
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.3s ease;
+.scrollIndicatorBox {
+  width: 24px;
+  height: 36px;
+  border: 2px solid rgba(29, 29, 31, 0.2);
+  border-radius: 12px;
+  margin: 0 auto;
+  position: relative;
 }
 
-.btnSubtle:hover {
-  border-color: rgba(0, 0, 0, 0.3);
-  color: #1d1d1f;
-  background: rgba(0, 0, 0, 0.02);
+.scrollIndicatorDot {
+  width: 4px;
+  height: 8px;
+  background: #d14d4d;
+  border-radius: 2px;
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: scroll 2s ease-in-out infinite;
 }
 
-.btnSubtle svg {
-  transition: transform 0.3s ease;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
-.btnSubtle:hover svg {
-  transform: translateY(3px);
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes scroll {
+  0% {
+    top: 6px;
+    opacity: 1;
+  }
+
+  100% {
+    top: 18px;
+    opacity: 0;
+  }
 }
 
 /* Button Icons */
