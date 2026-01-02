@@ -167,13 +167,10 @@ body {
   place-items: center;
   text-align: center;
   position: relative;
-  padding: 20px 16px;
 }
 
 .heroInner {
   max-width: 860px;
-  width: 100%;
-  margin: 0 auto;
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
