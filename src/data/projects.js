@@ -108,7 +108,7 @@ stock alerts and expiring items.
       `${import.meta.env.BASE_URL}images/p3-phamacy1.png`,
       `${import.meta.env.BASE_URL}images/p3-phamacy2.png`,
     ],
-    role: ["Project Management", "Frontend Developer", "System Analyst"],
+    role: ["Project Management", "System Analyst"],
 
     description: `
 An e-commerce pharmacy system for selling medicines and health supplements online. 
@@ -116,7 +116,7 @@ Features product catalog with categories, shopping cart management, order proces
 and admin dashboard for inventory and customer management.
   `,
 
-    technologies: ["PHP", "MySQL", "HTML", "CSS", "JavaScript", "Bootstrap"],
+    technologies: ["PHP", "MySQL", "HTML", "CSS", "JavaScript"],
 
     keyFeatures: [
       "Product catalog with multiple categories (vitamins, supplements, medicines, health products)",
