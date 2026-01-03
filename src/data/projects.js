@@ -100,7 +100,7 @@ stock alerts and expiring items.
   },
 
   {
-    slug: "mentos-pharmacy-store",
+    slug: "pharmacy-store",
     title: "Pharmacy Store",
     images: [
       `${import.meta.env.BASE_URL}images/p3-phamacy.png`,
