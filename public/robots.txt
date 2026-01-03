@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://napat-dev.com/sitemap.xml
+Sitemap: https://napatdev.com/sitemap.xml

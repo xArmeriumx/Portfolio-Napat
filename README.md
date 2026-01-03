@@ -4,7 +4,7 @@ Personal portfolio website showcasing my projects, skills, and professional expe
 
 ## Live Demo
 
-**Production URL:** [https://napat-dev.com](https://napat-dev.com)
+**Production URL:** [https://napatdev.com](https://napatdev.com)
 
 ---
 

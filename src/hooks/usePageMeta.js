@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 // Base URL for the portfolio (Vercel)
-const BASE_URL = "https://napat-dev.com";
+const BASE_URL = "https://napatdev.com";
 
 /**
  * usePageMeta - จัดการ SEO meta tags สำหรับแต่ละหน้า
