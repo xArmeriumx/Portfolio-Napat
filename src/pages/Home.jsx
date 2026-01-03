@@ -59,6 +59,7 @@ export default function Home() {
             {/* Description */}
             <p className="heroDesc heroAnimated heroAnimated--delay3">
               {profile.tagline}
+              <span className="sr-only"> - Napat Pamornsut (ณภัทร ภมรสูตร)</span>
             </p>
 
             {/* Buttons */}
