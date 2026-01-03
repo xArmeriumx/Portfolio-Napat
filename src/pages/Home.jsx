@@ -47,6 +47,7 @@ export default function Home() {
             {/* Title */}
             <h1 className="heroTitle heroAnimated heroAnimated--delay1">
               {profile.name}
+              <span className="sr-only"> (ณภัทร ภมรสูตร)</span>
               <div className="heroTitleUnderline" aria-hidden="true" />
             </h1>
 
