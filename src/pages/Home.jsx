@@ -7,11 +7,11 @@ export default function Home() {
 
   // SEO Meta Tags with Thai name keywords
   usePageMeta({
-    title: `${profile.name} (ณภัทร ภมรสูตร) | ${profile.headline}`,
-    description: profile.tagline,
-    ogTitle: `${profile.name} - Portfolio`,
+    title: `${profile.name} | ${profile.headline}`,
+    description: `Frontend Developer and Software Tester based in Bangkok, Thailand. - ${profile.name} (ณภัทร ภมรสูตร)`,
+    ogTitle: `${profile.name} (ณภัทร ภมรสูตร) | ${profile.headline}`,
     path: "/",
-    keywords: "Napat Pamornsut, ณภัทร ภมรสูตร, Frontend Developer, Software Tester, React, JavaScript, Bangkok, Thailand"
+    keywords: "Napat Pamornsut, ณภัทร ภมรสูตร, Napatdev, Frontend Developer, Software Tester, React, JavaScript, Bangkok, Thailand"
   });
 
   useEffect(() => {
