@@ -72,7 +72,7 @@ issue reporting, and LINE LIFF authentication.
       `${import.meta.env.BASE_URL}images/p5-testcase.png`,
       `${import.meta.env.BASE_URL}images/p5-testcase1.png`,
     ],
-    role: ["Automation Tester", "QA Engineer"],
+    role: ["Automation Tester"],
 
     description: `
 Comprehensive automated testing suite for the Clean Water Monitoring project.
