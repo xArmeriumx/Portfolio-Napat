@@ -2,10 +2,8 @@ export const projects = [
   {
     slug: "clean-water-monitoring",
     title: "Clean Water Monitoring",
-    // ✅ เปลี่ยนจาก image เป็น images (array) - รูปแรกจะแสดงในหน้าแรก
     images: [
       `${import.meta.env.BASE_URL}images/p1-clean-water.jpg`,
-      // เพิ่มรูปเพิ่มเติมได้ที่นี่
       `${import.meta.env.BASE_URL}images/p1-clean-water1.jpg`,
       `${import.meta.env.BASE_URL}images/p1-clean-water2.jpg`,
       `${import.meta.env.BASE_URL}images/p1-clean-water3.jpg`,
@@ -13,44 +11,118 @@ export const projects = [
     role: ["Fullstack Developer", "IoT Developer"],
 
     description: `
-Final Year Project for real-time water quality monitoring.
-System collects sensor data via MQTT and visualizes results
-on dashboards with alerts and historical logs.
+Final Year Project - Real-time water quality monitoring system.
+Built with React frontend and Node.js/Express backend, integrated with 
+IoT sensors via MQTT. Features include admin dashboard, user mapping, 
+issue reporting, and LINE LIFF authentication.
     `,
 
     technologies: [
       "React",
-      "Chart.js",
+      "Node.js",
+      "Express",
+      "Firebase Realtime Database",
       "MQTT",
-      "Firebase",
-      "ChakraUI",
-      "LeafletJS",
-      "IoT Technology",
+      "LINE LIFF",
+      "JWT Authentication",
+      "Chakra UI",
+      "Chart.js",
+      "Leaflet",
+      "Cloudinary",
     ],
 
     keyFeatures: [
-      "Real-time sensor dashboard with charts",
-      "Water quality logs & filtering",
-      "Location mapping for monitoring points",
-      "Lab document upload & tracking",
-      "Issue reporting workflow",
+      "Real-time sensor dashboard with pH, TDS, Turbidity, Temperature charts",
+      "Interactive map with water service point locations (Leaflet)",
+      "User authentication via LINE LIFF + Admin JWT login",
+      "Issue reporting system with image upload (Cloudinary)",
+      "Lab document management & upload",
+      "User management with role-based access (Admin, Lab Staff, User)",
+      "Activity logs & audit trail",
+      "Device management for IoT sensors",
+      "RESTful API with 6 route modules (auth, locations, issues, users, devices, logs)",
     ],
 
     highlights: [
-      "Real-time dashboards + logs",
-      "Mapping locations",
-      "Lab documents + issue reporting",
+      "Full-stack development (React + Node.js/Express)",
+      "IoT integration with MQTT protocol",
+      "LINE LIFF authentication",
+      "Admin dashboard + User portal",
     ],
 
     responsibilities: [
-      "Design dashboard layout",
-      "Implement real-time data updates",
-      "Handle data visualization & filtering",
+      "Design & implement RESTful API with Express.js",
+      "Build responsive React frontend with Chakra UI",
+      "Integrate Firebase Realtime Database for data persistence",
+      "Implement MQTT service for IoT sensor data",
+      "Setup LINE LIFF authentication flow",
+      "Create admin dashboard for location, user & device management",
+      "Develop issue reporting workflow with Cloudinary image upload",
+      "Deploy frontend to Vercel, backend to Render",
     ],
 
     links: { demo: "https://cleanwatermonitoring.com/", repo: "" },
   },
 
+  {
+    slug: "automate-test-pipeline",
+    title: "Automated Testing for Clean Water Monitoring",
+    images: [
+      `${import.meta.env.BASE_URL}images/p5-testcase2.png`,
+      `${import.meta.env.BASE_URL}images/p5-testcase.png`,
+      `${import.meta.env.BASE_URL}images/p5-testcase1.png`,
+    ],
+    role: ["Automation Tester", "QA Engineer"],
+
+    description: `
+Comprehensive automated testing suite for the Clean Water Monitoring project.
+Covers API testing (6 modules), Admin UI testing, and E2E flows using Playwright.
+Includes custom scripts for test pipeline, result export, and Google Sheets integration.
+    `,
+
+    technologies: [
+      "Playwright",
+      "TypeScript",
+      "Node.js",
+      "GitHub Actions",
+      "Google Sheets API",
+      "dotenv",
+    ],
+
+    keyFeatures: [
+      "API Testing - 6 modules: Auth, Devices, Issues, Locations, Logs, Users",
+      "Admin UI Testing - Dashboard, Locations, Issues, User Management",
+      "E2E Testing - Full user flows with Page Object Model",
+      "Multi-environment support (dev, staging, production)",
+      "Custom pipeline script with health check before tests",
+      "Auto export results to CSV and JSON formats",
+      "Google Sheets integration for test result reporting",
+      "GitHub Actions CI/CD workflow",
+    ],
+
+    highlights: [
+      "6 API test suites + Admin UI + E2E tests",
+      "Custom Node.js pipeline & export scripts",
+      "Multi-environment configs (.env.production, .env.staging)",
+      "Google Sheets auto-upload for test results",
+    ],
+
+    responsibilities: [
+      "Design test architecture with Page Object Model pattern",
+      "Implement API tests for all 6 backend route modules",
+      "Create Admin UI test suites (Dashboard, Locations, Issues, Users)",
+      "Build custom pipeline.js for orchestrating test execution",
+      "Develop export-results.js for CSV/JSON report generation",
+      "Integrate Google Sheets API with upload-to-sheets.js",
+      "Configure Playwright for multi-browser & multi-environment",
+      "Setup GitHub Actions CI/CD workflow with secrets management",
+    ],
+
+    links: {
+      demo: "https://docs.google.com/spreadsheets/d/1J2LEMbimPGh7JnK3hQky7QK2_lML8s8mQ_osI3Li0k4/edit?gid=0#gid=0",
+      repo: "https://github.com/xArmeriumx/-Automate-Test-with-Playwright-Clean-Water-Monitoring-",
+    },
+  },
   {
     slug: "stock-management-system",
     title: "Stock Management System",
@@ -196,62 +268,4 @@ dev, tester, and business.
     },
   },
 
-  {
-    slug: "automate-test-pipeline",
-    title: "Automated Test Pipeline",
-    images: [
-      `${import.meta.env.BASE_URL}images/p5-testcase2.png`,
-      `${import.meta.env.BASE_URL}images/p5-testcase.png`,
-      `${import.meta.env.BASE_URL}images/p5-testcase1.png`,
-      // เพิ่มรูปเพิ่มเติมได้
-    ],
-    role: ["Automation Tester", "DevOps"],
-
-    description: `
-End-to-end automated testing system for the Clean Water Monitoring project.
-Utilizes Playwright for UI and API testing with GitHub Actions CI/CD pipeline
-for automatic test execution and result export to Google Sheets.
-    `,
-
-    technologies: [
-      "Playwright",
-      "Node.js",
-      "TypeScript",
-      "GitHub Actions",
-      "Google Sheets API",
-    ],
-
-    keyFeatures: [
-      "CI/CD Pipeline with GitHub Actions - auto run on push/PR",
-      "Cross-browser testing (Chrome, Firefox, Safari)",
-      "API testing with authentication flow",
-      "Automated Google Sheets result upload",
-      "Thai language test case documentation",
-      "One-click pipeline execution (manual trigger)",
-      "Health check for services before running tests",
-      "Secure credential management with GitHub Secrets",
-    ],
-
-    highlights: [
-      "64 test cases covering Auth, Users, Locations, Issues APIs",
-      "CI/CD with GitHub Actions (auto run on push)",
-      "Auto upload to Google Sheets with formatting",
-      "Cross-browser support (Chromium, Firefox, WebKit)",
-    ],
-
-    responsibilities: [
-      "Design test architecture using Page Object Model",
-      "Implement API tests for all backend endpoints",
-      "Create automated pipeline with Node.js scripts",
-      "Setup GitHub Actions CI/CD workflow",
-      "Integrate Google Sheets API for result reporting",
-      "Configure Playwright for multi-browser testing",
-      "Implement secure secrets management",
-    ],
-
-    links: {
-      demo: "https://docs.google.com/spreadsheets/d/1J2LEMbimPGh7JnK3hQky7QK2_lML8s8mQ_osI3Li0k4/edit?gid=0#gid=0",
-      repo: "https://github.com/xArmeriumx/-Automate-Test-with-Playwright-Clean-Water-Monitoring-",
-    },
-  },
 ];
