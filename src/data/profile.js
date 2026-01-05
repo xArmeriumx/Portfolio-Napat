@@ -7,7 +7,7 @@ export const profile = {
     github: "https://github.com/NapatPamornsuT",
     linkedin: "#",
     resume: "#", // ใส่เป็น "/resume.pdf" ถ้าวางไฟล์ไว้ใน public
-    email: "armnapat.a.03@gmail.com",
+    email: "napat.pamornsut@gmail.com",
   },
   contact: {
     location: "Bangkok, Thailand",
