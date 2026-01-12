@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { usePageMeta } from "../hooks/usePageMeta.js";
 import Section from "../components/ui/Section.jsx";
+import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import { projects } from "../data/projects.js";
 
 /* ========================================
@@ -8,7 +9,8 @@ import { projects } from "../data/projects.js";
    - แสดงข้อมูลโปรเจคแต่ละรายการ
 ======================================== */
 function ProjectCard({ project }) {
-  const { slug, title, stack, role, highlights, links, images, image } = project;
+  const { slug, title, stack, role, highlights, links, images, image } =
+    project;
 
   // ใช้รูปแรกเป็นปก (รองรับทั้ง array และ string)
   const coverImage = images?.[0] || image;
@@ -29,7 +31,9 @@ function ProjectCard({ project }) {
         {/* Role Tags */}
         <div className="pillRow">
           {role.map((r) => (
-            <span key={r} className="pill">{r}</span>
+            <span key={r} className="pill">
+              {r}
+            </span>
           ))}
         </div>
 
@@ -66,7 +70,11 @@ function ProjectCard({ project }) {
             </a>
           )}
 
-          <Link className="btn" to={`/projects/${slug}`} aria-label={`View ${title} details`}>
+          <Link
+            className="btn"
+            to={`/projects/${slug}`}
+            aria-label={`View ${title} details`}
+          >
             View Detail →
           </Link>
         </div>
@@ -83,17 +91,21 @@ export default function ProjectList() {
   // SEO Meta Tags
   usePageMeta({
     title: "Projects | Napat Pamornsut (ณภัทร ภมรสูตร)",
-    description: "Explore my projects including web development, frontend, system analysis, and software testing work.",
+    description:
+      "Explore my projects including web development, frontend, system analysis, and software testing work.",
     path: "/projects",
-    keywords: "Napat Pamornsut, ณภัทร ภมรสูตร, Projects, Portfolio, Web Development, React, Software Testing"
+    keywords:
+      "Napat Pamornsut, ณภัทร ภมรสูตร, Projects, Portfolio, Web Development, React, Software Testing",
   });
 
   return (
     <div className="stack">
       <Section title="Projects">
         <div className="projectList">
-          {projects.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
+          {projects.map((project, idx) => (
+            <ScrollReveal key={project.slug} width="100%" delay={idx * 0.1}>
+              <ProjectCard project={project} />
+            </ScrollReveal>
           ))}
         </div>
       </Section>

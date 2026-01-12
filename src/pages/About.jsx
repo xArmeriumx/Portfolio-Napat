@@ -1,6 +1,7 @@
 import { usePageMeta } from "../hooks/usePageMeta.js";
 import Section from "../components/ui/Section.jsx";
 import Card from "../components/ui/Card.jsx";
+import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import { profile } from "../data/profile.js";
 
 /* ========================================
@@ -39,53 +40,60 @@ export default function About() {
     title: `About | ${profile.name} (ณภัทร ภมรสูตร)`,
     description: profile.about,
     path: "/about",
-    keywords: "Napat Pamornsut, ณภัทร ภมรสูตร, About, Skills, Education, Bangkok Developer"
+    keywords:
+      "Napat Pamornsut, ณภัทร ภมรสูตร, About, Skills, Education, Bangkok Developer",
   });
 
   return (
     <div className="stack">
-      <Section title="About Me">
-        <Card>
-          <p className="muted" style={{ margin: 0, lineHeight: 1.8 }}>
-            {profile.about}
-          </p>
-        </Card>
-      </Section>
+      <ScrollReveal width="100%">
+        <Section title="About Me">
+          <Card>
+            <p className="muted" style={{ margin: 0, lineHeight: 1.8 }}>
+              {profile.about}
+            </p>
+          </Card>
+        </Section>
+      </ScrollReveal>
 
-      <Section title="Education">
-        <Card>
-          <ul className="list">
-            {profile.education.map((x, idx) => (
-              <li key={idx}>{x}</li>
+      <ScrollReveal width="100%">
+        <Section title="Education">
+          <Card>
+            <ul className="list">
+              {profile.education.map((x, idx) => (
+                <li key={idx}>{x}</li>
+              ))}
+            </ul>
+          </Card>
+        </Section>
+      </ScrollReveal>
+
+      <ScrollReveal width="100%">
+        <Section title="Contact">
+          <Card>
+            <ul className="list">
+              <li>Location: {profile.contact.location}</li>
+              {profile.contact.phone && <li>Phone: {profile.contact.phone}</li>}
+              <li>Email: {profile.links.email}</li>
+              <li>GitHub: {profile.links.github}</li>
+            </ul>
+          </Card>
+        </Section>
+      </ScrollReveal>
+
+      <ScrollReveal width="100%">
+        <Section title="Skills">
+          <div className="skillCategoriesContainer">
+            {profile.skillCategories.map((cat) => (
+              <SkillCategory
+                key={cat.category}
+                category={cat.category}
+                skills={cat.skills}
+              />
             ))}
-          </ul>
-        </Card>
-      </Section>
-
-      <Section title="Contact">
-        <Card>
-          <ul className="list">
-            <li>Location: {profile.contact.location}</li>
-            {profile.contact.phone && (
-              <li>Phone: {profile.contact.phone}</li>
-            )}
-            <li>Email: {profile.links.email}</li>
-            <li>GitHub: {profile.links.github}</li>
-          </ul>
-        </Card>
-      </Section>
-
-      <Section title="Skills">
-        <div className="skillCategoriesContainer">
-          {profile.skillCategories.map((cat) => (
-            <SkillCategory
-              key={cat.category}
-              category={cat.category}
-              skills={cat.skills}
-            />
-          ))}
-        </div>
-      </Section>
+          </div>
+        </Section>
+      </ScrollReveal>
     </div>
   );
 }

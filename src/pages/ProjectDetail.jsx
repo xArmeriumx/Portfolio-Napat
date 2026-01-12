@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { usePageMeta } from "../hooks/usePageMeta.js";
 import Section from "../components/ui/Section.jsx";
+import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import { projects } from "../data/projects.js";
 import NotFound from "./NotFound.jsx";
 
@@ -25,13 +26,19 @@ function ImageGallery({ images, title, selectedIndex, onSelect }) {
 
       {/* Thumbnails */}
       {hasMultipleImages && (
-        <div className="galleryThumbs" role="tablist" aria-label="Image gallery">
+        <div
+          className="galleryThumbs"
+          role="tablist"
+          aria-label="Image gallery"
+        >
           {images.map((img, index) => (
             <img
               key={index}
               src={img}
               alt={`${title} thumbnail ${index + 1}`}
-              className={`galleryThumb ${selectedIndex === index ? "active" : ""}`}
+              className={`galleryThumb ${
+                selectedIndex === index ? "active" : ""
+              }`}
               onClick={() => onSelect(index)}
               role="tab"
               aria-selected={selectedIndex === index}
@@ -104,15 +111,23 @@ export default function ProjectDetail() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   // SEO Meta Tags (must be called before early return)
-  const metaDescription = project?.description?.trim().substring(0, 160) || `Project by Napat Pamornsut (ณภัทร ภมรสูตร)`;
+  const metaDescription =
+    project?.description?.trim().substring(0, 160) ||
+    `Project by Napat Pamornsut (ณภัทร ภมรสูตร)`;
   const projectImage = project?.images?.[0] || null;
   usePageMeta({
-    title: project ? `${project.title} | Napat Pamornsut (ณภัทร ภมรสูตร)` : "Project Not Found | Napat Pamornsut",
+    title: project
+      ? `${project.title} | Napat Pamornsut (ณภัทร ภมรสูตร)`
+      : "Project Not Found | Napat Pamornsut",
     description: metaDescription,
     ogTitle: project ? `${project.title} - Projects` : undefined,
     path: project ? `/projects/${project.slug}` : "/projects",
     ogImage: projectImage,
-    keywords: project ? `Napat Pamornsut, ณภัทร ภมรสูตร, ${project.title}, ${project.technologies?.join(', ')}` : undefined
+    keywords: project
+      ? `Napat Pamornsut, ณภัทร ภมรสูตร, ${
+          project.title
+        }, ${project.technologies?.join(", ")}`
+      : undefined,
   });
 
   // ถ้าไม่เจอโปรเจค ให้แสดง NotFound
@@ -120,7 +135,8 @@ export default function ProjectDetail() {
     return <NotFound />;
   }
   // รองรับทั้ง images (array) และ image (string)
-  const projectImages = project.images || (project.image ? [project.image] : []);
+  const projectImages =
+    project.images || (project.image ? [project.image] : []);
 
   const {
     title,
@@ -139,73 +155,101 @@ export default function ProjectDetail() {
       <Section title={title}>
         <div className="projectDetail">
           {/* ========== Media Section ========== */}
-          <ImageGallery
-            images={projectImages}
-            title={title}
-            selectedIndex={selectedImageIndex}
-            onSelect={setSelectedImageIndex}
-          />
+          <ScrollReveal width="100%">
+            <ImageGallery
+              images={projectImages}
+              title={title}
+              selectedIndex={selectedImageIndex}
+              onSelect={setSelectedImageIndex}
+            />
+          </ScrollReveal>
 
           {/* ========== Info Section ========== */}
           <div className="projectDetail__info">
             {/* Stack */}
-            {stack && <p className="projectStack">{stack}</p>}
+            {stack && (
+              <ScrollReveal width="100%">
+                <p className="projectStack">{stack}</p>
+              </ScrollReveal>
+            )}
 
             {/* Role Tags */}
             {role?.length > 0 && (
-              <div className="pillRow">
-                {role.map((r) => (
-                  <span key={r} className="pill">{r}</span>
-                ))}
-              </div>
+              <ScrollReveal width="100%">
+                <div className="pillRow">
+                  {role.map((r) => (
+                    <span key={r} className="pill">
+                      {r}
+                    </span>
+                  ))}
+                </div>
+              </ScrollReveal>
             )}
 
             {/* Overview */}
-            <InfoSection title="Overview">
-              {description && (
-                <p className="muted" style={{ whiteSpace: "pre-line" }}>
-                  {description.trim()}
-                </p>
-              )}
-            </InfoSection>
+            <ScrollReveal width="100%">
+              <InfoSection title="Overview">
+                {description && (
+                  <p className="muted" style={{ whiteSpace: "pre-line" }}>
+                    {description.trim()}
+                  </p>
+                )}
+              </InfoSection>
+            </ScrollReveal>
 
             {/* Technologies */}
-            <InfoSection title="Technologies">
-              {technologies?.length > 0 && (
-                <div className="pillRow">
-                  {technologies.map((t) => (
-                    <span key={t} className="pill">{t}</span>
-                  ))}
-                </div>
-              )}
-            </InfoSection>
+            <ScrollReveal width="100%">
+              <InfoSection title="Technologies">
+                {technologies?.length > 0 && (
+                  <div className="pillRow">
+                    {technologies.map((t) => (
+                      <span key={t} className="pill">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </InfoSection>
+            </ScrollReveal>
 
             {/* Key Features */}
-            <InfoSection title="Key Features">
-              {keyFeatures?.length > 0 && (
-                <ul className="bullets">
-                  {keyFeatures.map((f, i) => <li key={i}>{f}</li>)}
-                </ul>
-              )}
-            </InfoSection>
+            <ScrollReveal width="100%">
+              <InfoSection title="Key Features">
+                {keyFeatures?.length > 0 && (
+                  <ul className="bullets">
+                    {keyFeatures.map((f, i) => (
+                      <li key={i}>{f}</li>
+                    ))}
+                  </ul>
+                )}
+              </InfoSection>
+            </ScrollReveal>
 
             {/* Highlights */}
-            <InfoSection title="Highlights">
-              {highlights?.length > 0 && (
-                <ul className="bullets">
-                  {highlights.map((h, i) => <li key={i}>{h}</li>)}
-                </ul>
-              )}
-            </InfoSection>
+            <ScrollReveal width="100%">
+              <InfoSection title="Highlights">
+                {highlights?.length > 0 && (
+                  <ul className="bullets">
+                    {highlights.map((h, i) => (
+                      <li key={i}>{h}</li>
+                    ))}
+                  </ul>
+                )}
+              </InfoSection>
+            </ScrollReveal>
 
             {/* Responsibilities */}
-            <InfoSection title="Responsibilities">
-              {responsibilities?.length > 0 && (
-                <ul className="bullets">
-                  {responsibilities.map((r, i) => <li key={i}>{r}</li>)}
-                </ul>
-              )}
-            </InfoSection>
+            <ScrollReveal width="100%">
+              <InfoSection title="Responsibilities">
+                {responsibilities?.length > 0 && (
+                  <ul className="bullets">
+                    {responsibilities.map((r, i) => (
+                      <li key={i}>{r}</li>
+                    ))}
+                  </ul>
+                )}
+              </InfoSection>
+            </ScrollReveal>
 
             {/* Action Buttons */}
             <ActionButtons links={links} title={title} />
@@ -215,6 +259,3 @@ export default function ProjectDetail() {
     </div>
   );
 }
-
-
-
