@@ -1,23 +1,9 @@
-import { motion } from "framer-motion";
-
+/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
 export default function ScrollReveal({
   children,
   width = "fit-content",
-  delay = 0,
+  delay,
 }) {
-  return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0 },
-      }}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.4, delay: delay, ease: "easeOut" }}
-      style={{ width, willChange: "opacity, transform" }}
-    >
-      {children}
-    </motion.div>
-  );
+  return <div style={{ width }}>{children}</div>;
 }
