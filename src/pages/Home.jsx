@@ -41,7 +41,7 @@ export default function Home() {
               backgroundImage:
                 "linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(to right, #e5e7eb 1px, transparent 1px)",
               backgroundSize: "40px 40px",
-              opacity: 0.4,
+              opacity: 0.3,
               maskImage:
                 "radial-gradient(circle at center, black 40%, transparent 100%)",
             }}

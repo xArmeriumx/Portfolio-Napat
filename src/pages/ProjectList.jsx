@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { usePageMeta } from "../hooks/usePageMeta.js";
 import { useTranslation } from "../context/LanguageContext.jsx";
 import Section from "../components/ui/Section.jsx";
@@ -12,6 +12,13 @@ import { projects } from "../data/projects.js";
 ======================================== */
 function ProjectCard({ project }) {
   const { getContent, language } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleCardClick = (e) => {
+    // Prevent navigation if clicking on a button or link
+    if (e.target.closest("a") || e.target.closest("button")) return;
+    navigate(`/projects/${project.slug}`);
+  };
 
   const { slug, stack, role, links, images, image } = project;
 
@@ -26,7 +33,10 @@ function ProjectCard({ project }) {
   const viewDetailText = "View Detail";
 
   return (
-    <article className="group flex flex-col h-full bg-white rounded-[32px] p-4 border border-gray-200 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300">
+    <article
+      onClick={handleCardClick}
+      className="group flex flex-col h-full bg-white rounded-[32px] p-4 border border-gray-200 shadow-[0_2px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 cursor-pointer"
+    >
       {/* รูปปก */}
       <Link
         to={`/projects/${slug}`}
