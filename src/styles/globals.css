@@ -105,8 +105,49 @@ html {
   }
 }
 
+
 .animate-blur-in {
   animation: blurIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Clean Modern Slide Up */
+@keyframes slideUpMask {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUpMask 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+/* Sci-Fi Cinematic Focus */
+@keyframes cinematicFocus {
+  0% {
+    opacity: 0;
+    filter: blur(12px);
+    letter-spacing: 0.5em;
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    letter-spacing: normal;
+  }
+}
+
+.animate-cinematic {
+  animation: cinematicFocus 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  display: inline-block;
+  white-space: nowrap; /* Keep on one line during expansion if possible */
 }
 
 /* ========== FOOTER ========== */

@@ -4,33 +4,35 @@ import { usePageMeta } from "../hooks/usePageMeta.js";
 export default function NotFound() {
   usePageMeta({
     title: "Page Not Found | Napat Pamornsut",
-    description: "The page you are looking for does not exist."
+    description: "The page you are looking for does not exist.",
   });
 
   return (
-    <div className="stack" style={{ 
-      minHeight: "70vh", 
-      justifyContent: "center", 
-      alignItems: "center",
-      textAlign: "center" 
-    }}>
-      <h1 style={{ 
-        fontSize: "clamp(60px, 10vw, 120px)", 
-        fontWeight: "800", 
-        color: "#1d0606ff",
-        lineHeight: 1,
-        marginBottom: "1rem",
-        letterSpacing: "-0.05em"
-      }}>
+    <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
+      {/* 404 Number */}
+      <h1 className="font-sans text-[clamp(100px,15vw,200px)] font-bold text-gray-900 leading-none tracking-tighter opacity-10 select-none">
         404
       </h1>
-      <h2 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Page Not Found</h2>
-      <p className="muted" style={{ marginBottom: "2rem", fontSize: "1.1rem", maxWidth: "400px" }}>
-        Oops! The page you're looking for doesn't seem to exist (or I haven't built it yet).
-      </p>
-      <Link className="btn" to="/">
-        Return Home
-      </Link>
+
+      {/* Message Container */}
+      <div className="-mt-8 md:-mt-12 relative z-10">
+        <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight">
+          Page Not Found
+        </h2>
+
+        <div className="font-mono text-gray-500 text-sm md:text-base mb-8 max-w-md mx-auto leading-relaxed">
+          <p>&gt; The requested URL was not found on this server.</p>
+          <p>&gt; Error_Code: 404_NOT_FOUND</p>
+        </div>
+
+        {/* Action Button */}
+        <Link
+          to="/"
+          className="inline-block px-8 py-3 bg-gray-900 text-white font-medium rounded-full hover:bg-gray-700 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg shadow-gray-200"
+        >
+          Return Home
+        </Link>
+      </div>
     </div>
   );
 }
