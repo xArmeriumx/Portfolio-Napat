@@ -290,7 +290,7 @@ export default function ProjectDetail() {
               backgroundImage:
                 "linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(to right, #e5e7eb 1px, transparent 1px)",
               backgroundSize: "40px 40px",
-              opacity: 0.4,
+              opacity: 0.1,
               maskImage:
                 "radial-gradient(circle at top center, black 30%, transparent 100%)",
             }}
