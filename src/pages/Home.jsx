@@ -31,14 +31,24 @@ export default function Home() {
 
   return (
     <PageTransition>
-      <section
-        className="min-h-[90vh] flex items-center justify-center relative bg-[#fafafa] overflow-hidden pt-16"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, #f0f0f0 1px, transparent 1px)",
-          backgroundSize: "100px 100%",
-        }}
-      >
+      <section className="min-h-[90vh] flex items-center justify-center relative bg-[#fafafa] overflow-hidden pt-16">
+        {/* Dimensional Background */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Subtle Grid */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(to right, #e5e7eb 1px, transparent 1px)",
+              backgroundSize: "40px 40px",
+              opacity: 0.5,
+              maskImage:
+                "radial-gradient(circle at center, black 40%, transparent 100%)",
+            }}
+          />
+          {/* Glow Effect */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gray-200/50 rounded-full blur-3xl opacity-40 mix-blend-multiply" />
+        </div>
         <div className="relative z-10 w-full max-w-4xl px-6 text-center">
           <ScrollReveal width="100%">
             {/* Kicker */}

@@ -178,19 +178,36 @@ export default function ProjectList() {
 
   return (
     <PageTransition>
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-12 pb-24 pt-24 md:pt-28">
-        {/* Header with Line */}
-        <div className="flex items-center gap-4 mb-12">
-          <h2 className="text-3xl font-bold text-gray-900">{pageTitle}</h2>
-          <div className="h-px bg-gray-200 flex-grow mt-2"></div>
+      <div className="relative min-h-screen bg-[#f9fafb] overflow-hidden pt-24 md:pt-28 pb-24">
+        {/* Dimensional Background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(to right, #e5e7eb 1px, transparent 1px)",
+              backgroundSize: "40px 40px",
+              opacity: 0.4,
+              maskImage:
+                "radial-gradient(circle at top center, black 30%, transparent 100%)",
+            }}
+          />
         </div>
 
-        <div className="grid grid-cols-1 gap-12">
-          {projects.map((project, idx) => (
-            <ScrollReveal key={project.slug} width="100%" delay={idx * 0.1}>
-              <ProjectCard project={project} />
-            </ScrollReveal>
-          ))}
+        <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-6">
+          {/* Header with Line */}
+          <div className="flex items-center gap-4 mb-12">
+            <h2 className="text-3xl font-bold text-gray-900">{pageTitle}</h2>
+            <div className="h-px bg-gray-200 flex-grow mt-2"></div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-12">
+            {projects.map((project, idx) => (
+              <ScrollReveal key={project.slug} width="100%" delay={idx * 0.1}>
+                <ProjectCard project={project} />
+              </ScrollReveal>
+            ))}
+          </div>
         </div>
       </div>
     </PageTransition>
