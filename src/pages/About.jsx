@@ -4,6 +4,7 @@ import Section from "../components/ui/Section.jsx";
 import Card from "../components/ui/Card.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx"; // Ensure this is imported
+import AnimatedText from "../components/ui/AnimatedText.jsx";
 import { profile } from "../data/profile.js";
 
 /* ========================================
@@ -14,7 +15,7 @@ function SkillCategory({ category, skills }) {
     <div className="mb-8 last:mb-0">
       <div className="flex items-center gap-4 mb-6">
         <h3 className="text-lg font-bold text-red-500 whitespace-nowrap">
-          {category}
+          <AnimatedText>{category}</AnimatedText>
         </h3>
         <div className="h-px bg-red-100 flex-grow"></div>
       </div>
@@ -99,7 +100,7 @@ export default function About() {
               <SectionHeader title={labels.aboutMe} />
               <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
                 <p className="text-gray-600 leading-loose font-medium">
-                  {aboutText}
+                  <AnimatedText>{aboutText}</AnimatedText>
                 </p>
               </div>
             </section>
@@ -117,7 +118,9 @@ export default function About() {
                       className="flex items-start gap-3 text-gray-700 font-medium"
                     >
                       <span className="mt-2 w-1.5 h-1.5 rounded-full bg-gray-800 flex-shrink-0" />
-                      <span>{line}</span>
+                      <span>
+                        <AnimatedText>{line}</AnimatedText>
+                      </span>
                     </li>
                   ))}
                 </ul>

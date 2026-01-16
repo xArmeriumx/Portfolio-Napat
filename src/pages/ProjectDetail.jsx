@@ -5,6 +5,7 @@ import { useTranslation } from "../context/LanguageContext.jsx";
 import Section from "../components/ui/Section.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
+import AnimatedText from "../components/ui/AnimatedText.jsx";
 import { projects } from "../data/projects.js";
 
 // Libraries
@@ -157,13 +158,16 @@ function ImageGallery({ images, title }) {
         slides={slides}
         plugins={[Zoom]}
         zoom={{ maxZoomPixelRatio: 3 }}
-        animation={{ fade: 600 }}
+        animation={{
+          fade: 0,
+        }} /* Disable default fade to use custom animation */
         controller={{ closeOnBackdropClick: true }}
         styles={{
           root: {
             "--yarl__container_background_color": "rgba(0, 0, 0, 0.2)",
             backdropFilter: "blur(10px)",
             WebkitBackdropFilter: "blur(10px)",
+            animation: "zoomIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards",
           },
         }}
       />
@@ -298,7 +302,7 @@ export default function ProjectDetail() {
               </Link>
 
               <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-8">
-                {title}
+                <AnimatedText>{title}</AnimatedText>
               </h1>
 
               <div className="flex flex-wrap items-center gap-4 mb-8">
@@ -319,7 +323,7 @@ export default function ProjectDetail() {
               </div>
 
               <p className="text-lg md:text-xl text-gray-600 leading-relaxed font-medium max-w-3xl">
-                {description?.trim()}
+                <AnimatedText>{description?.trim()}</AnimatedText>
               </p>
             </div>
 
@@ -353,7 +357,7 @@ export default function ProjectDetail() {
                               0{index + 1}
                             </span>
                             <span className="text-gray-700 font-medium text-lg leading-relaxed pt-1">
-                              {item}
+                              <AnimatedText>{item}</AnimatedText>
                             </span>
                           </li>
                         </ScrollReveal>
@@ -391,7 +395,9 @@ export default function ProjectDetail() {
                                   d="M5 13l4 4L19 7"
                                 />
                               </svg>
-                              <span>{item}</span>
+                              <span>
+                                <AnimatedText>{item}</AnimatedText>
+                              </span>
                             </li>
                           </ScrollReveal>
                         ))}
@@ -434,9 +440,12 @@ export default function ProjectDetail() {
                         {responsibilities.map((item, index) => (
                           <li
                             key={index}
-                            className="text-gray-600 text-sm font-medium leading-relaxed"
+                            className="flex items-start gap-3 text-gray-600 text-sm font-medium leading-relaxed"
                           >
-                            • {item}
+                            <span className="shrink-0 font-bold text-gray-900">
+                              •
+                            </span>
+                            <AnimatedText>{item}</AnimatedText>
                           </li>
                         ))}
                       </ul>

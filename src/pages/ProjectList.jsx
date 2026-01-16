@@ -4,6 +4,7 @@ import { useTranslation } from "../context/LanguageContext.jsx";
 import Section from "../components/ui/Section.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx"; // Ensure this is imported
+import AnimatedText from "../components/ui/AnimatedText.jsx";
 import { projects } from "../data/projects.js";
 
 /* ========================================
@@ -55,7 +56,7 @@ function ProjectCard({ project }) {
       {/* เนื้อหา */}
       <div className="flex flex-col flex-grow px-2 pt-6 pb-2">
         <h3 className="text-2xl font-bold text-gray-900 tracking-tight group-hover:text-red-600 transition-colors mb-4">
-          {title}
+          <AnimatedText>{title}</AnimatedText>
         </h3>
 
         {/* Tags */}
@@ -80,7 +81,7 @@ function ProjectCard({ project }) {
           {highlights.map((h, i) => (
             <li key={i} className="flex items-start">
               <span className="mr-3 mt-2 w-1 h-1 bg-gray-400 rounded-full flex-shrink-0" />
-              {h}
+              <AnimatedText>{h}</AnimatedText>
             </li>
           ))}
         </ul>

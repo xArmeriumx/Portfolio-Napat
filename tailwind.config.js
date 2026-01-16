@@ -17,18 +17,15 @@ export default {
         "app-muted": "#6e6e73",
         "app-red": "#d14d4d",
       },
-      fontFamily: {
-        sans: [
-          "Prompt",
-          "ui-sans-serif",
-          "system-ui",
-          "-apple-system",
-          "Segoe UI",
-          "Roboto",
-          "Arial",
-          "sans-serif",
-        ],
-      },
+      sans: [
+        "Space Grotesk",
+        "Prompt",
+        "ui-sans-serif",
+        "system-ui",
+        "-apple-system",
+        "sans-serif",
+      ],
+      mono: ["Space Mono", "monospace"],
       maxWidth: {
         site: "1100px",
       },

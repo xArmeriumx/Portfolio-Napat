@@ -117,10 +117,17 @@ export default function Navbar() {
 
           <button
             onClick={toggleLanguage}
-            className="px-3 py-1 text-xs font-bold rounded-md border-2 border-gray-200 text-gray-700 hover:border-red-600 hover:text-red-600 transition-all uppercase tracking-wide bg-gray-50"
+            className="group relative h-7 overflow-hidden text-sm font-bold uppercase tracking-wide border-b-2 border-transparent hover:border-gray-900 transition-colors"
             aria-label="Toggle language"
           >
-            {language === "en" ? "TH" : "EN"}
+            <div
+              className={`flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                language === "th" ? "-translate-y-1/2" : "translate-y-0"
+              }`}
+            >
+              <span className="h-7 flex items-center text-gray-900">EN</span>
+              <span className="h-7 flex items-center text-gray-900">TH</span>
+            </div>
           </button>
         </nav>
 
