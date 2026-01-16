@@ -1,32 +1,38 @@
 import { usePageMeta } from "../hooks/usePageMeta.js";
+import { useTranslation } from "../context/LanguageContext.jsx";
 import Section from "../components/ui/Section.jsx";
 import Card from "../components/ui/Card.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
+import PageTransition from "../components/ui/PageTransition.jsx"; // Ensure this is imported
 import { profile } from "../data/profile.js";
 
 /* ========================================
    SkillCategory Component
-   - แสดง skills แยกตามหมวด
 ======================================== */
 function SkillCategory({ category, skills }) {
   return (
-    <div className="skillCategory">
-      <h3 className="skillCategoryTitle">{category}</h3>
-      <div className="skillsGrid">
+    <div className="mb-8 last:mb-0">
+      <div className="flex items-center gap-4 mb-6">
+        <h3 className="text-lg font-bold text-red-500 whitespace-nowrap">
+          {category}
+        </h3>
+        <div className="h-px bg-red-100 flex-grow"></div>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {skills.map((skill) => (
-          <div key={skill.name} className="skillBox">
+          <div
+            key={skill.name}
+            className="flex flex-col items-center justify-center gap-3 p-6 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-md transition-all duration-300"
+          >
             <img
               src={skill.logo}
               alt={skill.name}
-              className="skillIcon"
-              //loading="lazy"
-              style={{
-                width: "32px",
-                height: "32px",
-                objectFit: "contain",
-              }}
+              className="w-10 h-10 object-contain"
             />
-            <div className="skillText">{skill.name}</div>
+            <span className="text-sm font-bold text-gray-800">
+              {skill.name}
+            </span>
           </div>
         ))}
       </div>
@@ -34,66 +40,116 @@ function SkillCategory({ category, skills }) {
   );
 }
 
+function SectionHeader({ title }) {
+  return (
+    <div className="flex items-center gap-4 mb-6">
+      <h2 className="text-3xl font-bold text-gray-900">{title}</h2>
+      <div className="h-px bg-gray-200 flex-grow mt-2"></div>
+    </div>
+  );
+}
+
 export default function About() {
+  const { getContent, language } = useTranslation();
+
+  // Labels for section titles - Always English
+  const labels = {
+    aboutMe: "About Me",
+    education: "Education",
+    contact: "Contact",
+    skills: "Skills",
+    location: "Location",
+    phone: "Phone",
+    email: "Email",
+  };
+
+  // Get translated content
+  const aboutText = getContent(profile, "about");
+
   // SEO Meta Tags
   usePageMeta({
-    title: `About | ${profile.name} (ณภัทร ภมรสูตร)`,
-    description: profile.about,
+    title: `${profile.name} | About`,
+    description: `Learn more about ${profile.name}'s journey, skills, and experience.`,
+    ogTitle: `${profile.name} | About`,
     path: "/about",
-    keywords:
-      "Napat Pamornsut, ณภัทร ภมรสูตร, About, Skills, Education, Bangkok Developer",
   });
 
   return (
-    <div className="stack">
-      <ScrollReveal width="100%">
-        <Section title="About Me">
-          <Card>
-            <p className="muted" style={{ margin: 0, lineHeight: 1.8 }}>
-              {profile.about}
-            </p>
-          </Card>
-        </Section>
-      </ScrollReveal>
+    <PageTransition>
+      <div className="max-w-4xl mx-auto px-6 py-12 pb-32 pt-28">
+        {/* About Me */}
+        <ScrollReveal width="100%">
+          <section className="mb-12">
+            <SectionHeader title={labels.aboutMe} />
+            <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+              <p className="text-gray-600 leading-loose font-medium">
+                {aboutText}
+              </p>
+            </div>
+          </section>
+        </ScrollReveal>
 
-      <ScrollReveal width="100%">
-        <Section title="Education">
-          <Card>
-            <ul className="list">
-              {profile.education.map((x, idx) => (
-                <li key={idx}>{x}</li>
+        {/* Education */}
+        <ScrollReveal width="100%" delay={0.1}>
+          <section className="mb-12">
+            <SectionHeader title={labels.education} />
+            <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+              <ul className="space-y-3">
+                {getContent(profile, "education").map((line, index) => (
+                  <li
+                    key={index}
+                    className="flex items-start gap-3 text-gray-700 font-medium"
+                  >
+                    <span className="mt-2 w-1.5 h-1.5 rounded-full bg-gray-800 flex-shrink-0" />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        </ScrollReveal>
+
+        {/* Contact */}
+        <ScrollReveal width="100%" delay={0.2}>
+          <section className="mb-12">
+            <SectionHeader title={labels.contact} />
+            <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+              <ul className="space-y-3 font-medium text-gray-700">
+                <li className="flex items-center gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-800" />
+                  Location: {profile.contact.location}
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-800" />
+                  Email: {profile.links.email}
+                </li>
+                {profile.links.github && (
+                  <li className="flex items-center gap-3">
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-800" />
+                    GitHub: {profile.links.github}
+                  </li>
+                )}
+              </ul>
+            </div>
+          </section>
+        </ScrollReveal>
+
+        {/* Skills */}
+        <ScrollReveal width="100%" delay={0.3}>
+          <section>
+            <SectionHeader title={labels.skills} />
+            <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)] space-y-10">
+              {profile.skillCategories.map((cat) => (
+                <SkillCategory
+                  key={cat.category}
+                  category={getContent(cat, "category")}
+                  skills={cat.skills}
+                />
               ))}
-            </ul>
-          </Card>
-        </Section>
-      </ScrollReveal>
-
-      <ScrollReveal width="100%">
-        <Section title="Contact">
-          <Card>
-            <ul className="list">
-              <li>Location: {profile.contact.location}</li>
-              {profile.contact.phone && <li>Phone: {profile.contact.phone}</li>}
-              <li>Email: {profile.links.email}</li>
-              <li>GitHub: {profile.links.github}</li>
-            </ul>
-          </Card>
-        </Section>
-      </ScrollReveal>
-
-      <ScrollReveal width="100%">
-        <Section title="Skills">
-          <div className="skillCategoriesContainer">
-            {profile.skillCategories.map((cat) => (
-              <SkillCategory
-                key={cat.category}
-                category={cat.category}
-                skills={cat.skills}
-              />
-            ))}
-          </div>
-        </Section>
-      </ScrollReveal>
-    </div>
+            </div>
+          </section>
+        </ScrollReveal>
+      </div>
+    </PageTransition>
   );
 }
