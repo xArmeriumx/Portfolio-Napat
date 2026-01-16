@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { usePageMeta } from "../hooks/usePageMeta.js";
 import { useTranslation } from "../context/LanguageContext.jsx";
@@ -7,189 +7,166 @@ import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import { projects } from "../data/projects.js";
 
+// Libraries
+import { Swiper, SwiperSlide } from "swiper/react";
+import {
+  Pagination,
+  Navigation,
+  Autoplay,
+  Thumbs,
+  FreeMode,
+} from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import "swiper/css/autoplay";
+import "swiper/css/thumbs";
+import "swiper/css/free-mode";
+
+import Lightbox from "yet-another-react-lightbox";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import "yet-another-react-lightbox/styles.css";
+
 /* ========================================
    ImageGallery Component
 ======================================== */
-function ImageGallery({ images, title, selectedIndex, onSelect }) {
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const currentImage = images[selectedIndex] || images[0];
-  const hasMultipleImages = images.length > 1;
+function ImageGallery({ images, title }) {
+  const [open, setOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [swiperRef, setSwiperRef] = useState(null);
 
-  // Handle Keyboard Navigation
+  // Stop/Start Autoplay when Lightbox is open/closed
   useEffect(() => {
-    if (!isLightboxOpen) return;
-
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") setIsLightboxOpen(false);
-      if (e.key === "ArrowLeft" && hasMultipleImages) {
-        onSelect((selectedIndex - 1 + images.length) % images.length);
+    if (swiperRef && swiperRef.autoplay) {
+      if (open) {
+        swiperRef.autoplay.stop();
+      } else {
+        swiperRef.autoplay.start();
       }
-      if (e.key === "ArrowRight" && hasMultipleImages) {
-        onSelect((selectedIndex + 1) % images.length);
-      }
-    };
+    }
+  }, [open, swiperRef]);
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [
-    isLightboxOpen,
-    hasMultipleImages,
-    selectedIndex,
-    images.length,
-    onSelect,
-  ]);
+  // Convert images for Lightbox
+  const slides = images.map((src) => ({ src, alt: title }));
 
   return (
     <>
-      <div className="space-y-6 mb-12">
-        {/* Main Image View */}
-        <div
-          className="overflow-hidden bg-gray-50 rounded-2xl cursor-zoom-in group"
-          onClick={() => setIsLightboxOpen(true)}
-        >
-          <div className="aspect-video relative">
-            <img
-              className="w-full h-full object-contain transition-transform duration-500"
-              src={currentImage}
-              alt={`${title} - View ${selectedIndex + 1}`}
-              fetchPriority="high"
-            />
-            {/* Zoom Hint */}
-            <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-                />
-              </svg>
-              Click to Zoom
-            </div>
-          </div>
+      <div className="space-y-4">
+        {/* Main Swiper */}
+        <div className="rounded-[2rem] overflow-hidden shadow-2xl shadow-gray-200/50 bg-gray-100 ring-1 ring-gray-200">
+          <Swiper
+            onSwiper={setSwiperRef}
+            style={{
+              "--swiper-navigation-color": "rgba(75, 85, 99, 0.6)",
+              "--swiper-navigation-size": "24px",
+              "--swiper-pagination-color": "#4b5563",
+            }}
+            modules={[Pagination, Navigation, Autoplay, Thumbs, FreeMode]}
+            thumbs={{
+              swiper:
+                thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+            }}
+            autoplay={{
+              delay: 4000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
+            speed={2000}
+            pagination={{ clickable: true, dynamicBullets: true }}
+            navigation={true}
+            loop={true}
+            spaceBetween={20}
+            slidesPerView={1}
+            className="aspect-video w-full bg-white cursor-zoom-in"
+            onSlideChange={(swiper) => setIndex(swiper.realLoopIndex)}
+            onClick={() => setOpen(true)}
+          >
+            {images.map((img, i) => (
+              <SwiperSlide key={i} className="flex items-center justify-center">
+                <div className="w-full h-full flex items-center justify-center p-2 relative group">
+                  <img
+                    src={img}
+                    alt={`${title} ${i + 1}`}
+                    className="max-h-full max-w-full object-contain select-none"
+                    draggable="false"
+                  />
+                  {/* Zoom Hint Overlay */}
+                  <div className="absolute bottom-6 right-6 bg-black/50 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex items-center gap-2">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                      />
+                    </svg>
+                    Click to Expand
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
 
-        {/* Thumbnails */}
-        {hasMultipleImages && (
-          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-            {images.map((img, index) => (
-              <button
-                key={index}
-                onClick={() => onSelect(index)}
-                className={`relative flex-shrink-0 w-20 h-20 border-2 rounded-xl overflow-hidden transition-all duration-200 ${
-                  selectedIndex === index
-                    ? "border-red-500 ring-2 ring-red-500/20 opacity-100 scale-105"
-                    : "border-transparent opacity-60 hover:opacity-100"
-                }`}
-                aria-label={`View image ${index + 1}`}
-                aria-selected={selectedIndex === index}
+        {/* Thumbnail Swiper */}
+        {images.length > 1 && (
+          <Swiper
+            onSwiper={setThumbsSwiper}
+            loop={true}
+            spaceBetween={10}
+            slidesPerView={5}
+            freeMode={true}
+            watchSlidesProgress={true}
+            modules={[FreeMode, Navigation, Thumbs]}
+            className="thumbs-swiper rounded-xl"
+          >
+            {images.map((img, i) => (
+              <SwiperSlide
+                key={i}
+                className="cursor-pointer rounded-lg overflow-hidden border-2 border-transparent transition-all border-opacity-50 hover:border-gray-400 !h-auto"
               >
-                <img
-                  src={img}
-                  alt={`${title} thumbnail ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </button>
+                <div
+                  className={`w-full aspect-video relative ${
+                    index === i
+                      ? "ring-2 ring-gray-800 ring-offset-1"
+                      : "opacity-60 hover:opacity-100"
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`Thumbnail ${i + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
         )}
       </div>
 
-      {/* Lightbox Overlay */}
-      {isLightboxOpen && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={() => setIsLightboxOpen(false)}
-        >
-          {/* Close Button */}
-          <button
-            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors"
-            onClick={() => setIsLightboxOpen(false)}
-          >
-            <svg
-              className="w-10 h-10"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-
-          {/* Navigation Buttons */}
-          {hasMultipleImages && (
-            <>
-              <button
-                className="absolute left-6 text-white/70 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSelect((selectedIndex - 1 + images.length) % images.length);
-                }}
-              >
-                <svg
-                  className="w-12 h-12"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
-              <button
-                className="absolute right-6 text-white/70 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSelect((selectedIndex + 1) % images.length);
-                }}
-              >
-                <svg
-                  className="w-12 h-12"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            </>
-          )}
-
-          {/* Image */}
-          <div
-            className="relative max-w-7xl w-full max-h-screen flex items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={currentImage}
-              alt={`${title} full screen`}
-              className="max-h-[90vh] max-w-full object-contain rounded-lg shadow-2xl"
-            />
-            <div className="absolute bottom-[-3rem] text-white/50 text-sm font-medium tracking-widest uppercase">
-              {selectedIndex + 1} / {images.length}
-            </div>
-          </div>
-        </div>
-      )}
+      <Lightbox
+        open={open}
+        close={() => setOpen(false)}
+        index={index}
+        slides={slides}
+        plugins={[Zoom]}
+        zoom={{ maxZoomPixelRatio: 3 }}
+        animation={{ fade: 600 }}
+        controller={{ closeOnBackdropClick: true }}
+        styles={{
+          root: {
+            "--yarl__container_background_color": "rgba(0, 0, 0, 0.2)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+          },
+        }}
+      />
     </>
   );
 }
@@ -221,7 +198,6 @@ function ListSection({ title, items }) {
 export default function ProjectDetail() {
   const { slug } = useParams();
   const { getContent, language } = useTranslation();
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   // Find project
   const project = projects.find((p) => p.slug === slug);
@@ -350,12 +326,7 @@ export default function ProjectDetail() {
             {/* HERO IMAGE GALLERY - Immersive & Clean */}
             <div className="mb-16 md:mb-24">
               <div className="rounded-[2rem] overflow-hidden shadow-2xl shadow-gray-200/50">
-                <ImageGallery
-                  images={projectImages}
-                  title={title}
-                  selectedIndex={selectedImageIndex}
-                  onSelect={setSelectedImageIndex}
-                />
+                <ImageGallery images={projectImages} title={title} />
               </div>
             </div>
 
