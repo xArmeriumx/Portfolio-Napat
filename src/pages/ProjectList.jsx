@@ -1,5 +1,5 @@
+import SEO from "../components/utils/SEO.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { usePageMeta } from "../hooks/usePageMeta.js";
 import { useTranslation } from "../context/LanguageContext.jsx";
 import Section from "../components/ui/Section.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
@@ -177,18 +177,14 @@ export default function ProjectList() {
 
   const pageTitle = "Projects";
 
-  // SEO Meta Tags
-  usePageMeta({
-    title: `${pageTitle} | Napat Pamornsut (ณภัทร ภมรสูตร)`,
-    description:
-      "Explore my projects including web development, frontend, system analysis, and software testing work.",
-    path: "/projects",
-    keywords:
-      "Napat Pamornsut, ณภัทร ภมรสูตร, Projects, Portfolio, Web Development, React, Software Testing",
-  });
-
   return (
     <PageTransition>
+      <SEO
+        title={`${pageTitle} | Napat Pamornsut (ณภัทร ภมรสูตร)`}
+        description="Explore my projects including web development, frontend, system analysis, and software testing work."
+        path="/projects"
+        keywords="Napat Pamornsut, ณภัทร ภมรสูตร, Projects, Portfolio, Web Development, React, Software Testing"
+      />
       <div className="relative min-h-screen bg-[#f9fafb] overflow-hidden pt-24 md:pt-28 pb-24">
         {/* Dimensional Background */}
         <div className="absolute inset-0 pointer-events-none">

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import SEO from "../components/utils/SEO.jsx";
 import { Link, useParams } from "react-router-dom";
-import { usePageMeta } from "../hooks/usePageMeta.js";
 import { useTranslation } from "../context/LanguageContext.jsx";
 import Section from "../components/ui/Section.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
@@ -206,50 +206,46 @@ export default function ProjectDetail() {
   // Find project
   const project = projects.find((p) => p.slug === slug);
 
-  // SEO Meta Tags
-  usePageMeta({
-    title: project
-      ? `${getContent(project, "title")} | Projects`
-      : "Project Not Found",
-    description: project
-      ? getContent(project, "description")
-      : "Project details",
-    path: `/projects/${slug}`,
-  });
-
   if (!project) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
-        {/* 404 Number (Ghost) */}
-        <h1
-          className="font-sans text-[clamp(80px,12vw,160px)] font-bold text-gray-900 leading-none tracking-tighter opacity-10 select-none"
-          style={{ fontFamily: '"Space Grotesk", sans-serif' }}
-        >
-          NULL
-        </h1>
-
-        {/* Message Container */}
-        <div className="-mt-6 md:-mt-10 relative z-10">
-          <h2
-            className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight font-sans"
+      <>
+        <SEO
+          title="Project Not Found"
+          description="Project details"
+          path={`/projects/${slug}`}
+        />
+        <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
+          {/* 404 Number (Ghost) */}
+          <h1
+            className="font-sans text-[clamp(80px,12vw,160px)] font-bold text-gray-900 leading-none tracking-tighter opacity-10 select-none"
             style={{ fontFamily: '"Space Grotesk", sans-serif' }}
           >
-            Project Not Found
-          </h2>
+            NULL
+          </h1>
 
-          <div className="font-mono text-gray-500 text-sm md:text-base mb-8 max-w-md mx-auto leading-relaxed">
-            <p>&gt; The requested project ID ({slug}) is invalid.</p>
-            <p>&gt; Status: TERMINATED_OR_MISSING</p>
+          {/* Message Container */}
+          <div className="-mt-6 md:-mt-10 relative z-10">
+            <h2
+              className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight font-sans"
+              style={{ fontFamily: '"Space Grotesk", sans-serif' }}
+            >
+              Project Not Found
+            </h2>
+
+            <div className="font-mono text-gray-500 text-sm md:text-base mb-8 max-w-md mx-auto leading-relaxed">
+              <p>&gt; The requested project ID ({slug}) is invalid.</p>
+              <p>&gt; Status: TERMINATED_OR_MISSING</p>
+            </div>
+
+            <Link
+              to="/projects"
+              className="inline-block px-8 py-3 bg-gray-900 text-white font-medium rounded-full hover:bg-gray-700 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg shadow-gray-200"
+            >
+              Return to Projects
+            </Link>
           </div>
-
-          <Link
-            to="/projects"
-            className="inline-block px-8 py-3 bg-gray-900 text-white font-medium rounded-full hover:bg-gray-700 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg shadow-gray-200"
-          >
-            Return to Projects
-          </Link>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -281,6 +277,11 @@ export default function ProjectDetail() {
 
   return (
     <PageTransition>
+      <SEO
+        title={`${getContent(project, "title")} | Projects`}
+        description={getContent(project, "description")}
+        path={`/projects/${slug}`}
+      />
       <div className="relative min-h-screen bg-[#f9fafb] overflow-hidden pt-28 md:pt-36 pb-32">
         {/* Dimensional Background */}
         <div className="absolute inset-0 pointer-events-none">

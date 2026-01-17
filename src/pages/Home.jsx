@@ -7,15 +7,7 @@ import { profile } from "../data/profile.js";
 export default function Home() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  // SEO Meta Tags
-  usePageMeta({
-    title: `${profile.name} | ${profile.headline}`,
-    description: `Frontend Developer and Software Tester based in Bangkok, Thailand. - ${profile.name} (ณภัทร ภมรสูตร)`,
-    ogTitle: `${profile.name} (ณภัทร ภมรสูตร) | ${profile.headline}`,
-    path: "/",
-    keywords:
-      "Napat Pamornsut, ณภัทร ภมรสูตร, Napatdev, Frontend Developer, Software Tester, React, JavaScript, Bangkok, Thailand",
-  });
+  // SEO Meta Tags handled by SEO component
 
   useEffect(() => {
     const handleMouseMove = (e) => {

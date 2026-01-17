@@ -1,4 +1,4 @@
-import { usePageMeta } from "../hooks/usePageMeta.js";
+import SEO from "../components/utils/SEO.jsx";
 import { useTranslation } from "../context/LanguageContext.jsx";
 import Section from "../components/ui/Section.jsx";
 import Card from "../components/ui/Card.jsx";
@@ -67,16 +67,14 @@ export default function About() {
   // Get translated content
   const aboutText = getContent(profile, "about");
 
-  // SEO Meta Tags
-  usePageMeta({
-    title: `${profile.name} | About`,
-    description: `Learn more about ${profile.name}'s journey, skills, and experience.`,
-    ogTitle: `${profile.name} | About`,
-    path: "/about",
-  });
-
   return (
     <PageTransition>
+      <SEO
+        title={`${profile.name} (ณภัทร ภมรสูตร) | About`}
+        description={`Learn more about ${profile.name} (ณภัทร ภมรสูตร)'s journey, skills, and experience.`}
+        ogTitle={`${profile.name} (ณภัทร ภมรสูตร) | About`}
+        path="/about"
+      />
       <div className="relative min-h-screen bg-[#f9fafb] overflow-hidden pt-28 pb-32">
         {/* Dimensional Background */}
         <div className="absolute inset-0 pointer-events-none">
