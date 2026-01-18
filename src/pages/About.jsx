@@ -69,7 +69,7 @@ export default function About() {
   const aboutText = getContent(profile, "about");
 
   return (
-    <PageTransition>
+    <>
       <SEO
         title={`${profile.name} (ณภัทร ภมรสูตร) | About`}
         description={`Learn more about ${profile.name} (ณภัทร ภมรสูตร)'s journey, skills, and experience.`}
@@ -92,99 +92,101 @@ export default function About() {
         }}
       />
       <Breadcrumbs />
-      <div className="relative min-h-screen bg-[#f9fafb] overflow-hidden pt-28 pb-32">
-        {/* Dimensional Background */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(to right, #e5e7eb 1px, transparent 1px)",
-              backgroundSize: "40px 40px",
-              opacity: 0.2,
-              maskImage:
-                "radial-gradient(circle at top center, black 30%, transparent 100%)",
-            }}
-          />
-        </div>
+      <PageTransition>
+        <div className="relative min-h-screen bg-[#f9fafb] overflow-hidden pt-28 pb-32">
+          {/* Dimensional Background */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage:
+                  "linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(to right, #e5e7eb 1px, transparent 1px)",
+                backgroundSize: "40px 40px",
+                opacity: 0.2,
+                maskImage:
+                  "radial-gradient(circle at top center, black 30%, transparent 100%)",
+              }}
+            />
+          </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-6">
-          {/* About Me */}
-          <ScrollReveal width="100%">
-            <section className="mb-12">
-              <SectionHeader title={labels.aboutMe} />
-              <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
-                <p className="text-gray-600 leading-loose font-medium">
-                  <AnimatedText>{aboutText}</AnimatedText>
-                </p>
-              </div>
-            </section>
-          </ScrollReveal>
+          <div className="relative z-10 max-w-4xl mx-auto px-6">
+            {/* About Me */}
+            <ScrollReveal width="100%">
+              <section className="mb-12">
+                <SectionHeader title={labels.aboutMe} />
+                <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                  <p className="text-gray-600 leading-loose font-medium">
+                    <AnimatedText>{aboutText}</AnimatedText>
+                  </p>
+                </div>
+              </section>
+            </ScrollReveal>
 
-          {/* Education */}
-          <ScrollReveal width="100%" delay={0.1}>
-            <section className="mb-12">
-              <SectionHeader title={labels.education} />
-              <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
-                <ul className="space-y-3">
-                  {getContent(profile, "education").map((line, index) => (
-                    <li
-                      key={index}
-                      className="flex items-start gap-3 text-gray-700 font-medium"
-                    >
-                      <span className="mt-2 w-1.5 h-1.5 rounded-full bg-gray-800 flex-shrink-0" />
-                      <span>
-                        <AnimatedText>{line}</AnimatedText>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </section>
-          </ScrollReveal>
+            {/* Education */}
+            <ScrollReveal width="100%" delay={0.1}>
+              <section className="mb-12">
+                <SectionHeader title={labels.education} />
+                <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                  <ul className="space-y-3">
+                    {getContent(profile, "education").map((line, index) => (
+                      <li
+                        key={index}
+                        className="flex items-start gap-3 text-gray-700 font-medium"
+                      >
+                        <span className="mt-2 w-1.5 h-1.5 rounded-full bg-gray-800 flex-shrink-0" />
+                        <span>
+                          <AnimatedText>{line}</AnimatedText>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
+            </ScrollReveal>
 
-          {/* Contact */}
-          <ScrollReveal width="100%" delay={0.2}>
-            <section className="mb-12">
-              <SectionHeader title={labels.contact} />
-              <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
-                <ul className="space-y-3 font-medium text-gray-700">
-                  <li className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-800" />
-                    Location: {profile.contact.location}
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-800" />
-                    Email: {profile.links.email}
-                  </li>
-                  {profile.links.github && (
+            {/* Contact */}
+            <ScrollReveal width="100%" delay={0.2}>
+              <section className="mb-12">
+                <SectionHeader title={labels.contact} />
+                <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                  <ul className="space-y-3 font-medium text-gray-700">
                     <li className="flex items-center gap-3">
                       <span className="w-1.5 h-1.5 rounded-full bg-gray-800" />
-                      GitHub: {profile.links.github}
+                      Location: {profile.contact.location}
                     </li>
-                  )}
-                </ul>
-              </div>
-            </section>
-          </ScrollReveal>
+                    <li className="flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-800" />
+                      Email: {profile.links.email}
+                    </li>
+                    {profile.links.github && (
+                      <li className="flex items-center gap-3">
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-800" />
+                        GitHub: {profile.links.github}
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              </section>
+            </ScrollReveal>
 
-          {/* Skills */}
-          <ScrollReveal width="100%" delay={0.3}>
-            <section>
-              <SectionHeader title={labels.skills} />
-              <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)] space-y-10">
-                {profile.skillCategories.map((cat) => (
-                  <SkillCategory
-                    key={cat.category}
-                    category={getContent(cat, "category")}
-                    skills={cat.skills}
-                  />
-                ))}
-              </div>
-            </section>
-          </ScrollReveal>
+            {/* Skills */}
+            <ScrollReveal width="100%" delay={0.3}>
+              <section>
+                <SectionHeader title={labels.skills} />
+                <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.02)] space-y-10">
+                  {profile.skillCategories.map((cat) => (
+                    <SkillCategory
+                      key={cat.category}
+                      category={getContent(cat, "category")}
+                      skills={cat.skills}
+                    />
+                  ))}
+                </div>
+              </section>
+            </ScrollReveal>
+          </div>
         </div>
-      </div>
-    </PageTransition>
+      </PageTransition>
+    </>
   );
 }

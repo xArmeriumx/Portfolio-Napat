@@ -1,7 +1,7 @@
 import React from "react";
 
-// Base URL for the portfolio
-const BASE_URL = "https://napatdev.com";
+// Production URL for Canonical tags (Strict SEO)
+const PROD_URL = "https://napatdev.com";
 
 /**
  * SEO Component - Uses React 19 Native Document Metadata key features
@@ -26,9 +26,29 @@ export default function SEO({
   ogImage,
   path = "",
   keywords,
+  noindex,
+  structuredData,
 }) {
-  const fullUrl = `${BASE_URL}${path}`;
-  const imageUrl = ogImage || `${BASE_URL}/favicon.png`;
+  // Determine Base URL: use window.location.origin if available (Dev/Preview), else fallback to PROD
+  const origin =
+    typeof window !== "undefined" && window.location.origin
+      ? window.location.origin
+      : PROD_URL;
+
+  // OG/Twitter tags follow the current environment
+  const fullUrl = `${origin}${path}`;
+
+  // Canonical always points to production to prevent duplicate content issues
+  const canonicalUrl = `${PROD_URL}${path}`;
+
+  // Handle Image URL
+  let imageUrl = ogImage || "/favicon.png"; // Default to relative favicon
+  // If it's a relative path, prepend origin
+  if (imageUrl.startsWith("/")) {
+    imageUrl = `${origin}${imageUrl}`;
+  }
+  // If it's already an absolute URL (http...), leave it as is
+
   const effectiveTitle = ogTitle || title;
   const effectiveDesc = ogDescription || description;
 
@@ -38,7 +58,7 @@ export default function SEO({
       {title && <title>{title}</title>}
       {description && <meta name="description" content={description} />}
       {keywords && <meta name="keywords" content={keywords} />}
-      {props.noindex && <meta name="robots" content="noindex, nofollow" />}
+      {noindex && <meta name="robots" content="noindex, nofollow" />}
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={ogType} />
@@ -59,12 +79,12 @@ export default function SEO({
       {/* Canonical URL */}
       {/* Note: React 19 currently supports hoisting <title> and <meta>. 
           For <link> tags, it also supports them but key property helps prevent duplication. */}
-      <link rel="canonical" href={fullUrl} />
+      <link rel="canonical" href={canonicalUrl} />
 
       {/* Structured Data (JSON-LD) */}
-      {props.structuredData && (
+      {structuredData && (
         <script type="application/ld+json">
-          {JSON.stringify(props.structuredData)}
+          {JSON.stringify(structuredData)}
         </script>
       )}
     </>
