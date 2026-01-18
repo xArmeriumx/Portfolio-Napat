@@ -1,4 +1,5 @@
 import SEO from "../components/utils/SEO.jsx";
+import Breadcrumbs from "../components/utils/Breadcrumbs.jsx";
 import { useTranslation } from "../context/LanguageContext.jsx";
 import Section from "../components/ui/Section.jsx";
 import Card from "../components/ui/Card.jsx";
@@ -74,7 +75,23 @@ export default function About() {
         description={`Learn more about ${profile.name} (ณภัทร ภมรสูตร)'s journey, skills, and experience.`}
         ogTitle={`${profile.name} (ณภัทร ภมรสูตร) | About`}
         path="/about"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "ProfilePage",
+          mainEntity: {
+            "@type": "Person",
+            name: profile.name,
+            alternateName: "ณภัทร ภมรสูตร",
+            jobTitle: "Frontend Developer",
+            description: profile.tagline,
+            image: "https://napatdev.com/favicon.png",
+            sameAs: [profile.links.github, profile.links.linkedin].filter(
+              Boolean,
+            ),
+          },
+        }}
       />
+      <Breadcrumbs />
       <div className="relative min-h-screen bg-[#f9fafb] overflow-hidden pt-28 pb-32">
         {/* Dimensional Background */}
         <div className="absolute inset-0 pointer-events-none">

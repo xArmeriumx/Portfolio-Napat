@@ -1,4 +1,5 @@
 import SEO from "../components/utils/SEO.jsx";
+import Breadcrumbs from "../components/utils/Breadcrumbs.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "../context/LanguageContext.jsx";
 import Section from "../components/ui/Section.jsx";
@@ -184,7 +185,23 @@ export default function ProjectList() {
         description="Explore my projects including web development, frontend, system analysis, and software testing work."
         path="/projects"
         keywords="Napat Pamornsut, ณภัทร ภมรสูตร, Projects, Portfolio, Web Development, React, Software Testing"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Projects",
+          url: "https://napatdev.com/projects",
+          mainEntity: {
+            "@type": "ItemList",
+            itemListElement: projects.map((project, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              url: `https://napatdev.com/projects/${project.slug}`,
+              name: getContent(project, "title"),
+            })),
+          },
+        }}
       />
+      <Breadcrumbs />
       <div className="relative min-h-screen bg-[#f9fafb] overflow-hidden pt-24 md:pt-28 pb-24">
         {/* Dimensional Background */}
         <div className="absolute inset-0 pointer-events-none">

@@ -38,6 +38,7 @@ export default function SEO({
       {title && <title>{title}</title>}
       {description && <meta name="description" content={description} />}
       {keywords && <meta name="keywords" content={keywords} />}
+      {props.noindex && <meta name="robots" content="noindex, nofollow" />}
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={ogType} />
@@ -59,6 +60,13 @@ export default function SEO({
       {/* Note: React 19 currently supports hoisting <title> and <meta>. 
           For <link> tags, it also supports them but key property helps prevent duplication. */}
       <link rel="canonical" href={fullUrl} />
+
+      {/* Structured Data (JSON-LD) */}
+      {props.structuredData && (
+        <script type="application/ld+json">
+          {JSON.stringify(props.structuredData)}
+        </script>
+      )}
     </>
   );
 }

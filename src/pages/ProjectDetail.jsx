@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import SEO from "../components/utils/SEO.jsx";
+import Breadcrumbs from "../components/utils/Breadcrumbs.jsx";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "../context/LanguageContext.jsx";
 import Section from "../components/ui/Section.jsx";
@@ -281,7 +282,22 @@ export default function ProjectDetail() {
         title={`${getContent(project, "title")} | Projects`}
         description={getContent(project, "description")}
         path={`/projects/${slug}`}
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareSourceCode",
+          name: title,
+          description: description,
+          url: `https://napatdev.com/projects/${slug}`,
+          image: project.image,
+          author: {
+            "@type": "Person",
+            name: "Napat Pamornsut",
+            url: "https://napatdev.com",
+          },
+          programmingLanguage: stack ? stack.split(", ") : technologies,
+        }}
       />
+      <Breadcrumbs />
       <div className="relative min-h-screen bg-[#f9fafb] overflow-hidden pt-28 md:pt-36 pb-32">
         {/* Dimensional Background */}
         <div className="absolute inset-0 pointer-events-none">

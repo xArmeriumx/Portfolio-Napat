@@ -7,6 +7,7 @@ export default function NotFound() {
       <SEO
         title="Page Not Found | Napat Pamornsut"
         description="The page you are looking for does not exist."
+        noindex={true}
       />
       {/* 404 Number */}
       <h1 className="font-sans text-[clamp(100px,15vw,200px)] font-bold text-gray-900 leading-none tracking-tighter opacity-10 select-none">

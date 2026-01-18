@@ -40,7 +40,7 @@ export default function Navbar() {
           }`}
         >
           <img
-            src="/favicon.png"
+            src="/favicon.ico"
             alt="Napat-Dev Logo"
             className="h-10 w-auto transition-transform duration-300 group-hover:scale-110 mix-blend-multiply"
           />
@@ -155,7 +155,7 @@ export default function Navbar() {
             {/* Logo inside Drawer */}
             <div className="flex items-center gap-2">
               <img
-                src="/favicon.png"
+                src="/favicon.ico"
                 alt="Logo"
                 className="h-8 w-auto mix-blend-multiply"
               />

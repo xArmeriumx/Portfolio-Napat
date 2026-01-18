@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import SEO from "../components/utils/SEO.jsx";
+import Breadcrumbs from "../components/utils/Breadcrumbs.jsx";
 import { usePageMeta } from "../hooks/usePageMeta.js";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
@@ -21,8 +23,28 @@ export default function Home() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
+  // WebSite Schema for Sitelinks Search Box Candidate
+  const webSiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Napatdev",
+    url: "https://napatdev.com/",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://napatdev.com/projects?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <PageTransition>
+      <SEO
+        title={`${profile.name} (ณภัทร ภมรสูตร) | Frontend Developer & Software Tester`}
+        description={profile.tagline}
+        keywords="Napat Pamornsut, ณภัทร ภมรสูตร, Napatdev, Frontend Developer, Software Tester, React Developer, Node.js, Playwright, Bangkok, Thailand"
+        structuredData={webSiteSchema}
+      />
+      <Breadcrumbs />
       <section className="min-h-[90vh] flex items-center justify-center relative bg-[#fafafa] overflow-hidden pt-16">
         {/* Dimensional Background */}
         <div className="absolute inset-0 pointer-events-none">
