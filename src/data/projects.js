@@ -98,6 +98,89 @@ robust audit trails, and seamless user onboarding.
     },
   },
   {
+    slug: "jodbill-expense-tracker",
+    title: "JodBill — Smart Expense Tracker",
+    title_th: "JodBill — แอปบันทึกรายรับรายจ่ายอัจฉริยะ (AI-Powered PWA)",
+    images: [
+      `${import.meta.env.BASE_URL}images/jodbill-1.png`,
+      `${import.meta.env.BASE_URL}images/jodbill-2.png`,
+      `${import.meta.env.BASE_URL}images/jodbill-3.png`,
+      `${import.meta.env.BASE_URL}images/jodbill-4.png`,
+      `${import.meta.env.BASE_URL}images/jodbill-5.png`,
+      `${import.meta.env.BASE_URL}images/jodbill-6.png`,
+    ],
+    role: ["Fullstack Developer"],
+
+    description: `
+A personal finance PWA — scan receipts with AI, track income & expenses, 
+set budgets, and get AI-driven financial coaching. Designed as a mobile-first 
+app with native-like UX that can be installed on any device.
+    `,
+    description_th: `
+แอปบันทึกรายรับรายจ่ายส่วนตัว — สแกนใบเสร็จด้วย AI บันทึกรายรับรายจ่าย 
+ตั้งงบประมาณ และรับคำแนะนำทางการเงินจาก AI ออกแบบเป็น Mobile-first PWA 
+ติดตั้งได้ทุกอุปกรณ์ ใช้งานง่ายเหมือนแอปจริง
+    `,
+
+    technologies: [
+      "Next.js 14",
+      "TypeScript",
+      "Prisma",
+      "PostgreSQL",
+      "TailwindCSS",
+      "NextAuth.js",
+      "Supabase",
+      "AI / LLM",
+      "PWA",
+    ],
+
+    keyFeatures: [
+      "AI Receipt Scanner — Snap a photo and AI extracts vendor, items, and totals automatically",
+      "AI Financial Coach — Analyzes spending behavior and gives personalized financial advice",
+      "Budget & Savings — Set monthly budgets, track savings goals with visual charts",
+      "Reports & History — Monthly summaries, trend comparisons, searchable transaction history",
+      "PWA & Offline — Installable on mobile, works offline, native-app-like UX",
+    ],
+    keyFeatures_th: [
+      "AI สแกนใบเสร็จ — ถ่ายรูปใบเสร็จ แล้ว AI ดึงข้อมูลร้านค้า รายการ และยอดเงินให้อัตโนมัติ",
+      "AI Financial Coach — วิเคราะห์พฤติกรรมการใช้จ่ายและให้คำแนะนำทางการเงินเฉพาะบุคคล",
+      "งบประมาณ & ออมเงิน — ตั้งงบรายเดือน ติดตามเป้าหมายออมเงิน พร้อมกราฟสรุปผล",
+      "รายงาน & ประวัติ — ดูสรุปรายเดือน เปรียบเทียบแนวโน้ม ค้นหาและจัดการรายการย้อนหลัง",
+      "PWA & Offline — ติดตั้งได้บนมือถือ ใช้งานแบบ Offline พร้อม UX ระดับ Native App",
+    ],
+
+    highlights: [
+      "AI-Powered — Receipt scanning + financial analysis with AI in one app",
+      "Mobile-First PWA — Works on any device, installable, offline-capable",
+      "Full-stack — Built frontend, backend, database, and AI integration end-to-end",
+    ],
+    highlights_th: [
+      "AI-Powered — สแกนใบเสร็จ + วิเคราะห์การเงินด้วย AI ในแอปเดียว",
+      "Mobile-First PWA — ใช้งานได้ทุกอุปกรณ์ ติดตั้งได้ ใช้ Offline ได้",
+      "Full-stack — พัฒนา Frontend, Backend, Database, และ AI Integration ด้วยตัวเอง",
+    ],
+
+    responsibilities: [
+      "Full-stack development with Next.js 14 (App Router, Server Actions)",
+      "Database design and implementation with Prisma ORM",
+      "AI integration — receipt scanning and financial coaching",
+      "Authentication, security, and API protection",
+      "PWA setup with service worker and offline support",
+    ],
+    responsibilities_th: [
+      "พัฒนา Full-stack ด้วย Next.js 14 (App Router, Server Actions)",
+      "ออกแบบและสร้างฐานข้อมูลด้วย Prisma ORM",
+      "เชื่อมต่อ AI — ระบบสแกนใบเสร็จและ Financial Coach",
+      "ระบบยืนยันตัวตน, Security, และการป้องกัน API",
+      "ตั้งค่า PWA พร้อม Service Worker และ Offline Support",
+    ],
+
+    links: {
+      demo: "https://jodbill.napatdev.com/",
+      repo: "https://github.com/xArmeriumx/Billsnap-miniproject",
+    },
+  },
+  {
     slug: "clean-water-monitoring",
     title: "Clean Water Monitoring",
     title_th: "Clean Water Monitoring (IoT + Real-time Dashboard)",
