@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
       <SEO
-        title="Page Not Found | Napat Pamornsut"
+        title="Page Not Found | NapatDev"
         description="The page you are looking for does not exist."
         noindex={true}
       />
