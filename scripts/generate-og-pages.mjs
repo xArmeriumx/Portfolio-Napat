@@ -1,8 +1,10 @@
 /**
- * Generate OG Pages — Post-build Script
+ * Generate OG Pages + Sitemap — Post-build Script
  *
- * สร้าง static HTML สำหรับแต่ละ project route เพื่อให้ social media crawlers
- * (Facebook, LINE, Twitter) เห็น OG tags ที่ถูกต้อง
+ * 1. สร้าง static HTML สำหรับแต่ละ project route เพื่อให้ social media crawlers
+ *    (Facebook, LINE, Twitter) เห็น OG tags ที่ถูกต้อง
+ *
+ * 2. สร้าง sitemap.xml เพื่อให้ Google index ทุกหน้าได้เร็วขึ้น
  *
  * ทำงานหลัง `vite build` — อ่าน dist/index.html แล้ว clone + แก้ OG tags
  * สำหรับแต่ละ project แล้วบันทึกไปที่ dist/projects/{slug}/index.html
@@ -75,6 +77,15 @@ const projects = [
 ];
 
 // ============================================================
+// Static Pages (นอกเหนือจาก projects)
+// ============================================================
+const staticPages = [
+  { path: "/", priority: "1.0", changefreq: "monthly" },
+  { path: "/about", priority: "0.6", changefreq: "monthly" },
+  { path: "/projects", priority: "0.9", changefreq: "weekly" },
+];
+
+// ============================================================
 // Main
 // ============================================================
 function main() {
@@ -88,6 +99,17 @@ function main() {
 
   const baseHtml = fs.readFileSync(indexPath, "utf-8");
 
+  // 1) Generate OG pages
+  generateOgPages(baseHtml);
+
+  // 2) Generate sitemap.xml
+  generateSitemap();
+}
+
+// ============================================================
+// 1) OG Pages
+// ============================================================
+function generateOgPages(baseHtml) {
   console.log("\n🔧 Generating OG pages for social media previews...\n");
 
   let generated = 0;
@@ -148,7 +170,54 @@ function main() {
     generated++;
   }
 
-  console.log(`\n🎉 Done! Generated ${generated} OG pages.\n`);
+  console.log(`\n🎉 Generated ${generated} OG pages.`);
+}
+
+// ============================================================
+// 2) Sitemap
+// ============================================================
+function generateSitemap() {
+  console.log("\n🗺️  Generating sitemap.xml...\n");
+
+  // Use build date as lastmod
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+
+  let urls = "";
+
+  // Static pages
+  for (const page of staticPages) {
+    urls += `
+  <url>
+    <loc>${SITE_URL}${page.path}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`;
+  }
+
+  // Project pages
+  for (const project of projects) {
+    urls += `
+  <url>
+    <loc>${SITE_URL}/projects/${project.slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+  }
+
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${urls}
+</urlset>
+`;
+
+  fs.writeFileSync(path.join(distDir, "sitemap.xml"), sitemap, "utf-8");
+  console.log("  ✅ sitemap.xml");
+
+  // Count total URLs
+  const totalUrls = staticPages.length + projects.length;
+  console.log(`\n🎉 Sitemap generated with ${totalUrls} URLs.\n`);
 }
 
 // ============================================================
