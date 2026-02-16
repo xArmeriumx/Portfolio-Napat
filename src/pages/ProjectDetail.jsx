@@ -281,6 +281,8 @@ export default function ProjectDetail() {
       <SEO
         title={`${getContent(project, "title")} | Projects`}
         description={getContent(project, "description")}
+        ogImage={projectImages?.[0]}
+        ogType="article"
         path={`/projects/${slug}`}
         structuredData={{
           "@context": "https://schema.org",
@@ -288,7 +290,7 @@ export default function ProjectDetail() {
           name: title,
           description: description,
           url: `https://napatdev.com/projects/${slug}`,
-          image: project.image,
+          image: projectImages?.[0],
           author: {
             "@type": "Person",
             name: "Napat Pamornsut",
