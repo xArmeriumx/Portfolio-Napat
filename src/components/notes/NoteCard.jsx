@@ -69,7 +69,7 @@ export default function NoteCard({ markdown }) {
       {/* We use prose for tailwindcss/typography standard markdown styling.
           prose-pre:hidden is to hide the default unstyled pre block from tailwind typography, since we custom designed the box above */}
       <div className="prose prose-slate max-w-none 
-          prose-headings:font-bold prose-headings:tracking-tight
+          prose-headings:font-bold prose-headings:tracking-tight prose-headings:scroll-mt-24
           prose-h1:text-2xl prose-h1:mb-4 prose-h1:mt-0
           prose-h2:text-xl prose-h2:mt-6 prose-h2:border-b prose-h2:pb-2
           prose-a:text-red-600 hover:prose-a:text-red-700

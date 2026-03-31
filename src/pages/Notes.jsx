@@ -61,6 +61,37 @@ export default function Notes() {
   const prevNote = currentIndex > 0 ? notes[currentIndex - 1] : null;
   const nextNote = currentIndex < notes.length - 1 ? notes[currentIndex + 1] : null;
 
+  // Auto SEO / Meta Tags updating based on active document
+  useEffect(() => {
+    if (activeNote) {
+      // Update Page Title
+      document.title = `${activeNote.name} - Cheatsheet | Napat Portfolio`;
+      
+      // Extract brief description from markdown (strip symbols, find first real sentence)
+      const plainText = activeNote.content.replace(/[#*`_\[\]()]/g, '').replace(/(\r\n|\n|\r)/gm, ' ').trim();
+      const descMatch = plainText.match(/.*?[a-zA-Zก-๙]{10,}.*?(?=\s|$)/); 
+      const desc = descMatch ? plainText.substring(0, 160) + '...' : `Cheatsheet document for ${activeNote.name}`;
+      
+      // Update meta description
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.name = "description";
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.content = desc;
+      
+      // Update og:title
+      let ogTitle = document.querySelector('meta[property="og:title"]');
+      if (!ogTitle) {
+        ogTitle = document.createElement('meta');
+        ogTitle.setAttribute('property', 'og:title');
+        document.head.appendChild(ogTitle);
+      }
+      ogTitle.content = document.title;
+    }
+  }, [activeNote]);
+
   // Extract headings for Table of Contents (TOC) - h2 and h3
   const headings = useMemo(() => {
     if (!activeNote) return [];
@@ -78,13 +109,30 @@ export default function Notes() {
     return items;
   }, [activeNote]);
 
-  const scrollToHeading = (e, id) => {
+  const scrollToHeading = (e, id, headingText) => {
     e.preventDefault();
-    const element = document.getElementById(id);
+    
+    // First try standard ID matching (rehype-slug usually generates this)
+    let element = document.getElementById(id);
+    
+    // Bulletproof Fallback: if IDs mismatch due to Unicode/Thai/Special chars, find by text!
+    if (!element) {
+      const allHeadings = Array.from(document.querySelectorAll('main h2, main h3'));
+      element = allHeadings.find(h => {
+        // Strip out any # or extra spaces from raw text for comparison
+        const cleanContentText = h.textContent.trim().toLowerCase();
+        const cleanTargetText = headingText.trim().toLowerCase();
+        return cleanContentText.includes(cleanTargetText) || cleanTargetText.includes(cleanContentText);
+      });
+    }
+
     if (element) {
-      // scroll with some offset for the fixed navbar (approx 120px)
-      const top = element.getBoundingClientRect().top + window.scrollY - 120;
-      window.scrollTo({ top, behavior: 'smooth' });
+      // scroll Into View natively handles whichever container is scrolling (window or main)
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Update browser URL hash seamlessly
+      window.history.pushState(null, '', `#${element.id || id}`);
+    } else {
+      console.warn("TOC Scroll Failed: Heading not found for", headingText);
     }
   };
 
@@ -240,7 +288,7 @@ export default function Notes() {
                   >
                     <a 
                       href={`#${heading.id}`}
-                      onClick={(e) => scrollToHeading(e, heading.id)}
+                      onClick={(e) => scrollToHeading(e, heading.id, heading.text)}
                       className="hover:text-red-600 transition-colors line-clamp-2 leading-tight"
                     >
                       {heading.text}

@@ -25,6 +25,7 @@
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "swiper": "^12.0.3",
+    "unist-util-visit": "^5.1.0",
     "yet-another-react-lightbox": "^3.28.0"
   },
   "devDependencies": {
