@@ -34,7 +34,7 @@ export default function CmdKModal({ notes, isOpen, onClose, onSelectNote }) {
 
     try {
       const res = await askAiContext(query, contextStr);
-      setAiAnswer(res);
+      setAiAnswer(typeof res === 'object' ? res.answer : res);
     } catch (err) {
       setAiError("ไม่สามารถเชื่อมต่อระบบประมวลผลได้ในขณะนี้");
     } finally {

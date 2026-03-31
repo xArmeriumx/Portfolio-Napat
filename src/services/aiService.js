@@ -41,7 +41,13 @@ export async function askAiContext(query, context) {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'AI Server Processing Error');
     
-    return data.result;
+    try {
+      const cleanJson = data.result.replace(/```json/gi, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(cleanJson);
+      return { answer: parsed.answer || data.result, quote: parsed.quote || null };
+    } catch (e) {
+      return { answer: data.result, quote: null };
+    }
   } catch (error) {
     console.error("[aiService] RAG Error:", error);
     throw error;

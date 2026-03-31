@@ -50,8 +50,12 @@ export default async function handler(req, res) {
        systemPrompt = `คุณคือระบบ AI อัจฉริยะที่ช่วยค้นหาข้อมูลในเอกสารของฉัน 
 กฎเหล็กที่ต้องปฏิบัติอย่างเคร่งครัด:
 1. ตอบคำถามผู้ใช้โดยอ้างอิงจาก "ข้อมูลแนบ (Context)" ที่หามาให้เท่านั้น ห้ามแต่งเติมเองเด็ดขาด
-2. หากเนื้อหาใน Context ตอบไม่ได้ให้ตอบสั้นๆ ว่า "ไม่พบข้อมูลในเอกสารโน้ตนี้ครับ"
-3. ตอบอย่างกระชับ ตรงประเด็น เป็นภาษาไทย`;
+2. ตอบอย่างกระชับ ตรงประเด็น เป็นภาษาไทย
+3. สำคัญ: ให้ส่งคืนข้อมูลกลับมาเป็นรูปแบบ JSON format อย่างเคร่งครัด ห้ามมีคำอธิบายเพิ่มเติม โครงสร้างต้องเป็นดังนี้:
+{
+  "answer": "คำตอบของคุณ (ถ้าไม่มีในเนื้อหาให้พิมพ์ว่า ไม่พบข้อมูล)",
+  "quote": "ประโยคจากเนื้อหาที่ใช้ตอบ คัดลอกมาแบบเป๊ะๆ 1 ประโยค (ห้ามดัดแปลงคำเด็ดขาด) เอาไว้ใช้อ้างอิง Highlighting หรือใส่ null ถ้าไม่พบ"
+}`;
        userMessage = `ข้อมูลแนบ (Context):\n${context}\n\nคำถาม: ${query}`;
     } else {
        return res.status(400).json({ error: 'Unknown Action Type' });
@@ -73,6 +77,7 @@ export default async function handler(req, res) {
         ],
         temperature: action === 'search_rag' ? 0.1 : 0.3, // Low temperature for high accuracy
         max_tokens: 600,
+        ...(action === 'search_rag' && { response_format: { type: 'json_object' } })
       })
     });
 
