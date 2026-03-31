@@ -178,8 +178,8 @@ function generateOgPages(baseHtml) {
   fs.mkdirSync(notesDir, { recursive: true });
 
   const notesUrl = `${SITE_URL}/notes`;
-  const notesTitle = `Developer Notes & Cheatsheets | Napat Pamornsut`;
-  const notesDesc = `A collection of my technical cheatsheets, quick reference guides, and programming notes. Covers SQL, Web Development, and more.`;
+  const notesTitle = `Summary Notes | Napat Pamornsut`;
+  const notesDesc = `Personal knowledge base, summary notes, and technical cheatsheets.`;
 
   let notesHtml = baseHtml;
   notesHtml = notesHtml.replace(/<title>.*?<\/title>/, `<title>${escapeHtml(notesTitle)}</title>`);
