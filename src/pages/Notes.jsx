@@ -5,6 +5,9 @@ import CmdKModal from '../components/notes/CmdKModal';
 import GithubSlugger from 'github-slugger';
 import { BookOpen, FileText, ChevronRight, Hash, FolderTree, Search, ArrowLeft, ArrowRight, List } from 'lucide-react';
 
+import { FEATURES } from '../config/features';
+import AiSummaryPanel from '../components/notes/AiSummaryPanel';
+
 export default function Notes() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -264,6 +267,14 @@ export default function Notes() {
               
               {/* The Core Cheatsheet Content */}
               <div className="animate-fade-in-up">
+                {/* AI Summary Injection */}
+                {FEATURES.ENABLE_AI_ASSISTANT && activeNote?.content && (
+                   <AiSummaryPanel 
+                     noteContent={activeNote.content} 
+                     noteId={activeNote.id} 
+                   />
+                )}
+
                 <NoteCard markdown={activeNote.content} />
               </div>
 

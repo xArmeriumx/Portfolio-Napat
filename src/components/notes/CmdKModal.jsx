@@ -1,11 +1,46 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, FileText } from 'lucide-react';
+import { Search, FileText, AlignLeft } from 'lucide-react';
+import { FEATURES } from '../../config/features';
+import { askAiContext } from '../../services/aiService';
 
 export default function CmdKModal({ notes, isOpen, onClose, onSelectNote }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef(null);
+
+  const [aiAnswer, setAiAnswer] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+
+  useEffect(() => {
+    setAiAnswer(null);
+    setAiError(null);
+  }, [query]);
+
+  const handleAskAi = async () => {
+    if (!query.trim()) return;
+    setAiLoading(true);
+    setAiError(null);
+    
+    // Build context from top snippets OR all titles if nothing matched
+    let contextStr = results.slice(0, 3).map(r => {
+      return `[File: ${r.note.name}]\n${r.snippets.map(s => s.text).join('... ')}`;
+    }).join('\n\n');
+
+    if (!contextStr) {
+      contextStr = `[Available Documents]: ${notes.map(n => n.name).join(', ')}`; 
+    }
+
+    try {
+      const res = await askAiContext(query, contextStr);
+      setAiAnswer(res);
+    } catch (err) {
+      setAiError("ไม่สามารถเชื่อมต่อระบบประมวลผลได้ในขณะนี้");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   // Focus input when modal opens
   useEffect(() => {
@@ -96,6 +131,8 @@ export default function CmdKModal({ notes, isOpen, onClose, onSelectNote }) {
       if (results[activeIndex]) {
         onSelectNote(results[activeIndex].note);
         onClose();
+      } else if (FEATURES.ENABLE_AI_ASSISTANT && query && results.length === 0) {
+        handleAskAi();
       }
     }
   };
@@ -138,8 +175,48 @@ export default function CmdKModal({ notes, isOpen, onClose, onSelectNote }) {
 
         {/* Results Area */}
         <div className="max-h-[50vh] overflow-y-auto scrollbar-hide py-2 bg-[#fdfdfd]">
+          {/* AI Panel Inject */}
+          {FEATURES.ENABLE_AI_ASSISTANT && query && (
+             <div className="px-4 mb-3 mt-1">
+                {!aiAnswer && !aiLoading && !aiError && (
+                  <button 
+                    onClick={handleAskAi} 
+                    className="w-full bg-gray-50 border border-gray-200 hover:border-gray-300 rounded-lg p-3 text-left flex items-center justify-between group transition-all"
+                  >
+                    <div className="flex items-center gap-2">
+                       <AlignLeft size={16} className="text-gray-600" />
+                       <span className="text-gray-900 text-sm font-semibold">สรุปใจความสำหรับ "{query}"</span>
+                    </div>
+                    {results.length === 0 && <span className="text-[10px] font-bold text-gray-600 bg-white shadow-sm px-1.5 py-0.5 rounded border border-gray-200 uppercase">Enter</span>}
+                  </button>
+                )}
+                {aiLoading && (
+                  <div className="flex items-center gap-3 text-sm text-gray-600 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="animate-pulse">กำลังประมวลผลข้อมูล...</span>
+                  </div>
+                )}
+                {aiAnswer && (
+                  <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm relative">
+                    <div className="flex items-center justify-between mb-3 border-b border-gray-50 pb-2">
+                      <div className="flex items-center gap-2">
+                        <AlignLeft size={14} className="text-gray-600" />
+                        <span className="text-xs font-bold text-gray-900 tracking-widest">ผลการสรุปข้อความ</span>
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-line text-[14px]">
+                      {aiAnswer}
+                    </div>
+                  </div>
+                )}
+                {aiError && (
+                  <div className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-100">{aiError}</div>
+                )}
+             </div>
+          )}
+
           {query && results.length === 0 ? (
-            <div className="px-6 py-12 text-center text-sm text-gray-500">
+            <div className="px-6 py-8 text-center text-sm text-gray-500">
               No results found for "<span className="text-gray-900 font-bold">{query}</span>"
             </div>
           ) : (
