@@ -92,37 +92,72 @@ export default async function handler(req, res) {
        return res.status(400).json({ error: 'Unknown Action Type' });
     }
 
-    // 3. Native Fetch to obscure usage of heavier libraries
-    // We use the direct OpenAI-compatible endpoint from Groq 
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'llama-3.1-8b-instant', // Switched to 8b model for higher token limits
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userMessage }
-        ],
-        temperature: action === 'search_rag' ? 0.1 : 0.3, // Low temperature for high accuracy
-        max_tokens: 600,
-        ...(action === 'search_rag' && { response_format: { type: 'json_object' } })
-      })
-    });
+    // 3. Multi-Model Fallback Queue
+    // We loop through available models. If one hits Rate Limit (429), we silently switch to the next!
+    const FALLBACK_MODELS = [
+      'llama-3.1-8b-instant', 
+      'qwen-2.5-32b',
+      'moonshotai/kimi-k2-instruct',
+      'openai/gpt-oss-120b',         // Adding custom requested model
+      'openai/gpt-oss-20b',          // Adding custom requested model
+      'llama-3.3-70b-versatile',
+      'llama3-8b-8192',
+      'llama3-70b-8192'
+    ];
 
-    if (!response.ok) {
-       const errText = await response.text();
-       console.error("AI Provider Error:", response.status, errText);
-       throw new Error(`Upstream API Error: ${response.status}`);
+    let lastError = null;
+
+    for (const model of FALLBACK_MODELS) {
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', { // Can be changed to openrouter URL if using those models
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userMessage }
+            ],
+            temperature: action === 'search_rag' ? 0.1 : 0.3,
+            max_tokens: 600,
+            ...(action === 'search_rag' && { response_format: { type: 'json_object' } })
+          })
+        });
+
+        if (response.status === 429) {
+          console.warn(`[AI] Rate limit hit for model: ${model}. Falling back to next model...`);
+          lastError = new Error(`Rate limit exceeded for ${model}`);
+          continue; // Trigger fallback
+        }
+
+        if (!response.ok) {
+           const errText = await response.text();
+           console.error(`[AI] Error with model ${model}:`, response.status, errText);
+           // If it's a model not found error (like kimi on groq), we should fallback too
+           if (response.status === 404 || response.status === 400) {
+              continue;
+           }
+           throw new Error(`Upstream API Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const resultText = data.choices[0]?.message?.content || "";
+
+        // 4. Send back securely on first success!
+        return res.status(200).json({ result: resultText.trim(), _usedModel: model });
+
+      } catch (err) {
+        lastError = err;
+        console.warn(`[AI] Exception with model ${model}:`, err.message);
+        // Continue to next model on fetch failures
+      }
     }
 
-    const data = await response.json();
-    const resultText = data.choices[0]?.message?.content || "";
-
-    // 4. Send back securely
-    return res.status(200).json({ result: resultText.trim() });
+    // If loop finishes without returning, all models failed (or limit totally reached)
+    throw lastError || new Error("All fallback models failed.");
 
   } catch (error) {
     console.error('Serverless Execution Error:', error);

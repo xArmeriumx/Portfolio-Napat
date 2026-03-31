@@ -57,6 +57,41 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
   );
 };
 
+// Custom interactive block for mobile "Tap to Explain"
+const InteractiveBlock = ({ node, children, tagName: Tag, ...props }) => {
+  const handleTap = (e) => {
+    // Only trigger on mobile viewports (< 768px)
+    if (window.innerWidth >= 768) return;
+    
+    // Stop propagation so parent blocks don't fire
+    e.stopPropagation();
+    
+    const text = extractTextFromAST(node);
+    // Don't trigger for very short snippets or empty lines
+    if (!text || text.trim().length < 10) return;
+    
+    // Get precise coordinates of the block element that was tapped
+    const rect = e.currentTarget.getBoundingClientRect();
+    
+    // Fire global event that AiSelectionTooltip listens to
+    window.dispatchEvent(new CustomEvent('ai-explain-block', {
+       detail: { text, rect }
+    }));
+  };
+
+  return (
+    <Tag 
+       {...props} 
+       className={`relative group ${props.className || ''} ${window.innerWidth < 768 ? 'active:bg-yellow-50/40 cursor-pointer rounded transition-colors duration-200' : ''}`}
+       onClick={handleTap}
+    >
+      {children}
+      {/* Sparkle icon only visible on mobile (subtle indicator) */}
+      <span className="md:hidden inline-block ml-1 opacity-20 text-[10px] text-yellow-500">✨</span>
+    </Tag>
+  );
+};
+
 export default function NoteCard({ markdown }) {
   // Extracting title assuming it's the first heading # Title
   const titleMatch = markdown.match(/^#\s+(.+)$/m);
@@ -85,6 +120,11 @@ export default function NoteCard({ markdown }) {
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeRaw, rehypeSlug, rehypeHighlight]}
           components={{ 
+            p: (props) => <InteractiveBlock tagName="p" {...props} />,
+            h1: (props) => <InteractiveBlock tagName="h1" {...props} />,
+            h2: (props) => <InteractiveBlock tagName="h2" {...props} />,
+            h3: (props) => <InteractiveBlock tagName="h3" {...props} />,
+            li: (props) => <InteractiveBlock tagName="li" {...props} />,
             code: CodeBlock,
             table: ({node, ...props}) => (
               <div className="w-full overflow-x-auto mb-6 rounded-lg border-x border-gray-200">

@@ -62,6 +62,17 @@ export default function AiSelectionTooltip({ noteContent }) {
       }
     };
 
+    const handleCustomExplain = (e) => {
+       const { text, rect } = e.detail;
+       setSelection(text);
+       setPosition({
+         top: rect.top - 10,
+         left: rect.left + (rect.width / 2)
+       });
+       setIsOpen(false);
+       setExplanation("");
+    };
+
     const handleDocumentClick = (e) => {
        // Close if clicked outside the popover and no selection exists
        if (isOpen && popoverRef.current && !popoverRef.current.contains(e.target)) {
@@ -72,9 +83,11 @@ export default function AiSelectionTooltip({ noteContent }) {
 
     document.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('mousedown', handleDocumentClick);
+    window.addEventListener('ai-explain-block', handleCustomExplain);
     return () => {
       document.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('mousedown', handleDocumentClick);
+      window.removeEventListener('ai-explain-block', handleCustomExplain);
     };
   }, [isOpen]);
 
@@ -94,10 +107,19 @@ export default function AiSelectionTooltip({ noteContent }) {
     // Clear selection natively so it looks clean while reading
     window.getSelection().removeAllRanges();
     
-    // Truncate context to save API Tokens! (TPM Limit avoidance)
-    const truncatedContext = noteContent.substring(0, 1500) + "...";
+    // Neighborhood Context Optimization: Extract text directly surrounding the selection
+    let optimizedContext = noteContent;
+    const matchIndex = noteContent.indexOf(selection);
+    if (matchIndex !== -1) {
+       const start = Math.max(0, matchIndex - 600);
+       const end = Math.min(noteContent.length, matchIndex + selection.length + 600);
+       optimizedContext = noteContent.substring(start, end);
+    } else {
+       // Fallback to top 1500 chars if for some reason the selection text isn't an exact match
+       optimizedContext = noteContent.substring(0, 1500) + "...";
+    }
     
-    const result = await explainSelection(selection, truncatedContext);
+    const result = await explainSelection(selection, optimizedContext);
     setExplanation(result);
     setLoading(false);
   };
