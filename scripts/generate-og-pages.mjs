@@ -83,6 +83,7 @@ const staticPages = [
   { path: "/", priority: "1.0", changefreq: "monthly" },
   { path: "/about", priority: "0.6", changefreq: "monthly" },
   { path: "/projects", priority: "0.9", changefreq: "weekly" },
+  { path: "/notes", priority: "0.8", changefreq: "weekly" },
 ];
 
 // ============================================================
@@ -170,7 +171,29 @@ function generateOgPages(baseHtml) {
     generated++;
   }
 
-  console.log(`\n🎉 Generated ${generated} OG pages.`);
+
+
+  // ---- Generate OG for /notes ----
+  const notesDir = path.join(distDir, "notes");
+  fs.mkdirSync(notesDir, { recursive: true });
+
+  const notesUrl = `${SITE_URL}/notes`;
+  const notesTitle = `Developer Notes & Cheatsheets | Napat Pamornsut`;
+  const notesDesc = `A collection of my technical cheatsheets, quick reference guides, and programming notes. Covers SQL, Web Development, and more.`;
+
+  let notesHtml = baseHtml;
+  notesHtml = notesHtml.replace(/<title>.*?<\/title>/, `<title>${escapeHtml(notesTitle)}</title>`);
+  notesHtml = replaceMetaName(notesHtml, "title", notesTitle);
+  notesHtml = replaceMetaName(notesHtml, "description", escapeHtml(notesDesc));
+  notesHtml = replaceMetaProperty(notesHtml, "og:title", notesTitle);
+  notesHtml = replaceMetaProperty(notesHtml, "og:description", escapeHtml(notesDesc));
+  notesHtml = replaceMetaProperty(notesHtml, "og:url", notesUrl);
+  // Keep the default og:image from baseHtml or set a specific one if needed
+  fs.writeFileSync(path.join(notesDir, "index.html"), notesHtml, "utf-8");
+  console.log(`  ✅ notes/index.html`);
+  generated++;
+
+  console.log(`\n🎉 Generated ${generated} static OG pages.`);
 }
 
 // ============================================================
