@@ -1,17 +1,31 @@
 import { useState, useEffect, useMemo } from 'react';
 import NoteCard from '../components/notes/NoteCard';
+import CmdKModal from '../components/notes/CmdKModal';
+import GithubSlugger from 'github-slugger';
 import { BookOpen, FileText, ChevronRight, Hash, FolderTree, Search, ArrowLeft, ArrowRight, List } from 'lucide-react';
 
 export default function Notes() {
   const [notes, setNotes] = useState([]);
   const [activeNote, setActiveNote] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [isCmdKOpen, setIsCmdKOpen] = useState(false);
 
   const formatFileName = (path) => {
     const filename = path.split('/').pop().replace('.md', '');
     return filename.split(/[-_]/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
+
+  // Global Cmd+K Listener
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsCmdKOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const loadNotes = async () => {
@@ -42,8 +56,6 @@ export default function Notes() {
 
     loadNotes();
   }, []);
-
-  const filteredNotes = notes.filter(n => n.name.toLowerCase().includes(searchQuery.toLowerCase()) || n.rawName.toLowerCase().includes(searchQuery.toLowerCase()));
   
   const currentIndex = notes.findIndex(n => n.path === activeNote?.path);
   const prevNote = currentIndex > 0 ? notes[currentIndex - 1] : null;
@@ -52,13 +64,15 @@ export default function Notes() {
   // Extract headings for Table of Contents (TOC) - h2 and h3
   const headings = useMemo(() => {
     if (!activeNote) return [];
+    
+    const slugger = new GithubSlugger();
     const regex = /^(#{2,3})\s+(.+)$/gm;
     const items = [];
     let match;
     while ((match = regex.exec(activeNote.content)) !== null) {
       const level = match[1].length; // number of #
       const text = match[2].replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1').replace(/`([^`]+)`/g, '$1'); // Clean simple markdown
-      const id = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-+|-+$/g, '');
+      const id = slugger.slug(text); // This ensures 1:1 match with rehype-slug ID output
       items.push({ level, text, id });
     }
     return items;
@@ -95,18 +109,20 @@ export default function Notes() {
            </div>
         </div>
 
-        {/* Search Bar */}
+        {/* Search Bar - Fake Button to Open Modal */}
         <div className="p-3 border-b border-gray-100 bg-gray-50/30">
-          <div className="relative">
-             <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
-             <input 
-               type="text" 
-               placeholder="Search cheatsheets..." 
-               value={searchQuery}
-               onChange={(e) => setSearchQuery(e.target.value)}
-               className="w-full pl-8 pr-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition-shadow"
-             />
-          </div>
+          <button 
+            onClick={() => setIsCmdKOpen(true)}
+            className="w-full flex items-center justify-between pl-3 pr-2 py-1.5 bg-white border border-gray-200 rounded-md text-sm hover:border-red-400 hover:ring-1 hover:ring-red-400 transition-all group shadow-sm"
+          >
+             <div className="flex items-center gap-2 text-gray-400 group-hover:text-red-500 transition-colors">
+               <Search size={14} />
+               <span className="text-gray-500 font-medium">Search guides...</span>
+             </div>
+             <div className="flex gap-1">
+                <kbd className="hidden md:inline-block px-1.5 py-0.5 text-[10px] bg-gray-50 border border-gray-200 rounded text-gray-400 font-mono tracking-widest shadow-sm">⌘K</kbd>
+             </div>
+          </button>
         </div>
 
         {/* File List */}
@@ -117,7 +133,7 @@ export default function Notes() {
           </div>
           
           <ul className="space-y-0.5 relative before:absolute before:inset-y-0 before:left-3.5 before:w-px before:bg-gray-100 ml-4 pb-8">
-            {filteredNotes.map((note) => (
+            {notes.map((note) => (
               <li key={note.path} className="relative group">
                 <button
                   onClick={() => {
@@ -143,7 +159,7 @@ export default function Notes() {
                 </button>
               </li>
             ))}
-            {filteredNotes.length === 0 && (
+            {notes.length === 0 && (
                <li className="text-xs text-gray-400 pl-6 italic py-2">No files found.</li>
             )}
           </ul>
@@ -155,13 +171,16 @@ export default function Notes() {
         
         {/* Editor Tabs / Header */}
         {activeNote && (
-          <div className="h-12 border-b border-gray-200 flex items-center bg-white sticky top-0 z-20">
-            <div className="flex items-center h-full px-6 border-r border-gray-200 bg-gray-100 text-sm gap-2.5 min-w-fit">
-               <Hash size={14} className="text-gray-500"/>
-               <span className="font-semibold text-gray-700 tracking-wide">{activeNote.name}</span>
+          <div className="h-14 border-b border-gray-200 flex items-center bg-gray-50/80 sticky top-0 z-20">
+            <div className="flex items-center h-full px-8 border-r border-gray-200 bg-white border-t-[3px] border-t-red-500 text-sm gap-2.5 min-w-fit shadow-sm relative">
+               <Hash size={16} className="text-gray-400"/>
+               <span className="font-bold text-gray-800 tracking-wide">{activeNote.name}</span>
+               
+               {/* Bottom cover to blend with content area */}
+               <div className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-white z-10"></div>
             </div>
             {/* Empty space filler to look like a tab bar */}
-            <div className="flex-1 h-full bg-gray-50/50"></div>
+            <div className="flex-1 h-full"></div>
           </div>
         )}
 
@@ -234,6 +253,17 @@ export default function Notes() {
 
         </div>
       </main>
+
+      {/* 4) Modal */}
+      <CmdKModal 
+        notes={notes}
+        isOpen={isCmdKOpen}
+        onClose={() => setIsCmdKOpen(false)}
+        onSelectNote={(note) => {
+          setActiveNote(note);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+      />
     </div>
   );
 }

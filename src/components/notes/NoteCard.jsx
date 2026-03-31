@@ -84,7 +84,14 @@ export default function NoteCard({ markdown }) {
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeRaw, rehypeSlug, rehypeHighlight]}
-          components={{ code: CodeBlock }}
+          components={{ 
+            code: CodeBlock,
+            table: ({node, ...props}) => (
+              <div className="w-full overflow-x-auto mb-6 rounded-lg border-x border-gray-200">
+                <table className="!my-0 border-0" {...props} />
+              </div>
+            )
+          }}
         >
           {markdown}
         </ReactMarkdown>
