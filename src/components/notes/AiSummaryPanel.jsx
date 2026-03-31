@@ -12,7 +12,6 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
   const [searchStatus, setSearchStatus] = useState(null); // 'searching', 'found', 'not_found', 'error', 'summarizing'
   
   const [currentEvalId, setCurrentEvalId] = useState(null);
-  const [prompts, setPrompts] = useState([]);
 
   // Typewriter effect integration
   const { displayedText: typedSummary, isTyping, skipTyping } = useTypewriter(summaryText, 8, !!summaryText);
@@ -22,29 +21,6 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
     setSearchStatus(null);
     setQuery('');
   }
-
-  // Effect to load cached smart prompts automatically
-  useEffect(() => {
-    let isMounted = true;
-    const loadPrompts = async () => {
-      if (!noteId || !noteContent) return;
-      
-      const cacheKey = `ai_prompts_${noteId}`;
-      const cached = localStorage.getItem(cacheKey);
-      if (cached) {
-        try { setPrompts(JSON.parse(cached)); return; } catch (e) {}
-      }
-      
-      // Async generation if miss
-      const generated = await generatePrompts(noteContent);
-      if (generated && Array.isArray(generated) && isMounted) {
-         setPrompts(generated.slice(0, 3));
-         localStorage.setItem(cacheKey, JSON.stringify(generated.slice(0, 3)));
-      }
-    };
-    loadPrompts();
-    return () => { isMounted = false; };
-  }, [noteId, noteContent]);
 
   const highlightQuoteInDocument = (quote) => {
     if (!quote || quote === 'null' || quote.length < 5) return false;
@@ -195,25 +171,7 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
          </div>
       </div>
 
-      {/* 2. Embedded Dynamic Prompt Row */}
-      {prompts.length > 0 && !summaryText && (
-         <div className="bg-gray-50/80 px-4 sm:px-3 pt-2 pb-3 border-b border-gray-100 flex gap-2 flex-wrap items-center">
-            <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mr-1 hidden sm:inline-block">AI SUGGESTS:</span>
-            {prompts.map((p, i) => (
-               <button 
-                 key={i}
-                 onClick={() => handleSearch(null, p)}
-                 disabled={loading}
-                 className="px-3 py-1 bg-white border border-gray-200 hover:border-gray-300 text-gray-600 rounded-full text-[12px] sm:text-[11px] font-medium transition-all shadow-sm hover:shadow active:scale-95 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
-               >
-                 <Sparkles size={12} className="text-gray-400" />
-                 {p}
-               </button>
-            ))}
-         </div>
-      )}
-
-      {/* 3. Streaming Summary Render Panel */}
+      {/* 2. Streaming Summary Render Panel */}
       {summaryText && (
         <div className="relative p-5 sm:p-4 bg-white animate-fade-in-down border-t border-gray-100 group">
            <div className="prose prose-sm prose-gray max-w-none text-gray-700 

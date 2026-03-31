@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Sparkles, X } from 'lucide-react';
 import { explainSelection } from '../../services/aiService';
 import { useTypewriter } from '../../hooks/useTypewriter';
@@ -43,10 +44,13 @@ export default function AiSelectionTooltip({ noteContent }) {
 
         if (isInsideProse) {
           setSelection(text);
-          // Position relative to viewport since we'll use fixed positioning
+          // Get the exact rect of the first client box (to avoid huge block bounding box issues)
+          const clientRects = range.getClientRects();
+          const preciseRect = clientRects.length > 0 ? clientRects[0] : rect;
+          
           setPosition({
-            top: rect.top - 8,
-            left: rect.left + (rect.width / 2)
+            top: preciseRect.top - 8,
+            left: preciseRect.left + (preciseRect.width / 2)
           });
           setIsOpen(false);
           setExplanation("");
@@ -90,14 +94,17 @@ export default function AiSelectionTooltip({ noteContent }) {
     // Clear selection natively so it looks clean while reading
     window.getSelection().removeAllRanges();
     
-    const result = await explainSelection(selection, noteContent);
+    // Truncate context to save API Tokens! (TPM Limit avoidance)
+    const truncatedContext = noteContent.substring(0, 1500) + "...";
+    
+    const result = await explainSelection(selection, truncatedContext);
     setExplanation(result);
     setLoading(false);
   };
 
   if (!position) return null;
 
-  return (
+  return createPortal(
     <div 
       ref={popoverRef}
       className={`fixed z-50 transition-all duration-200 ${isOpen ? 'animate-fade-in-down' : 'animate-fade-in-up'}`}
@@ -150,6 +157,7 @@ export default function AiSelectionTooltip({ noteContent }) {
            </div>
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }
