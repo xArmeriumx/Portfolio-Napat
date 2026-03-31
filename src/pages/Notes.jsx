@@ -123,7 +123,7 @@ export default function Notes() {
     if (!activeNote) return [];
     
     const slugger = new GithubSlugger();
-    const regex = /^(#{2,3})\s+(.+)$/gm;
+    const regex = /^(#{1,3})\s+(.+)$/gm;
     const items = [];
     let match;
     while ((match = regex.exec(activeNote.content)) !== null) {
@@ -143,7 +143,7 @@ export default function Notes() {
     
     // Bulletproof Fallback: if IDs mismatch due to Unicode/Thai/Special chars, find by text!
     if (!element) {
-      const allHeadings = Array.from(document.querySelectorAll('main h2, main h3'));
+      const allHeadings = Array.from(document.querySelectorAll('main h1, main h2, main h3'));
       element = allHeadings.find(h => {
         // Strip out any # or extra spaces from raw text for comparison
         const cleanContentText = h.textContent.trim().toLowerCase();
@@ -310,7 +310,7 @@ export default function Notes() {
                 {headings.map((heading, i) => (
                   <li 
                     key={`${heading.id}-${i}`}
-                    style={{ paddingLeft: `${(heading.level - 2) * 12}px` }}
+                    style={{ paddingLeft: `${(heading.level - 1) * 12}px` }}
                   >
                     <a 
                       href={`#${heading.id}`}
