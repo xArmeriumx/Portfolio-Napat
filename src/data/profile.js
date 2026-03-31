@@ -129,7 +129,7 @@ export const profile = {
           name: "Postman",
           logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postman/postman-original.svg",
         },
-        { name: "Bruno", logo: "https://docs.usebruno.com/bruno.png" },
+        { name: "Bruno", logo: "https://docs.usebruno.com/favicon.png" },
       ],
     },
   ],

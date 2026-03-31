@@ -23,6 +23,7 @@ export default function App() {
           <Route path="/projects" element={<ProjectList />} />
           <Route path="/projects/:slug" element={<ProjectDetail />} />
           <Route path="/notes" element={<Notes />} />
+          <Route path="/notes/:slug" element={<Notes />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />

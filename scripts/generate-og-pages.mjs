@@ -86,6 +86,8 @@ const staticPages = [
   { path: "/notes", priority: "0.8", changefreq: "weekly" },
 ];
 
+let generatedNotesSlugs = [];
+
 // ============================================================
 // Main
 // ============================================================
@@ -193,6 +195,44 @@ function generateOgPages(baseHtml) {
   console.log(`  ✅ notes/index.html`);
   generated++;
 
+  // ---- Generate OG for individual Notes ----
+  const notesSrcDir = path.resolve(__dirname, "../src/data/notes");
+  if (fs.existsSync(notesSrcDir)) {
+    const files = fs.readdirSync(notesSrcDir).filter(f => f.endsWith(".md"));
+    for (const file of files) {
+      const filename = file.replace('.md', '');
+      const noteDir = path.join(distDir, "notes", filename);
+      fs.mkdirSync(noteDir, { recursive: true });
+
+      const content = fs.readFileSync(path.join(notesSrcDir, file), "utf-8");
+      
+      const titleMatch = content.match(/^#\s+(.+)$/m);
+      const rawName = filename.split(/[-_]/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      const pageTitle = titleMatch ? titleMatch[1].replace(/[*`_]/g, '') : rawName;
+      const fullTitle = `${pageTitle} - Cheatsheet | Napat Pamornsut`;
+
+      const plainText = content.replace(/[#*`_\[\]()]/g, '').replace(/(\r\n|\n|\r)/gm, ' ').trim();
+      const descMatch = plainText.match(/.*?[a-zA-Zก-๙]{10,}.*?(?=\s|$)/); 
+      const safeDesc = escapeHtml(descMatch ? plainText.substring(0, 160) + '...' : `Cheatsheet document for ${pageTitle}`);
+
+      const ogUrl = `${SITE_URL}/notes/${filename}`;
+
+      let html = baseHtml;
+      html = html.replace(/<title>.*?<\/title>/, `<title>${escapeHtml(fullTitle)}</title>`);
+      html = replaceMetaName(html, "title", fullTitle);
+      html = replaceMetaName(html, "description", safeDesc);
+      html = replaceMetaProperty(html, "og:title", fullTitle);
+      html = replaceMetaProperty(html, "og:description", safeDesc);
+      html = replaceMetaProperty(html, "og:url", ogUrl);
+      
+      fs.writeFileSync(path.join(noteDir, "index.html"), html, "utf-8");
+      console.log(`  ✅ notes/${filename}/index.html`);
+      generated++;
+
+      generatedNotesSlugs.push(filename);
+    }
+  }
+
   console.log(`\n🎉 Generated ${generated} static OG pages.`);
 }
 
@@ -226,6 +266,17 @@ function generateSitemap() {
     <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>`;
+  }
+
+  // Individual Note pages
+  for (const slug of generatedNotesSlugs) {
+    urls += `
+  <url>
+    <loc>${SITE_URL}/notes/${slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>`;
   }
 

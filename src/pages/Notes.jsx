@@ -1,14 +1,24 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import NoteCard from '../components/notes/NoteCard';
 import CmdKModal from '../components/notes/CmdKModal';
 import GithubSlugger from 'github-slugger';
 import { BookOpen, FileText, ChevronRight, Hash, FolderTree, Search, ArrowLeft, ArrowRight, List } from 'lucide-react';
 
 export default function Notes() {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+
   const [notes, setNotes] = useState([]);
-  const [activeNote, setActiveNote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isCmdKOpen, setIsCmdKOpen] = useState(false);
+  
+  // Calculate activeNote from the URL parameter slug
+  const activeNote = useMemo(() => {
+    if (notes.length === 0) return null;
+    if (!slug) return null; // handled in useEffect
+    return notes.find(n => n.id === slug) || notes[0];
+  }, [notes, slug]);
 
   const formatFileName = (path) => {
     const filename = path.split('/').pop().replace('.md', '');
@@ -35,8 +45,10 @@ export default function Notes() {
         
         for (const path in markdownFiles) {
           const content = await markdownFiles[path]();
+          const filename = path.split('/').pop().replace('.md', '');
           loadedNotes.push({ 
             path, 
+            id: filename,
             content,
             name: formatFileName(path),
             rawName: path.split('/').pop()
@@ -44,8 +56,8 @@ export default function Notes() {
         }
         
         setNotes(loadedNotes);
-        if (loadedNotes.length > 0) {
-          setActiveNote(loadedNotes[0]);
+        if (loadedNotes.length > 0 && !slug) {
+          navigate(`/notes/${loadedNotes[0].id}`, { replace: true });
         }
       } catch (error) {
         console.error("Failed to load notes:", error);
@@ -57,9 +69,23 @@ export default function Notes() {
     loadNotes();
   }, []);
   
-  const currentIndex = notes.findIndex(n => n.path === activeNote?.path);
+  const currentIndex = notes.findIndex(n => n.id === activeNote?.id);
   const prevNote = currentIndex > 0 ? notes[currentIndex - 1] : null;
   const nextNote = currentIndex < notes.length - 1 ? notes[currentIndex + 1] : null;
+
+  // Auto-scroll on initial load if URL has a #hash
+  useEffect(() => {
+    if (activeNote && window.location.hash) {
+      const hashId = window.location.hash.substring(1);
+      setTimeout(() => {
+        // Find by exact ID from rehype-slug
+        const element = document.getElementById(hashId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500); // give markdown time to render
+    }
+  }, [activeNote]);
 
   // Auto SEO / Meta Tags updating based on active document
   useEffect(() => {
@@ -185,11 +211,11 @@ export default function Notes() {
               <li key={note.path} className="relative group">
                 <button
                   onClick={() => {
-                    setActiveNote(note);
+                    navigate(`/notes/${note.id}`);
                     if (window.innerWidth < 768) window.scrollTo(0, 0); // scroll to top on mobile
                   }}
                   className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-sm rounded-md transition-all text-left relative z-10 ${
-                    activeNote?.path === note.path
+                    activeNote?.id === note.id
                       ? 'bg-red-50 text-red-700 font-semibold before:absolute before:left-[-17px] before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-4 before:bg-red-600 before:rounded-r'
                       : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                   }`}
@@ -201,7 +227,7 @@ export default function Notes() {
                   ) : note.rawName.toLowerCase().includes('react') ? (
                      <span className="text-blue-400 font-mono text-[9px] font-bold bg-blue-50 px-1 rounded shadow-sm">JSX</span>
                   ) : (
-                    <FileText size={14} className={activeNote?.path === note.path ? 'text-red-500' : 'text-gray-400 group-hover:text-gray-600'} />
+                    <FileText size={14} className={activeNote?.id === note.id ? 'text-red-500' : 'text-gray-400 group-hover:text-gray-600'} />
                   )}
                   <span className="truncate flex-1">{note.name}</span>
                 </button>
@@ -245,7 +271,7 @@ export default function Notes() {
               <div className="mt-16 pt-8 border-t border-gray-200 flex flex-col sm:flex-row gap-4 justify-between items-center text-sm">
                 {prevNote ? (
                   <button 
-                    onClick={() => setActiveNote(prevNote)}
+                    onClick={() => navigate(`/notes/${prevNote.id}`)}
                     className="flex flex-col items-start p-4 border border-gray-200 rounded-lg hover:border-red-400 hover:shadow-sm focus:ring-1 focus:ring-red-400 transition-all w-full sm:w-[48%] bg-white group"
                   >
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
@@ -257,7 +283,7 @@ export default function Notes() {
 
                 {nextNote ? (
                   <button 
-                     onClick={() => setActiveNote(nextNote)}
+                     onClick={() => navigate(`/notes/${nextNote.id}`)}
                      className="flex flex-col items-end p-4 border border-gray-200 rounded-lg hover:border-red-400 hover:shadow-sm focus:ring-1 focus:ring-red-400 transition-all w-full sm:w-[48%] bg-white group text-right"
                   >
                      <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
@@ -308,7 +334,7 @@ export default function Notes() {
         isOpen={isCmdKOpen}
         onClose={() => setIsCmdKOpen(false)}
         onSelectNote={(note) => {
-          setActiveNote(note);
+          navigate(`/notes/${note.id}`);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
