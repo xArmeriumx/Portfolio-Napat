@@ -57,37 +57,47 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
   );
 };
 
-// Custom interactive block for mobile "Tap to Explain"
+// Custom interactive block for mobile "Long-Press to Explain"
 const InteractiveBlock = ({ node, children, tagName: Tag, ...props }) => {
-  const handleTap = (e) => {
-    // Only trigger on mobile viewports (< 768px)
+  const timerRef = useRef(null);
+
+  const handleTouchStart = (e) => {
     if (window.innerWidth >= 768) return;
     
-    // Stop propagation so parent blocks don't fire
-    e.stopPropagation();
-    
     const text = extractTextFromAST(node);
-    // Don't trigger for very short snippets or empty lines
     if (!text || text.trim().length < 10) return;
     
-    // Get precise coordinates of the block element that was tapped
-    const rect = e.currentTarget.getBoundingClientRect();
+    const target = e.currentTarget;
+    const rect = target.getBoundingClientRect();
     
-    // Fire global event that AiSelectionTooltip listens to
-    window.dispatchEvent(new CustomEvent('ai-explain-block', {
-       detail: { text, rect }
-    }));
+    // Touch and hold for 700ms to trigger the AI summary
+    timerRef.current = setTimeout(() => {
+       // Haptic feedback if supported
+       if (typeof navigator !== 'undefined' && navigator.vibrate) {
+          navigator.vibrate(50);
+       }
+       
+       // Fire global event that AiSelectionTooltip listens to
+       window.dispatchEvent(new CustomEvent('ai-explain-block', {
+          detail: { text, rect }
+       }));
+    }, 700);
+  };
+
+  const cancelTimer = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
   };
 
   return (
     <Tag 
        {...props} 
-       className={`relative group ${props.className || ''} ${window.innerWidth < 768 ? 'active:bg-yellow-50/40 cursor-pointer rounded transition-colors duration-200' : ''}`}
-       onClick={handleTap}
+       className={`relative group ${props.className || ''}`}
+       onTouchStart={handleTouchStart}
+       onTouchEnd={cancelTimer}
+       onTouchMove={cancelTimer}
+       onTouchCancel={cancelTimer}
     >
       {children}
-      {/* Sparkle icon only visible on mobile (subtle indicator) */}
-      <span className="md:hidden inline-block ml-1 opacity-20 text-[10px] text-yellow-500">✨</span>
     </Tag>
   );
 };

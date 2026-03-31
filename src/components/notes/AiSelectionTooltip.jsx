@@ -14,12 +14,16 @@ export default function AiSelectionTooltip({ noteContent }) {
   const [explanation, setExplanation] = useState("");
   const [loading, setLoading] = useState(false);
   
+  const [isMobile, setIsMobile] = useState(false);
+  
   // Typewriter effect for AI explanation
   const { displayedText, isTyping, skipTyping } = useTypewriter(explanation, 8, !!explanation);
   
   const popoverRef = useRef(null);
 
   useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+    
     const handleMouseUp = (e) => {
       // Don't trigger if clicking inside the popover itself
       if (popoverRef.current && popoverRef.current.contains(e.target)) return;
@@ -69,8 +73,9 @@ export default function AiSelectionTooltip({ noteContent }) {
          top: rect.top - 10,
          left: rect.left + (rect.width / 2)
        });
-       setIsOpen(false);
-       setExplanation("");
+       
+       // Instantly trigger explanation for mobile long-press
+       triggerExplanation(text);
     };
 
     const handleDocumentClick = (e) => {
@@ -98,18 +103,21 @@ export default function AiSelectionTooltip({ noteContent }) {
     setExplanation("");
   };
 
-  const handleExplain = async () => {
+  const triggerExplanation = async (textOverride = null) => {
+    const textToExplain = textOverride || selection;
     setIsOpen(true);
     setLoading(true);
-    // Move position down slightly to act as a proper modal popup
-    setPosition(prev => ({ ...prev, top: prev.top + 30 }));
     
-    // Clear selection natively so it looks clean while reading
-    window.getSelection().removeAllRanges();
+    if (!isMobile) {
+      // Move position down slightly to act as a proper modal popup on desktop
+      setPosition(prev => ({ ...prev, top: prev.top + 30 }));
+    }
+    
+    // Notice: We don't remove ranges natively anymore! This allows the user to still use OS Copy tools!
     
     // Neighborhood Context Optimization: Extract text directly surrounding the selection
     let optimizedContext = noteContent;
-    const matchIndex = noteContent.indexOf(selection);
+    const matchIndex = noteContent.indexOf(textToExplain);
     if (matchIndex !== -1) {
        const start = Math.max(0, matchIndex - 600);
        const end = Math.min(noteContent.length, matchIndex + selection.length + 600);
@@ -119,7 +127,7 @@ export default function AiSelectionTooltip({ noteContent }) {
        optimizedContext = noteContent.substring(0, 1500) + "...";
     }
     
-    const result = await explainSelection(selection, optimizedContext);
+    const result = await explainSelection(textToExplain, optimizedContext);
     setExplanation(result);
     setLoading(false);
   };
@@ -129,29 +137,29 @@ export default function AiSelectionTooltip({ noteContent }) {
   return createPortal(
     <div 
       ref={popoverRef}
-      className={`fixed z-50 transition-all duration-200 ${isOpen ? 'animate-fade-in-down' : 'animate-fade-in-up'}`}
-      style={{ 
-        top: position.top, 
-        left: position.left,
-        transform: 'translate(-50%, -100%)'
-      }}
+      className={`fixed z-50 transition-all duration-200 ${isOpen && isMobile ? 'animate-fade-in-up' : isOpen ? 'animate-fade-in-down' : 'animate-fade-in-up'} w-full md:w-auto px-4 md:px-0`}
+      style={
+        (isMobile && isOpen) 
+          ? { bottom: '24px', left: '0' }
+          : { top: position.top, left: position.left, transform: 'translate(-50%, -100%)' }
+      }
     >
       {!isOpen ? (
         <button 
-          onClick={handleExplain}
+          onClick={() => triggerExplanation()}
           className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 border border-gray-700 text-white rounded-lg shadow-xl text-[12px] font-medium hover:bg-gray-800 transition-colors transform hover:scale-105"
         >
           <Sparkles size={14} className="text-yellow-400" /> อธิบายส่วนนี้
         </button>
       ) : (
-        <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-xl shadow-2xl p-4 w-[340px] max-w-[90vw] relative text-sm">
+        <div className={`bg-white/95 backdrop-blur-md border border-gray-200 shadow-2xl p-4 relative text-sm ${isMobile ? 'rounded-2xl w-full mx-auto max-w-sm border-gray-100 shadow-[0_-5px_40px_-15px_rgba(0,0,0,0.3)]' : 'rounded-xl w-[340px] max-w-[90vw]'}`}>
            <button onClick={closeTooltip} className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
              <X size={14} />
            </button>
            
            <div className="flex items-center gap-1.5 mb-3 border-b border-gray-100 pb-2">
              <Sparkles size={14} className="text-gray-900" />
-             <span className="font-bold text-[12px] text-gray-800 tracking-wide uppercase">AI Explanation</span>
+             <span className="font-bold text-[12px] text-gray-800 tracking-wide uppercase">สรุปเนื้อหาส่วนนี้</span>
            </div>
 
            <div className="text-gray-700 min-h-[60px] max-h-[300px] overflow-y-auto scrollbar-hide">
