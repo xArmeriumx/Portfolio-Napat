@@ -2,6 +2,8 @@
 @import './theme.css';
 @import './grid-bg.css';
 
+@plugin "@tailwindcss/typography";
+
 /* Basic Reset & Base Styles */
 * {
   box-sizing: border-box;

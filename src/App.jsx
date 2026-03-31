@@ -4,6 +4,7 @@ import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
 import ProjectList from "./pages/ProjectList.jsx";
 import ProjectDetail from "./pages/ProjectDetail.jsx";
+import Notes from "./pages/Notes.jsx";
 import Footer from "./components/layout/Footer";
 
 import ScrollToTop from "./components/utils/ScrollToTop.jsx";
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/projects" element={<ProjectList />} />
           <Route path="/projects/:slug" element={<ProjectDetail />} />
+          <Route path="/notes" element={<Notes />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />

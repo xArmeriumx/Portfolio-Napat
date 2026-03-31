@@ -25,6 +25,7 @@ export default function Navbar() {
     home: "Home",
     about: "About",
     projects: "Projects",
+    notes: "Notes",
   };
 
   return (
@@ -113,6 +114,18 @@ export default function Navbar() {
             }
           >
             {t.projects}
+          </NavLink>
+          <NavLink
+            to="/notes"
+            className={({ isActive }) =>
+              `text-sm font-bold uppercase tracking-wide transition-all py-1 border-b-2 ${
+                isActive
+                  ? "text-gray-900 border-red-600"
+                  : "text-gray-600 border-transparent hover:text-gray-900"
+              }`
+            }
+          >
+            {t.notes}
           </NavLink>
 
           <button
@@ -208,6 +221,19 @@ export default function Navbar() {
                 }
               >
                 {t.projects}
+              </NavLink>
+              <NavLink
+                to="/notes"
+                onClick={() => setIsOpen(false)}
+                className={({ isActive }) =>
+                  `text-3xl font-bold font-['Prompt'] transition-colors duration-200 ${
+                    isActive
+                      ? "text-red-600 pl-4 border-l-4 border-red-600"
+                      : "text-gray-900 border-l-4 border-transparent hover:text-red-500 hover:pl-2"
+                  }`
+                }
+              >
+                {t.notes}
               </NavLink>
             </div>
 
