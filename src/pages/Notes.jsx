@@ -7,6 +7,7 @@ import { BookOpen, FileText, ChevronRight, Hash, FolderTree, Search, ArrowLeft, 
 
 import { FEATURES } from '../config/features';
 import AiSummaryPanel from '../components/notes/AiSummaryPanel';
+import AiSelectionTooltip from '../components/notes/AiSelectionTooltip';
 
 export default function Notes() {
   const { slug } = useParams();
@@ -269,10 +270,13 @@ export default function Notes() {
               <div className="animate-fade-in-up">
                 {/* AI Summary Injection */}
                 {FEATURES.ENABLE_AI_ASSISTANT && activeNote?.content && (
-                   <AiSummaryPanel 
-                     noteContent={activeNote.content} 
-                     noteId={activeNote.id} 
-                   />
+                   <>
+                     <AiSummaryPanel 
+                       noteContent={activeNote.content} 
+                       noteId={activeNote.id} 
+                     />
+                     <AiSelectionTooltip noteContent={activeNote.content} />
+                   </>
                 )}
 
                 <NoteCard markdown={activeNote.content} />

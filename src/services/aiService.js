@@ -25,31 +25,66 @@ export async function summarizeContent(content) {
   }
 }
 
-export async function askAiContext(query, context) {
-  if (!FEATURES.ENABLE_AI_ASSISTANT) return null;
+// Helper for API calls
+async function callBackendApi(action, payload) {
+  const response = await fetch('/api/ai', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, payload })
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || 'AI Server Error');
+  return data.result;
+}
 
+export async function askAiContext(query, context) {
+  if (!FEATURES.ENABLE_AI_ASSISTANT) return { answer: "", quote: null };
   try {
-    const response = await fetch('/api/ai', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        action: 'search_rag', 
-        payload: { query, context } 
-      })
-    });
-    
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'AI Server Processing Error');
-    
+    const result = await callBackendApi('search_rag', { query, context });
+    if (!result) return { answer: "ขออภัย ติดขัดปัญหาการส่งข้อมูลครับ", quote: null };
     try {
-      const cleanJson = data.result.replace(/```json/gi, '').replace(/```/g, '').trim();
-      const parsed = JSON.parse(cleanJson);
-      return { answer: parsed.answer || data.result, quote: parsed.quote || null };
+      const cleaned = result.replace(/```json/gi, '').replace(/```/g, '').trim();
+      return JSON.parse(cleaned);
     } catch (e) {
-      return { answer: data.result, quote: null };
+      return { answer: result, quote: null };
     }
   } catch (error) {
-    console.error("[aiService] RAG Error:", error);
-    throw error;
+    console.error('askAiContext error:', error);
+    return { answer: "ไม่สามารถค้นหาข้อมูลได้ในขณะนี้", quote: null };
+  }
+}
+
+export async function generatePrompts(context) {
+  if (!FEATURES.ENABLE_AI_ASSISTANT) return null;
+  try {
+    const result = await callBackendApi('generate_prompts', { context });
+    if (!result) return null;
+    try {
+      const cleaned = result.replace(/```json/gi, '').replace(/```/g, '').trim();
+      return JSON.parse(cleaned);
+    } catch (e) {
+      return null;
+    }
+  } catch (error) {
+    console.error('generatePrompts error:', error);
+    return null;
+  }
+}
+
+export async function explainSelection(selection, context) {
+  if (!FEATURES.ENABLE_AI_ASSISTANT) return null;
+  try {
+    const result = await callBackendApi('explain_selection', { selection, context });
+    if (!result) return "ไม่มีคำอธิบายจากส่วนนี้";
+    try {
+       const cleaned = result.replace(/```json/gi, '').replace(/```/g, '').trim();
+       const parsed = JSON.parse(cleaned);
+       return parsed.explanation || result;
+    } catch (e) {
+       return result;
+    }
+  } catch (error) {
+    console.error('explainSelection error:', error);
+    return "ขออภัย ไม่สามารถดึงข้อมูลอธิบายได้";
   }
 }
