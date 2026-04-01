@@ -102,7 +102,7 @@ export default async function handler(req, res) {
     }
   }
 
-  const { action, payload } = req.body || {};
+  const { action, payload, stream } = req.body || {};
   if (!action || !payload) {
     return res.status(400).json({ error: 'Bad Request. Missing action or payload.' });
   }
@@ -213,7 +213,8 @@ export default async function handler(req, res) {
             ],
             temperature: action === 'search_rag' ? 0.1 : 0.3,
             max_tokens: 600,
-            ...((['search_rag', 'review_code'].includes(action)) && { response_format: { type: 'json_object' } })
+            stream: !!stream,
+            ...((['search_rag', 'review_code'].includes(action) && !stream) && { response_format: { type: 'json_object' } })
           })
         });
 
@@ -231,6 +232,29 @@ export default async function handler(req, res) {
               continue;
            }
            throw new Error(`Upstream API Error: ${response.status}`);
+        }
+
+        if (stream) {
+          res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+          });
+          
+          if (response.body && response.body.getReader) {
+            const reader = response.body.getReader();
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              res.write(value);
+            }
+          } else if (response.body) {
+            for await (const chunk of response.body) {
+              res.write(chunk);
+            }
+          }
+          res.end();
+          return;
         }
 
         const data = await response.json();

@@ -3,7 +3,6 @@ import { X, Search, ArrowRight, FileText, CheckCircle2, AlertCircle, Sparkles, C
 import { summarizeContent, askAiContext, generatePrompts } from '../../services/aiService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { useTypewriter } from '../../hooks/useTypewriter';
 
 export default function AiSummaryPanel({ noteContent, noteId }) {
   const [query, setQuery] = useState('');
@@ -19,8 +18,7 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
   const [followUps, setFollowUps] = useState([]);
   const [followUpsLoading, setFollowUpsLoading] = useState(false);
 
-  // Typewriter effect integration
-  const { displayedText: typedSummary, isTyping, skipTyping } = useTypewriter(summaryText, 8, !!summaryText);
+  // Note: We no longer use useTypewriter because we have real streaming (SSE) from the backend!
 
   if (currentEvalId !== noteId && (summaryText || searchStatus)) {
     setSummaryText('');
@@ -109,8 +107,9 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
     setCopied(false);
     
     try {
-      const result = await summarizeContent(noteContent);
-      setSummaryText(result);
+      await summarizeContent(noteContent, (chunk) => {
+         setSummaryText(chunk);
+      });
 
       // Generate follow-up chips after summary is ready
       setFollowUpsLoading(true);
@@ -227,22 +226,13 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
                prose-ul:pl-4 prose-ol:pl-4 prose-li:my-1 text-[14px] sm:text-[13px]"
            >
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {typedSummary}
+                {summaryText}
               </ReactMarkdown>
-              {isTyping && <span className="inline-block w-1.5 h-4 ml-1 bg-gray-400 animate-pulse align-middle"></span>}
+              {searchStatus === 'summarizing' && <span className="inline-block w-1.5 h-4 ml-1 bg-gray-400 animate-pulse align-middle"></span>}
            </div>
-           
-           {isTyping && (
-             <button 
-               onClick={skipTyping} 
-               className="absolute right-4 bottom-4 text-[11px] font-medium px-2 py-1 bg-gray-100 text-gray-500 rounded hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100 shadow-sm"
-             >
-               ข้ามการแสดงผล ⏯
-             </button>
-           )}
 
           {/* Follow-up question chips */}
-          {!isTyping && followUps.length > 0 && (
+          {searchStatus !== 'summarizing' && followUps.length > 0 && (
             <div className="mt-4 pt-3 border-t border-gray-100">
               <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1">
                 <CornerDownRight size={11} /> คำถามที่เกี่ยวข้อง
@@ -263,7 +253,7 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
           )}
 
           {/* Follow-up chips loading skeleton */}
-          {!isTyping && followUpsLoading && (
+          {searchStatus !== 'summarizing' && followUpsLoading && (
             <div className="mt-4 pt-3 border-t border-gray-100 flex gap-2">
               {[80, 100, 90].map((w, i) => (
                 <div key={i} className="h-7 bg-gray-100 rounded-full animate-pulse" style={{ width: w }} />
