@@ -4,6 +4,35 @@
  * Note: Named generically to obscure the backend provider logic.
  */
 
+// In-Memory Rate Limiter Store (per Hot Vercel Container)
+// Format: { "IP": { count: number, resetTime: number } }
+const rateLimitMap = new Map();
+const MAX_REQUESTS_PER_MINUTE = 10;
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  if (rateLimitMap.has(ip)) {
+     const data = rateLimitMap.get(ip);
+     if (now > data.resetTime) {
+        // Window expired, reset counter
+        rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+        return true;
+     }
+     
+     if (data.count >= MAX_REQUESTS_PER_MINUTE) {
+        return false; // Rate limit exceeded!
+     }
+     
+     data.count += 1;
+     return true;
+  } else {
+     // First time seeing this IP in this window
+     rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+     return true;
+  }
+}
+
 export default async function handler(req, res) {
   // 1. Basic Security: CORS & Origin Check
   // Allow local development and the production domain
@@ -24,6 +53,14 @@ export default async function handler(req, res) {
   
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  // Rate Limit Execution
+  const forwardedFor = req.headers['x-forwarded-for'];
+  const rawIp = forwardedFor ? forwardedFor.split(',')[0].trim() : (req.socket?.remoteAddress || 'unknown');
+  
+  if (!checkRateLimit(rawIp)) {
+    return res.status(429).json({ error: 'Too Many Requests (Rate Limit Exceeded). Please slow down and try again later.' });
   }
 
   // Security Protection: Validate request source to prevent stolen quota
