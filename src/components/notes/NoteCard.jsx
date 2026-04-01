@@ -192,17 +192,16 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
 
                 {/* Summary */}
                 {reviewResult.summary && (
-                  <p className="text-[13px] text-gray-600 leading-relaxed font-medium">{reviewResult.summary}</p>
+                  <p className="text-[13px] text-gray-600 leading-relaxed font-medium break-words whitespace-pre-line">{reviewResult.summary}</p>
                 )}
 
                 {/* Issues */}
                 {reviewResult.issues?.length > 0 && (
                   <div>
                     <p className="text-[11px] font-bold text-gray-800 uppercase tracking-wider mb-2">Issues & Warnings</p>
-                    <ul className="space-y-1.5">
+                    <ul className="space-y-1.5 list-disc pl-4">
                       {reviewResult.issues.map((issue, i) => (
-                        <li key={i} className="text-[13px] text-gray-600 flex items-start gap-2">
-                          <span className="text-gray-400 shrink-0 mt-0.5">•</span>
+                        <li key={i} className="text-[13px] text-gray-600 break-words pr-2">
                           {issue}
                         </li>
                       ))}
@@ -214,7 +213,7 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                 {reviewResult.suggestions && (
                   <div>
                     <p className="text-[11px] font-bold text-gray-800 uppercase tracking-wider mb-2">Suggestions</p>
-                    <p className="text-[13px] text-gray-600 leading-relaxed">{reviewResult.suggestions}</p>
+                    <p className="text-[13px] text-gray-600 leading-relaxed break-words whitespace-pre-line">{reviewResult.suggestions}</p>
                   </div>
                 )}
 

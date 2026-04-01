@@ -4,14 +4,60 @@
  */
 import { FEATURES } from '../config/features.js';
 
+// --- Cloudflare Turnstile Integration (Vanilla JS) ---
+let turnstileInjected = false;
+
+function getTurnstileToken() {
+  return new Promise((resolve) => {
+    if (!turnstileInjected) {
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+      turnstileInjected = true;
+    }
+
+    if (!document.getElementById('cf-turnstile-container')) {
+      const div = document.createElement('div');
+      div.id = 'cf-turnstile-container';
+      document.body.appendChild(div);
+    }
+
+    const checkAndRender = () => {
+      if (window.turnstile) {
+        const widgetId = window.turnstile.render('#cf-turnstile-container', {
+          sitekey: '0x4AAAAAAACy5u8zujWObefIl',
+          callback: function(token) {
+            resolve(token);
+            // reset immediately after use so it's fresh for next API call
+            setTimeout(() => window.turnstile.remove(widgetId), 100);
+          },
+          "error-callback": function() {
+            resolve('');
+          }
+        });
+      } else {
+        setTimeout(checkAndRender, 100);
+      }
+    };
+    checkAndRender();
+  });
+}
+
 export async function summarizeContent(content) {
   if (!FEATURES.ENABLE_AI_ASSISTANT) return null;
 
   try {
-    // Calling our serverless backend (api/ai.js)
-    const response = await fetch('/api/ai', {
+    const cfToken = await getTurnstileToken();
+
+    // Calling our secure serverless backend
+    const response = await fetch('/api/summary', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-turnstile-token': cfToken
+      },
       body: JSON.stringify({ action: 'summarize', payload: content })
     });
     
@@ -27,9 +73,14 @@ export async function summarizeContent(content) {
 
 // Helper for API calls
 async function callBackendApi(action, payload) {
-  const response = await fetch('/api/ai', {
+  const cfToken = await getTurnstileToken();
+
+  const response = await fetch('/api/summary', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'x-turnstile-token': cfToken
+    },
     body: JSON.stringify({ action, payload })
   });
   const data = await response.json();

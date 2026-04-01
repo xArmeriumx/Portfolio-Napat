@@ -1,6 +1,6 @@
 /**
  * Vercel Serverless Function: AI Gateway
- * Path: api/ai.js 
+ * Path: api/summary.js 
  * Note: Named generically to obscure the backend provider logic.
  */
 
@@ -24,6 +24,45 @@ export default async function handler(req, res) {
   
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  // Security Protection: Validate request source to prevent stolen quota
+  const isDev = process.env.NODE_ENV === 'development';
+  if (!isDev) {
+    // 1. Check Origin/Referer: Blocks other websites from requesting our API via browser fetch (CORS spoofing is blocked by browsers natively)
+    const origin = req.headers.origin || req.headers.referer || '';
+    const isAllowedDomain = origin.includes('napatdev.com') || origin.includes('vercel.app') || origin.includes('localhost');
+    
+    if (!isAllowedDomain) {
+      return res.status(403).json({ error: 'Forbidden: Origin validation failed' });
+    }
+
+    // 2. CAPTCHA / Cloudflare Turnstile Validation (Final Boss)
+    const turnstileToken = req.headers['x-turnstile-token'];
+    const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+    
+    if (!turnstileToken) {
+       return res.status(403).json({ error: 'Unauthorized Access: Missing CAPTCHA Token.' });
+    }
+
+    const formData = new URLSearchParams();
+    formData.append('secret', turnstileSecret);
+    formData.append('response', turnstileToken);
+    
+    // Check if behind proxy or retrieve normal IP
+    const remoteIp = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '';
+    if (remoteIp) formData.append('remoteip', remoteIp);
+
+    const cfRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body: formData
+    });
+    const outcome = await cfRes.json();
+    
+    if (!outcome.success) {
+       console.warn("[Turnstile] Validation failed:", outcome['error-codes']);
+       return res.status(403).json({ error: 'Unauthorized Access: CAPTCHA Validation Failed.' });
+    }
   }
 
   const { action, payload } = req.body || {};
@@ -90,22 +129,21 @@ export default async function handler(req, res) {
        userMessage = `ข้อมูลแนบ (Context):\n${context}\n\nข้อความที่ผู้ใช้คลุมดำ (Selection): "${selection}"\n\nคำสั่ง: โปรดอธิบายข้อความนี้ให้เข้าใจง่ายที่สุด:`;
     } else if (action === 'review_code') {
        const { code, language } = payload;
-       systemPrompt = `You are a Senior Staff Software Engineer.
-Your task is to thoroughly review the provided code and give constructive feedback.
+       systemPrompt = `คุณคือ Senior Staff Software Engineer ผู้เชี่ยวชาญและใจดี
+หน้าที่ของคุณคือทบทวนโค้ดและอธิบายการทำงานให้ความรู้ "แบบไล่โค้ดทีละบรรทัด"
 
-Rules:
-1. Analyze this${language ? ` ${language}` : ''} code for correctness, performance, and security.
-2. Point out what is good, what are the issues/risks, and suggest improvements.
-3. If there is a better way to write it, provide the improved code.
-4. Respond in brief, direct English.
-5. Return strictly valid JSON in this format:
+กฎเหล็ก:
+1. ตอบเป็นภาษาไทย เสมอ อธิบายให้เข้าใจง่าย เป็นกันเองเหมือนรุ่นพี่สอนรุ่นน้อง
+2. วิเคราะห์และอธิบายโค้ดนี้${language ? ` ภาษา ${language}` : ''} อย่างละเอียดทีละบรรทัด (Line-by-line) หรือทีละส่วน ว่ามันกำลังทำอะไร
+3. ชี้จุดที่ดี, จุดที่มีปัญหา/ความเสี่ยง, และแนะนำการปรับปรุง พร้อมเหตุผล
+4. ส่งคืนรูปแบบ JSON อย่างเคร่งครัดตามโครงสร้างนี้:
 {
-  "summary": "Short summary of what the code does",
-  "issues": ["Issue/Warning 1", "Issue/Warning 2"],
-  "suggestions": "Overall suggestions for best practices",
-  "improved_code": "The refactored code (put null if it's already perfect)"
+  "summary": "อธิบายหลักการและการทำงานไล่ทีละบรรทัดอย่างละเอียด (เว้นบรรทัดให้อ่านง่าย)",
+  "issues": ["ปัญหาที่ควรระวัง 1", "ปัญหาที่ควรระวัง 2"],
+  "suggestions": "คำแนะนำเพิ่มเติม",
+  "improved_code": "โค้ดเวอร์ชันที่ดีขึ้น (ถ้าโค้ดเดิมดีแล้วให้ใส่ null)"
 }`;
-       userMessage = `Code to review:\n\`\`\`${language || ''}\n${code}\n\`\`\``;
+       userMessage = `โค้ดที่ต้องการรีวิว:\n\`\`\`${language || ''}\n${code}\n\`\`\``;
     } else {
        return res.status(400).json({ error: 'Unknown Action Type' });
     }
@@ -165,7 +203,8 @@ Rules:
         const resultText = data.choices[0]?.message?.content || "";
 
         // 4. Send back securely on first success!
-        return res.status(200).json({ result: resultText.trim(), _usedModel: model });
+        // Note: intentionally omitting _usedModel to hide architecture implementation details
+        return res.status(200).json({ result: resultText.trim() });
 
       } catch (err) {
         lastError = err;
