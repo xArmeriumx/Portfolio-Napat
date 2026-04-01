@@ -203,19 +203,16 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                 {/* Explanation with Markdown Formatting and forced word-wraps */}
                 {aiText && (
                   <div className="relative group/typewriter">
-                    <div className="prose prose-sm max-w-none w-full text-gray-700 leading-relaxed font-medium break-words
-                        [&_*]:break-words
-                        prose-headings:text-gray-900 
-                        [&_h1]:text-lg [&_h1]:mt-4 [&_h1]:mb-2 [&_h1]:font-bold
-                        [&_h2]:text-md [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:font-bold
-                        [&_h3]:text-sm [&_h3]:mt-3 [&_h3]:mb-1 [&_h3]:font-bold
-                        [&_p]:my-1.5 [&_p]:break-words
-                        [&_ul]:my-1.5 [&_ul]:pl-5 [&_ol]:my-1.5 [&_ol]:pl-5
-                        [&_li]:my-0.5 [&_li]:break-words 
-                        [&_li>p]:my-0
-                        [&_strong]:text-gray-900 [&_strong]:font-bold
-                        [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:bg-gray-100 [&_code]:text-red-600 [&_code]:rounded [&_code]:border [&_code]:border-gray-200 [&_code]:text-[12px] [&_code]:break-words [&_code]:before:content-none [&_code]:after:content-none
-                        [&_pre]:bg-gray-50 [&_pre]:border [&_pre]:border-gray-200 [&_pre]:text-gray-800 [&_pre]:p-3 [&_pre]:overflow-x-auto [&_pre_code]:bg-transparent [&_pre_code]:text-gray-800 [&_pre_code]:border-none [&_pre_code]:p-0">
+                    <div className="prose prose-sm prose-gray max-w-none w-full text-gray-700 font-medium 
+                        prose-p:leading-relaxed prose-p:my-2
+                        prose-headings:text-gray-900 prose-headings:font-bold prose-headings:mt-4 prose-headings:mb-2
+                        prose-ul:pl-4 prose-ol:pl-4 prose-li:my-0.5
+                        prose-hr:my-4 prose-hr:border-gray-200
+                        prose-a:text-red-600 prose-strong:text-gray-900
+                        prose-code:px-1.5 prose-code:py-0.5 prose-code:bg-gray-100 prose-code:text-red-600 prose-code:rounded prose-code:border prose-code:border-gray-200 prose-code:text-[12px] prose-code:before:content-none prose-code:after:content-none
+                        prose-pre:bg-gray-50 prose-pre:border prose-pre:border-gray-200 prose-pre:text-gray-800 prose-pre:p-3 prose-pre:overflow-x-auto [&_pre_code]:bg-transparent [&_pre_code]:text-gray-800 [&_pre_code]:border-none [&_pre_code]:p-0
+                        [&_p]:break-words [&_li]:break-words [&_li>p]:my-0"
+                    >
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {displayedText}
                       </ReactMarkdown>
@@ -327,6 +324,11 @@ export default function NoteCard({ markdown }) {
             h2: (props) => <InteractiveBlock tagName="h2" {...props} />,
             h3: (props) => <InteractiveBlock tagName="h3" {...props} />,
             li: (props) => <InteractiveBlock tagName="li" {...props} />,
+            pre: ({ node, children, ...props }) => (
+              <div className="not-prose" {...props}>
+                {children}
+              </div>
+            ),
             code: CodeBlock,
             table: ({node, ...props}) => (
               <div className="w-full overflow-x-auto mb-6 rounded-lg border-x border-gray-200">
