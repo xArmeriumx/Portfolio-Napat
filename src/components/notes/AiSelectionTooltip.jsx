@@ -219,9 +219,16 @@ export default function AiSelectionTooltip({ noteContent }) {
       {!isOpen ? (
         <button 
           onClick={() => triggerExplanation()}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 border border-gray-700 text-white rounded-lg shadow-xl text-[12px] font-medium hover:bg-gray-800 transition-colors transform hover:scale-105"
+          className="group flex items-center gap-2 px-3 py-1.5 bg-gray-900 border border-gray-700 text-white rounded-lg shadow-xl text-[12px] font-medium hover:bg-gray-800 transition-colors transform hover:scale-105"
         >
-          <Sparkles size={14} className="text-yellow-400" /> อธิบายส่วนนี้
+          <span className="flex items-center gap-1.5">
+            <Sparkles size={14} className="text-yellow-400" /> อธิบายส่วนนี้
+          </span>
+          {!isMobile && (
+            <div className="hidden sm:flex items-center gap-0.5 px-1 bg-gray-800 rounded text-[9px] text-gray-400 border border-gray-700 opacity-80 group-hover:opacity-100 transition-opacity" title="กดปุ่ม Shift 2 ครั้ง">
+              <span>⇧</span><span className="text-[8px] mx-0.5">x2</span>
+            </div>
+          )}
         </button>
       ) : (
         <div className={`bg-white/95 backdrop-blur-md border border-gray-200 shadow-2xl p-4 relative text-sm ${isMobile ? 'rounded-2xl w-full mx-auto max-w-sm border-gray-100 shadow-[0_-5px_40px_-15px_rgba(0,0,0,0.3)]' : 'rounded-xl w-[340px] max-w-[90vw]'}`}>
