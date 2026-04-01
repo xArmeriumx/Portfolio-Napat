@@ -27,13 +27,13 @@ function getTurnstileToken() {
     const checkAndRender = () => {
       if (window.turnstile) {
         const widgetId = window.turnstile.render('#cf-turnstile-container', {
-          sitekey: '0x4AAAAAAACy5u8zujWObefIl',
-          callback: function(token) {
+          sitekey: '0x4AAAAAACy5u8zujWObefIl',
+          callback: function (token) {
             resolve(token);
             // reset immediately after use so it's fresh for next API call
             setTimeout(() => window.turnstile.remove(widgetId), 100);
           },
-          "error-callback": function() {
+          "error-callback": function () {
             resolve('');
           }
         });
@@ -54,16 +54,16 @@ export async function summarizeContent(content) {
     // Calling our secure serverless backend
     const response = await fetch('/api/summary', {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'x-turnstile-token': cfToken
       },
       body: JSON.stringify({ action: 'summarize', payload: content })
     });
-    
+
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Failed to summarize document');
-    
+
     return data.result;
   } catch (error) {
     console.error("[aiService] Error:", error);
@@ -77,7 +77,7 @@ async function callBackendApi(action, payload) {
 
   const response = await fetch('/api/summary', {
     method: 'POST',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
       'x-turnstile-token': cfToken
     },
@@ -128,11 +128,11 @@ export async function explainSelection(selection, context) {
     const result = await callBackendApi('explain_selection', { selection, context });
     if (!result) return "ไม่มีคำอธิบายจากส่วนนี้";
     try {
-       const cleaned = result.replace(/```json/gi, '').replace(/```/g, '').trim();
-       const parsed = JSON.parse(cleaned);
-       return parsed.explanation || result;
+      const cleaned = result.replace(/```json/gi, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(cleaned);
+      return parsed.explanation || result;
     } catch (e) {
-       return result;
+      return result;
     }
   } catch (error) {
     console.error('explainSelection error:', error);
