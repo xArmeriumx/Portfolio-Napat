@@ -206,10 +206,14 @@ export default async function handler(req, res) {
             'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
+            body: JSON.stringify({
             model: model,
             messages: [
               { role: 'system', content: systemPrompt },
+              ...(action === 'search_rag' && payload.history ? payload.history.map(h => ({
+                  role: h.role === 'assistant' ? 'assistant' : 'user',
+                  content: h.role === 'system' ? `[Memory]: ${h.content}` : h.content
+              })) : []),
               { role: 'user', content: userMessage }
             ],
             temperature: action === 'search_rag' ? 0.1 : 0.3,

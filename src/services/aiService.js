@@ -22,6 +22,20 @@ function compactMarkdown(md) {
   return compacted.length > 5000 ? compacted.substring(0, 5000) + '...' : compacted;
 }
 
+// --- Mini QueryEngine (Session Memory) ---
+// คอยจำบริบท (Context) 3 เรื่องล่าสุดที่ผู้ใช้งานเพิ่งให้ AI อ่านหรืออธิบายไป (เลียนแบบ QueryEngine ของ claude-code)
+let sessionMemory = [];
+
+export function recordAiMemory(role, shortContext) {
+  sessionMemory.push({ role, content: shortContext });
+  if (sessionMemory.length > 4) sessionMemory.shift(); // จำแค่ 4 แอคชันล่าสุด
+}
+
+export function clearAiMemory() {
+  sessionMemory = [];
+}
+
+
 // --- Cloudflare Turnstile Integration (Vanilla JS) ---
 let turnstileInjected = false;
 
@@ -168,12 +182,21 @@ async function callBackendApi(action, payload) {
 export async function askAiContext(query, context) {
   if (!FEATURES.ENABLE_AI_ASSISTANT) return { answer: "", quote: null };
   try {
-    // ไม่ใช้ Compact ตัวเต็ม เพราะต้องค้นหา Quote ตรงตัวจากเอกสาร จึงส่งไปปกติดีที่สุด
-    const result = await callBackendApi('search_rag', { query, context });
+    recordAiMemory('user', `ผู้ใช้ถามว่า: ${query}`);
+
+    // ส่ง Session Memory ไปประกอบร่างเป็น Multi-turn Conversation
+    const result = await callBackendApi('search_rag', { 
+       query, 
+       context,
+       history: sessionMemory // ส่งประวัติเข้าไปด้วย!
+    });
+    
     if (!result) return { answer: "ขออภัย ติดขัดปัญหาการส่งข้อมูลครับ", quote: null };
     try {
       const cleaned = result.replace(/```json/gi, '').replace(/```/g, '').trim();
-      return JSON.parse(cleaned);
+      const parsed = JSON.parse(cleaned);
+      recordAiMemory('assistant', `AI ตอบว่า: ${parsed.answer}`);
+      return parsed;
     } catch (e) {
       return { answer: result, quote: null };
     }
@@ -212,8 +235,11 @@ export async function explainSelection(selection, context) {
     try {
       const cleaned = result.replace(/```json/gi, '').replace(/```/g, '').trim();
       const parsed = JSON.parse(cleaned);
-      return parsed.explanation || result;
+      const explanation = parsed.explanation || result;
+      recordAiMemory('system', `ผู้ใช้เพิ่งกดให้ AI อธิบายประโยคนี้: "${selection.substring(0, 50)}..."`);
+      return explanation;
     } catch (e) {
+      recordAiMemory('system', `ผู้ใช้เพิ่งให้อธิบายคำว่า: "${selection.substring(0, 20)}..."`);
       return result;
     }
   } catch (error) {
@@ -279,6 +305,7 @@ export async function reviewCode(code, language, onChunk) {
         }
       }
       aiCache.set(cacheKey, resultText);
+      recordAiMemory('system', `ผู้ใช้เพิ่งกดให้ระบบช่วย Review โค้ดภาษา ${language}`);
       return { explanation: resultText };
     } else {
       const data = await response.json();
@@ -290,6 +317,7 @@ export async function reviewCode(code, language, onChunk) {
         parsed = { explanation: data.result };
       }
       aiCache.set(cacheKey, parsed);
+      recordAiMemory('system', `ผู้ใช้เพิ่งกดให้ระบบช่วย Review โค้ดภาษา ${language}`);
       return parsed;
     }
   } catch (error) {

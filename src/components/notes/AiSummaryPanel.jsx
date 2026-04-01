@@ -28,6 +28,20 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
     setCopied(false);
   }
 
+  // 1. Proactive Cache-Warming (Kairos/Daemon effect)
+  // แอบคอมพิวท์คำตอบ(Summary, Prompts) ไว้ใน Background หลังจากที่ผู้ใช้อ่านเนื้อหาเกิน 3 วินาที
+  // ผลลัพธ์จะถูกเซฟเงียบๆ ลง Cache ฝั่ง Client ทำให้ตอนที่ผู้ใช้กดปุ่มจะได้ข้อมูลทันที 0ms!
+  useEffect(() => {
+    if (!noteContent || !noteId) return;
+    const timer = setTimeout(() => {
+      // โหลดทิ้งไว้ในแบคกราวด์ ไม่เอาผลมาโชว์ (Fire and forget)
+      generatePrompts(noteContent.substring(0, 1500)).catch(() => {});
+      summarizeContent(noteContent).catch(() => {});
+    }, 3500); // ดีเลย์ 3.5 วินาที
+    return () => clearTimeout(timer);
+  }, [noteContent, noteId]);
+
+
   // Listen for cross-component highlight requests (from AiSelectionTooltip)
   useEffect(() => {
     const handleHighlight = (e) => highlightQuoteInDocument(e.detail.quote);
