@@ -6,6 +6,7 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import { Copy, Check, Pencil, Sparkles, X, RotateCcw, Save } from 'lucide-react';
 import { reviewCode } from '../../services/aiService';
+import { useTypewriter } from '../../hooks/useTypewriter';
 import 'highlight.js/styles/github.css';
 
 // Helper to extract raw text from react-markdown AST
@@ -30,6 +31,15 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
   
   const [reviewResult, setReviewResult] = useState(null);
   const [reviewLoading, setReviewLoading] = useState(false);
+
+  // Extract explanation string for typewriter
+  const extractExplanation = () => {
+    if (!reviewResult) return '';
+    return reviewResult.explanation || reviewResult.summary || '';
+  };
+  
+  const aiText = extractExplanation();
+  const { displayedText, isTyping, skipTyping } = useTypewriter(aiText, 10, !!aiText);
 
   const hasChanges = editedCode !== rawCode;
 
@@ -191,32 +201,36 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                 </div>
 
                 {/* Explanation with Markdown Formatting and forced word-wraps */}
-                {reviewResult.explanation && (
-                  <div className="prose prose-sm max-w-none w-full text-gray-700 leading-relaxed font-medium break-words
-                      [&_*]:break-words
-                      prose-headings:text-gray-900 
-                      [&_h1]:text-lg [&_h1]:mt-4 [&_h1]:mb-2 [&_h1]:font-bold
-                      [&_h2]:text-md [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:font-bold
-                      [&_h3]:text-sm [&_h3]:mt-3 [&_h3]:mb-1 [&_h3]:font-bold
-                      [&_p]:my-1.5 [&_p]:break-words
-                      [&_ul]:my-1.5 [&_ul]:pl-5 [&_ol]:my-1.5 [&_ol]:pl-5
-                      [&_li]:my-0.5 [&_li]:break-words 
-                      [&_li>p]:my-0
-                      [&_strong]:text-gray-900 [&_strong]:font-bold
-                      [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:bg-gray-100 [&_code]:text-red-600 [&_code]:rounded [&_code]:border [&_code]:border-gray-200 [&_code]:text-[12px] [&_code]:break-words [&_code]:before:content-none [&_code]:after:content-none
-                      [&_pre]:bg-gray-50 [&_pre]:border [&_pre]:border-gray-200 [&_pre]:text-gray-800 [&_pre]:p-3 [&_pre]:overflow-x-auto [&_pre_code]:bg-transparent [&_pre_code]:text-gray-800 [&_pre_code]:border-none [&_pre_code]:p-0">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {reviewResult.explanation}
-                    </ReactMarkdown>
-                  </div>
-                )}
-                
-                {/* Fallback code to support previous cached summaries before the schema update */}
-                {reviewResult.summary && !reviewResult.explanation && (
-                  <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed font-medium prose-p:break-words prose-p:whitespace-pre-wrap">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {reviewResult.summary}
-                    </ReactMarkdown>
+                {aiText && (
+                  <div className="relative group/typewriter">
+                    <div className="prose prose-sm max-w-none w-full text-gray-700 leading-relaxed font-medium break-words
+                        [&_*]:break-words
+                        prose-headings:text-gray-900 
+                        [&_h1]:text-lg [&_h1]:mt-4 [&_h1]:mb-2 [&_h1]:font-bold
+                        [&_h2]:text-md [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:font-bold
+                        [&_h3]:text-sm [&_h3]:mt-3 [&_h3]:mb-1 [&_h3]:font-bold
+                        [&_p]:my-1.5 [&_p]:break-words
+                        [&_ul]:my-1.5 [&_ul]:pl-5 [&_ol]:my-1.5 [&_ol]:pl-5
+                        [&_li]:my-0.5 [&_li]:break-words 
+                        [&_li>p]:my-0
+                        [&_strong]:text-gray-900 [&_strong]:font-bold
+                        [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:bg-gray-100 [&_code]:text-red-600 [&_code]:rounded [&_code]:border [&_code]:border-gray-200 [&_code]:text-[12px] [&_code]:break-words [&_code]:before:content-none [&_code]:after:content-none
+                        [&_pre]:bg-gray-50 [&_pre]:border [&_pre]:border-gray-200 [&_pre]:text-gray-800 [&_pre]:p-3 [&_pre]:overflow-x-auto [&_pre_code]:bg-transparent [&_pre_code]:text-gray-800 [&_pre_code]:border-none [&_pre_code]:p-0">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {displayedText}
+                      </ReactMarkdown>
+                      {isTyping && <span className="inline-block w-1.5 h-4 ml-1 bg-gray-400 animate-pulse align-middle"></span>}
+                    </div>
+
+                    {/* Skip button appears only while typing on hover (or stays if mobile but fade is elegant) */}
+                    {isTyping && (
+                       <button 
+                         onClick={skipTyping} 
+                         className="absolute right-0 bottom-0 text-[11px] font-bold px-2 py-1 bg-white text-gray-500 rounded hover:bg-gray-100 transition-colors opacity-0 group-hover/typewriter:opacity-100 shadow border border-gray-100"
+                       >
+                         ข้ามการพิมพ์ ⏯
+                       </button>
+                    )}
                   </div>
                 )}
               </div>
