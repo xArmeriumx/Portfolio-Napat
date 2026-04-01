@@ -222,19 +222,75 @@ export async function explainSelection(selection, context) {
   }
 }
 
-export async function reviewCode(code, language) {
+export async function reviewCode(code, language, onChunk) {
   if (!FEATURES.ENABLE_AI_ASSISTANT) return null;
   try {
     // Cap code length to ~3000 chars to stay within token limits
     const trimmedCode = code.substring(0, 3000);
-    const result = await callBackendApi('review_code', { code: trimmedCode, language });
-    if (!result) return null;
-    try {
-      const cleaned = result.replace(/```json/gi, '').replace(/```/g, '').trim();
-      return JSON.parse(cleaned);
-    } catch (e) {
-      // If AI returned plain text instead of JSON, wrap it
-      return { explanation: result };
+    const cacheKey = getCacheKey('review_code', trimmedCode + (language || ''));
+
+    if (aiCache.has(cacheKey)) {
+       const cached = aiCache.get(cacheKey);
+       if (onChunk) onChunk(typeof cached === 'string' ? cached : cached.explanation);
+       return typeof cached === 'string' ? { explanation: cached } : cached;
+    }
+
+    const cfToken = await getTurnstileToken();
+    const response = await fetch('/api/summary', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-turnstile-token': cfToken
+      },
+      body: JSON.stringify({ action: 'review_code', payload: { code: trimmedCode, language }, stream: !!onChunk })
+    });
+
+    if (!response.ok) {
+      try {
+         const data = await response.json();
+         throw new Error(data.error || 'Failed to review code');
+      } catch (e) {
+         throw new Error('Failed to review code');
+      }
+    }
+
+    if (onChunk) {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let resultText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.trim() === '' || line.includes('[DONE]')) continue;
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.replace(/^data:\s*/, ''));
+              const contentPiece = data.choices?.[0]?.delta?.content || '';
+              resultText += contentPiece;
+              onChunk(resultText); 
+            } catch (e) {}
+          }
+        }
+      }
+      aiCache.set(cacheKey, resultText);
+      return { explanation: resultText };
+    } else {
+      const data = await response.json();
+      let parsed;
+      try {
+        const cleaned = data.result.replace(/```json/gi, '').replace(/```/g, '').trim();
+        parsed = JSON.parse(cleaned);
+      } catch (e) {
+        parsed = { explanation: data.result };
+      }
+      aiCache.set(cacheKey, parsed);
+      return parsed;
     }
   } catch (error) {
     console.error('reviewCode error:', error);

@@ -6,7 +6,6 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import { Copy, Check, Pencil, Sparkles, X, RotateCcw, Save } from 'lucide-react';
 import { reviewCode } from '../../services/aiService';
-import { useTypewriter } from '../../hooks/useTypewriter';
 import 'highlight.js/styles/github.css';
 
 // Helper to extract raw text from react-markdown AST
@@ -33,15 +32,14 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
   const [reviewLoading, setReviewLoading] = useState(false);
   const [copiedReview, setCopiedReview] = useState(false);
 
-  // Extract explanation string for typewriter
+  // Extract explanation string
   const extractExplanation = () => {
     if (!reviewResult) return '';
     return reviewResult.explanation || reviewResult.summary || '';
   };
   
   const aiText = extractExplanation();
-  const { displayedText, isTyping, skipTyping } = useTypewriter(aiText, 10, !!aiText);
-
+  const isTyping = reviewResult?.isStreaming;
   const hasChanges = editedCode !== rawCode;
 
   const handleCopy = () => {
@@ -72,9 +70,14 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
   const handleReview = async () => {
     setReviewLoading(true);
     setReviewResult(null);
-    const result = await reviewCode(editedCode, language);
-    setReviewResult(result);
-    setReviewLoading(false);
+    
+    await reviewCode(editedCode, language, (chunk) => {
+       setReviewLoading(false); // Stop skeleton as soon as data arrives
+       setReviewResult({ explanation: chunk, isStreaming: true });
+    });
+    
+    setReviewResult(prev => ({ ...prev, isStreaming: false })); // stream finished
+    setReviewLoading(false); // in case cache hit returned instantly
   };
 
   if (!inline && match) {
@@ -222,20 +225,10 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                         remarkPlugins={[remarkGfm]}
                         rehypePlugins={[rehypeRaw, rehypeHighlight]}
                       >
-                        {displayedText}
+                        {aiText}
                       </ReactMarkdown>
                       {isTyping && <span className="inline-block w-1.5 h-4 ml-1 bg-gray-400 animate-pulse align-middle"></span>}
                     </div>
-
-                    {/* Skip button is slightly faded normally, solid on hover. Fixes invisible button on mobile */}
-                    {isTyping && (
-                       <button 
-                         onClick={skipTyping} 
-                         className="absolute right-0 bottom-4 text-[11px] font-bold px-2 py-1 bg-white text-gray-500 rounded hover:bg-gray-100 transition-colors opacity-70 hover:opacity-100 shadow border border-gray-100"
-                       >
-                         ข้ามการพิมพ์ ⏯
-                       </button>
-                    )}
 
                     {/* Completion Action Bar (Appears when typing is done) */}
                     {!isTyping && (
@@ -245,7 +238,7 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                          </span>
                          <button 
                            onClick={() => {
-                             navigator.clipboard.writeText(displayedText);
+                             navigator.clipboard.writeText(aiText);
                              setCopiedReview(true);
                              setTimeout(() => setCopiedReview(false), 2000);
                            }}
