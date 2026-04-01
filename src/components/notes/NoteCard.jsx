@@ -192,12 +192,19 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
 
                 {/* Explanation with Markdown Formatting and forced word-wraps */}
                 {reviewResult.explanation && (
-                  <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed font-medium 
-                      prose-p:my-2 prose-p:break-words prose-p:whitespace-pre-wrap
-                      prose-a:text-red-500 prose-ul:my-2 prose-li:my-1
-                      prose-strong:text-gray-900 prose-strong:font-bold
-                      prose-code:px-1.5 prose-code:py-0.5 prose-code:bg-white prose-code:text-red-600 prose-code:rounded prose-code:border prose-code:border-gray-200 prose-code:text-[12px] prose-code:break-words prose-code:before:content-none prose-code:after:content-none
-                      prose-pre:bg-white prose-pre:border prose-pre:border-gray-200 prose-pre:text-gray-800 prose-pre:p-3 prose-pre:whitespace-pre-wrap prose-pre:break-words">
+                  <div className="prose prose-sm max-w-none w-full text-gray-700 leading-relaxed font-medium break-words
+                      [&_*]:break-words
+                      prose-headings:text-gray-900 
+                      [&_h1]:text-lg [&_h1]:mt-4 [&_h1]:mb-2 [&_h1]:font-bold
+                      [&_h2]:text-md [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:font-bold
+                      [&_h3]:text-sm [&_h3]:mt-3 [&_h3]:mb-1 [&_h3]:font-bold
+                      [&_p]:my-1.5 [&_p]:break-words
+                      [&_ul]:my-1.5 [&_ul]:pl-5 [&_ol]:my-1.5 [&_ol]:pl-5
+                      [&_li]:my-0.5 [&_li]:break-words 
+                      [&_li>p]:my-0
+                      [&_strong]:text-gray-900 [&_strong]:font-bold
+                      [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:bg-gray-100 [&_code]:text-red-600 [&_code]:rounded [&_code]:border [&_code]:border-gray-200 [&_code]:text-[12px] [&_code]:break-words [&_code]:before:content-none [&_code]:after:content-none
+                      [&_pre]:bg-gray-50 [&_pre]:border [&_pre]:border-gray-200 [&_pre]:text-gray-800 [&_pre]:p-3 [&_pre]:overflow-x-auto [&_pre_code]:bg-transparent [&_pre_code]:text-gray-800 [&_pre_code]:border-none [&_pre_code]:p-0">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {reviewResult.explanation}
                     </ReactMarkdown>
