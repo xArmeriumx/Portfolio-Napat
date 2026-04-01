@@ -66,38 +66,59 @@ export default function AiSelectionTooltip({ noteContent }) {
       }
     };
 
-    // ⚡ 3. Double-Tap Shortcut (Haptic Auto-Explain)
-    // ถอดแบบจาก claude-code: ดับเบิลคลิกเพื่อรัน AI ทันทีโดยไม่ต้องกดปุ่ม
-    const handleDoubleClick = (e) => {
-      if (popoverRef.current && popoverRef.current.contains(e.target)) return;
-
-      const fullSelection = window.getSelection();
-      const text = fullSelection.toString().trim();
-
-      if (text.length > 0 && text.length < 800) {
-        let isInsideProse = false;
-        let node = fullSelection.getRangeAt(0)?.commonAncestorContainer;
-        while (node) {
-           if (node.nodeType === 1 && node?.classList?.contains('prose')) {
-              isInsideProse = true; break;
-           }
-           node = node.parentNode;
-        }
-
-        if (isInsideProse) {
-          const range = fullSelection.getRangeAt(0);
-          const rect = range.getBoundingClientRect();
-          const clientRects = range.getClientRects();
-          const preciseRect = clientRects.length > 0 ? clientRects[0] : rect;
-          
-          const autoPos = {
-            top: preciseRect.top - 8,
-            left: preciseRect.left + (preciseRect.width / 2)
-          };
-          
-          setSelection(text);
-          triggerExplanation(text, autoPos);
-        }
+    // ⚡ 3. Double-Press Shortcut (Keyboard Haptic via claude-code's useDoublePress)
+    // แก้อาการทับซ้อนกับการดับเบิลคลิกเมาส์ ด้วยการใช้ "กด Shift 2 ครั้งติดกัน" เมื่อคลุมดำเสร็จ
+    let lastKeyTime = 0;
+    let lastKey = '';
+    
+    const handleKeyDown = (e) => {
+      // ห้ามทำงานถ้ากำลังพิมพ์ในช่อง Search
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      
+      // ตรวจจับเฉพาะปุ่ม Shift
+      if (e.key === 'Shift') {
+         const now = Date.now();
+         if (lastKey === 'Shift' && now - lastKeyTime < 400) {
+            // Double Press Detected (ภายใน 400ms)
+            const text = window.getSelection().toString().trim();
+            // เช็คว่ามีข้อความคลุมดำอยู่ และปุ่มรอพร้อมแล้ว หรือยังไม่ได้กดปุ่ม
+            if (text.length > 0 && text.length < 800) {
+              
+              const range = window.getSelection().getRangeAt(0);
+              let isInsideProse = false;
+              let node = range.commonAncestorContainer;
+              while (node) {
+                 if (node.nodeType === 1 && node?.classList?.contains('prose')) {
+                    isInsideProse = true; break;
+                 }
+                 node = node.parentNode;
+              }
+              
+              if (isInsideProse) {
+                 e.preventDefault();
+                 
+                 // ถ้าเปิดค้างไว้อยู่แล้ว ก็รันเลย
+                 if (isOpen) {
+                    triggerExplanation();
+                 } else {
+                    const rect = range.getBoundingClientRect();
+                    const clientRects = range.getClientRects();
+                    const preciseRect = clientRects.length > 0 ? clientRects[0] : rect;
+                    setSelection(text);
+                    triggerExplanation(text, {
+                      top: preciseRect.top - 8,
+                      left: preciseRect.left + (preciseRect.width / 2)
+                    });
+                 }
+              }
+            }
+            lastKey = ''; // reset
+         } else {
+            lastKey = e.key;
+            lastKeyTime = now;
+         }
+      } else {
+         lastKey = '';
       }
     };
 
@@ -109,12 +130,10 @@ export default function AiSelectionTooltip({ noteContent }) {
          left: rect.left + (rect.width / 2)
        });
        
-       // Instantly trigger explanation for mobile long-press
        triggerExplanation(text);
     };
 
     const handleDocumentClick = (e) => {
-       // Close if clicked outside the popover and no selection exists
        if (isOpen && popoverRef.current && !popoverRef.current.contains(e.target)) {
           const text = window.getSelection().toString().trim();
           if (text.length === 0) closeTooltip();
@@ -122,13 +141,13 @@ export default function AiSelectionTooltip({ noteContent }) {
     };
 
     document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('dblclick', handleDoubleClick);
     document.addEventListener('mousedown', handleDocumentClick);
+    document.addEventListener('keydown', handleKeyDown);
     window.addEventListener('ai-explain-block', handleCustomExplain);
     return () => {
       document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('dblclick', handleDoubleClick);
       document.removeEventListener('mousedown', handleDocumentClick);
+      document.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('ai-explain-block', handleCustomExplain);
     };
   }, [isOpen]);

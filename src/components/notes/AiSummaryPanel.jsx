@@ -262,8 +262,11 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
            </span>
            <span className="hidden sm:block w-1 h-1 bg-gray-200 rounded-full"></span>
            <span className="flex items-center gap-1.5 font-medium whitespace-nowrap">
-             <kbd className="bg-gray-100/80 text-gray-500 px-1.5 py-0.5 rounded text-[10px] font-bold border border-gray-200/60 shadow-[0_1px_0_rgba(200,200,200,0.5)]">Double Click</kbd> 
-             อธิบายคำศัพท์หรือโค้ดอัตโนมัติด้วย AI
+             <div className="flex items-center gap-0.5">
+                <kbd className="bg-gray-100/80 text-gray-500 px-1.5 py-0.5 rounded text-[10px] font-bold border border-gray-200/60 shadow-[0_1px_0_rgba(200,200,200,0.5)]">⇧ Shift</kbd>
+                <span className="text-[10px] text-gray-400 font-bold">×2</span>
+             </div>
+             อธิบายข้อความที่คลุมดำไว้ด้วย AI ทันที
            </span>
          </div>
       )}
