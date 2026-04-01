@@ -31,6 +31,7 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
   
   const [reviewResult, setReviewResult] = useState(null);
   const [reviewLoading, setReviewLoading] = useState(false);
+  const [copiedReview, setCopiedReview] = useState(false);
 
   // Extract explanation string for typewriter
   const extractExplanation = () => {
@@ -231,6 +232,26 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                        >
                          ข้ามการพิมพ์ ⏯
                        </button>
+                    )}
+
+                    {/* Completion Action Bar (Appears when typing is done) */}
+                    {!isTyping && (
+                       <div className="mt-5 pt-3 border-t border-gray-100 flex items-center justify-between animate-fade-in-up">
+                         <span className="text-[11px] text-gray-400 font-medium flex items-center gap-1.5">
+                           <Check size={12} className="text-green-500"/> อธิบายเสร็จสิ้น
+                         </span>
+                         <button 
+                           onClick={() => {
+                             navigator.clipboard.writeText(displayedText);
+                             setCopiedReview(true);
+                             setTimeout(() => setCopiedReview(false), 2000);
+                           }}
+                           className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 bg-white border border-gray-200 text-gray-600 rounded shadow-sm hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                         >
+                            {copiedReview ? <Check size={12} className="text-green-600" /> : <Copy size={12} />}
+                            <span className={copiedReview ? 'text-green-600' : ''}>{copiedReview ? 'คัดลอกแล้ว' : 'คัดลอกคำอธิบาย'}</span>
+                         </button>
+                       </div>
                     )}
                   </div>
                 )}
