@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Search, ArrowRight, FileText, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
+import { X, Search, ArrowRight, FileText, CheckCircle2, AlertCircle, Sparkles, Copy, Check, CornerDownRight } from 'lucide-react';
 import { summarizeContent, askAiContext, generatePrompts } from '../../services/aiService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -9,9 +9,15 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
   const [query, setQuery] = useState('');
   const [summaryText, setSummaryText] = useState('');
   const [loading, setLoading] = useState(false);
-  const [searchStatus, setSearchStatus] = useState(null); // 'searching', 'found', 'not_found', 'error', 'summarizing'
-  
+  const [searchStatus, setSearchStatus] = useState(null);
   const [currentEvalId, setCurrentEvalId] = useState(null);
+
+  // Copy state
+  const [copied, setCopied] = useState(false);
+
+  // Follow-up chips
+  const [followUps, setFollowUps] = useState([]);
+  const [followUpsLoading, setFollowUpsLoading] = useState(false);
 
   // Typewriter effect integration
   const { displayedText: typedSummary, isTyping, skipTyping } = useTypewriter(summaryText, 8, !!summaryText);
@@ -20,7 +26,16 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
     setSummaryText('');
     setSearchStatus(null);
     setQuery('');
+    setFollowUps([]);
+    setCopied(false);
   }
+
+  // Listen for cross-component highlight requests (from AiSelectionTooltip)
+  useEffect(() => {
+    const handleHighlight = (e) => highlightQuoteInDocument(e.detail.quote);
+    window.addEventListener('ai-highlight-quote', handleHighlight);
+    return () => window.removeEventListener('ai-highlight-quote', handleHighlight);
+  }, []);
 
   const highlightQuoteInDocument = (quote) => {
     if (!quote || quote === 'null' || quote.length < 5) return false;
@@ -90,16 +105,33 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
     setSearchStatus('summarizing');
     setCurrentEvalId(noteId);
     setSummaryText('');
+    setFollowUps([]);
+    setCopied(false);
     
     try {
       const result = await summarizeContent(noteContent);
       setSummaryText(result);
+
+      // Generate follow-up chips after summary is ready
+      setFollowUpsLoading(true);
+      try {
+        const chips = await generatePrompts(noteContent.substring(0, 1500));
+        if (Array.isArray(chips)) setFollowUps(chips.slice(0, 3));
+      } catch (_) { /* silently skip follow-ups on error */ }
+      setFollowUpsLoading(false);
+
     } catch (err) {
       setSummaryText('ขออภัย ไม่สามารถประมวลผลข้อมูลได้ในเวลานี้');
     } finally {
       setLoading(false);
       setSearchStatus(null);
     }
+  };
+
+  const handleCopySummary = () => {
+    navigator.clipboard.writeText(summaryText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   let statusIcon = <Search size={18} className="absolute left-4 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400 sm:w-3.5 sm:h-3.5 pointer-events-none" />;
@@ -174,6 +206,22 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
       {/* 2. Streaming Summary Render Panel */}
       {summaryText && (
         <div className="relative p-5 sm:p-4 bg-white animate-fade-in-down border-t border-gray-100 group">
+
+          {/* Header row: label + copy button */}
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+              <Sparkles size={11} /> ผลสรุปเนื้อหา
+            </span>
+            <button
+              onClick={handleCopySummary}
+              title="คัดลอกผลสรุป"
+              className="flex items-center gap-1 px-2 py-1 text-[11px] text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors"
+            >
+              {copied ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
+              <span>{copied ? 'คัดลอกแล้ว' : 'คัดลอก'}</span>
+            </button>
+          </div>
+
            <div className="prose prose-sm prose-gray max-w-none text-gray-700 
                prose-p:leading-relaxed prose-a:text-red-600 prose-strong:text-gray-900 
                prose-ul:pl-4 prose-ol:pl-4 prose-li:my-1 text-[14px] sm:text-[13px]"
@@ -189,9 +237,39 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
                onClick={skipTyping} 
                className="absolute right-4 bottom-4 text-[11px] font-medium px-2 py-1 bg-gray-100 text-gray-500 rounded hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100 shadow-sm"
              >
-               Skip ⏯
+               ข้ามการแสดงผล ⏯
              </button>
            )}
+
+          {/* Follow-up question chips */}
+          {!isTyping && followUps.length > 0 && (
+            <div className="mt-4 pt-3 border-t border-gray-100">
+              <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1">
+                <CornerDownRight size={11} /> คำถามที่เกี่ยวข้อง
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {followUps.map((chip, i) => (
+                  <button
+                    key={i}
+                    onClick={(e) => handleSearch(e, chip)}
+                    disabled={loading}
+                    className="px-3 py-1.5 text-[12px] bg-gray-50 hover:bg-red-50 border border-gray-200 hover:border-red-300 text-gray-600 hover:text-red-700 rounded-full transition-all font-medium shadow-sm"
+                  >
+                    {chip}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Follow-up chips loading skeleton */}
+          {!isTyping && followUpsLoading && (
+            <div className="mt-4 pt-3 border-t border-gray-100 flex gap-2">
+              {[80, 100, 90].map((w, i) => (
+                <div key={i} className="h-7 bg-gray-100 rounded-full animate-pulse" style={{ width: w }} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

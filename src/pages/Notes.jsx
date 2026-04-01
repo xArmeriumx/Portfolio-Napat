@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import NoteCard from '../components/notes/NoteCard';
 import CmdKModal from '../components/notes/CmdKModal';
@@ -16,6 +16,11 @@ export default function Notes() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isCmdKOpen, setIsCmdKOpen] = useState(false);
+
+  // ── UX Enhancements ──────────────────────────────────────────
+  const [readingProgress, setReadingProgress] = useState(0); // 0–100
+  const [activeHeadingId, setActiveHeadingId] = useState(null);
+  const mainRef = useRef(null); // ref on the scrollable <main>
 
   // Calculate activeNote from the URL parameter slug
   const activeNote = useMemo(() => {
@@ -139,6 +144,51 @@ export default function Notes() {
     return items;
   }, [activeNote]);
 
+  // ── Reading Progress Bar ─────────────────────────────────────
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = el;
+      const total = scrollHeight - clientHeight;
+      setReadingProgress(total > 0 ? Math.round((scrollTop / total) * 100) : 0);
+    };
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, [activeNote]); // re-attach when note changes
+
+  // ── Reset scroll position when switching notes (Desktop fix) ──
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTo({ top: 0 });
+    }
+    setReadingProgress(0);
+    setActiveHeadingId(null);
+  }, [activeNote?.id]);
+
+  // ── Active TOC Highlight – IntersectionObserver ───────────────
+  useEffect(() => {
+    if (!headings.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Pick the topmost visible heading
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible.length > 0) setActiveHeadingId(visible[0].target.id);
+      },
+      {
+        root: mainRef.current,       // observe inside the scrollable container
+        rootMargin: '-80px 0px -60% 0px', // trigger when heading enters top 40% of viewport
+        threshold: 0,
+      }
+    );
+    // Observe every heading rendered in the document
+    const targets = document.querySelectorAll('main h1, main h2, main h3');
+    targets.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [headings, activeNote?.id]);
+
   const scrollToHeading = (e, id, headingText) => {
     e.preventDefault();
 
@@ -216,7 +266,8 @@ export default function Notes() {
                 <button
                   onClick={() => {
                     navigate(`/notes/${note.id}`);
-                    if (window.innerWidth < 768) window.scrollTo(0, 0); // scroll to top on mobile
+                    // Desktop: handled by the activeNote useEffect above (mainRef.scrollTo)
+                    if (window.innerWidth < 768) window.scrollTo(0, 0);
                   }}
                   className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-sm rounded-md transition-all text-left relative z-10 ${activeNote?.id === note.id
                     ? 'bg-red-50 text-red-700 font-semibold before:absolute before:left-[-17px] before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-4 before:bg-red-600 before:rounded-r'
@@ -244,20 +295,28 @@ export default function Notes() {
       </aside>
 
       {/* 2) Main Workspace (Scrollable area) */}
-      <main className="flex-1 min-w-0 bg-white md:h-[calc(100vh-64px)] md:overflow-y-auto scrollbar-hide flex flex-col relative">
+      <main ref={mainRef} className="flex-1 min-w-0 bg-white md:h-[calc(100vh-64px)] md:overflow-y-auto scrollbar-hide flex flex-col relative">
 
         {/* Editor Tabs / Header */}
         {activeNote && (
-          <div className="h-14 border-b border-gray-200 flex items-center bg-gray-50/80 sticky top-0 z-20">
-            <div className="flex items-center h-full px-8 border-r border-gray-200 bg-white border-t-[3px] border-t-red-500 text-sm gap-2.5 min-w-fit shadow-sm relative">
-              <Hash size={16} className="text-gray-400" />
-              <span className="font-bold text-gray-800 tracking-wide">{activeNote.name}</span>
-
-              {/* Bottom cover to blend with content area */}
-              <div className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-white z-10"></div>
+          <div className="border-b border-gray-200 flex flex-col bg-gray-50/80 sticky top-0 z-20">
+            <div className="h-14 flex items-center">
+              <div className="flex items-center h-full px-8 border-r border-gray-200 bg-white border-t-[3px] border-t-red-500 text-sm gap-2.5 min-w-fit shadow-sm relative">
+                <Hash size={16} className="text-gray-400" />
+                <span className="font-bold text-gray-800 tracking-wide">{activeNote.name}</span>
+                {/* Bottom cover to blend with content area */}
+                <div className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-white z-10"></div>
+              </div>
+              <div className="flex-1 h-full"></div>
             </div>
-            {/* Empty space filler to look like a tab bar */}
-            <div className="flex-1 h-full"></div>
+
+            {/* ── Reading Progress Bar ── */}
+            <div className="h-[2px] w-full bg-gray-100">
+              <div
+                className="h-full bg-gradient-to-r from-red-500 to-red-400 transition-[width] duration-150 ease-out"
+                style={{ width: `${readingProgress}%` }}
+              />
+            </div>
           </div>
         )}
 
@@ -331,20 +390,31 @@ export default function Notes() {
             <aside className="hidden xl:block w-64 shrink-0 px-6 py-8 border-l border-gray-100 bg-[#fdfdfd] h-[calc(100vh-104px)] sticky top-10 overflow-y-auto scrollbar-hide">
               <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4 flex items-center gap-1.5"><List size={14} className="text-gray-400" /> On this page</h3>
               <ul className="space-y-2.5 text-sm text-gray-500">
-                {headings.map((heading, i) => (
-                  <li
-                    key={`${heading.id}-${i}`}
-                    style={{ paddingLeft: `${(heading.level - 1) * 12}px` }}
-                  >
-                    <a
-                      href={`#${heading.id}`}
-                      onClick={(e) => scrollToHeading(e, heading.id, heading.text)}
-                      className="hover:text-red-600 transition-colors line-clamp-2 leading-tight"
+                {headings.map((heading, i) => {
+                  const isActive = activeHeadingId === heading.id;
+                  return (
+                    <li
+                      key={`${heading.id}-${i}`}
+                      style={{ paddingLeft: `${(heading.level - 1) * 12}px` }}
                     >
-                      {heading.text}
-                    </a>
-                  </li>
-                ))}
+                      <a
+                        href={`#${heading.id}`}
+                        onClick={(e) => scrollToHeading(e, heading.id, heading.text)}
+                        className={`block line-clamp-2 leading-tight transition-all duration-200 ${
+                          isActive
+                            ? 'text-red-600 font-semibold'
+                            : 'text-gray-500 hover:text-red-600'
+                        }`}
+                      >
+                        {/* Active indicator dot */}
+                        {isActive && (
+                          <span className="inline-block w-1 h-1 rounded-full bg-red-500 mr-1.5 mb-0.5 align-middle" />
+                        )}
+                        {heading.text}
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </aside>
           )}

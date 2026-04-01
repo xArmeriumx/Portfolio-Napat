@@ -88,3 +88,23 @@ export async function explainSelection(selection, context) {
     return "ขออภัย ไม่สามารถดึงข้อมูลอธิบายได้";
   }
 }
+
+export async function reviewCode(code, language) {
+  if (!FEATURES.ENABLE_AI_ASSISTANT) return null;
+  try {
+    // Cap code length to ~3000 chars to stay within token limits
+    const trimmedCode = code.substring(0, 3000);
+    const result = await callBackendApi('review_code', { code: trimmedCode, language });
+    if (!result) return null;
+    try {
+      const cleaned = result.replace(/```json/gi, '').replace(/```/g, '').trim();
+      return JSON.parse(cleaned);
+    } catch (e) {
+      // If AI returned plain text instead of JSON, wrap it
+      return { summary: result, issues: [], suggestions: '', improved_code: null };
+    }
+  } catch (error) {
+    console.error('reviewCode error:', error);
+    return null;
+  }
+}

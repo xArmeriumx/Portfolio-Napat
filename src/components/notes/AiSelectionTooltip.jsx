@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Sparkles, X } from 'lucide-react';
+import { Sparkles, X, Copy, Check, FileSearch } from 'lucide-react';
 import { explainSelection } from '../../services/aiService';
 import { useTypewriter } from '../../hooks/useTypewriter';
 import ReactMarkdown from 'react-markdown';
@@ -13,8 +13,8 @@ export default function AiSelectionTooltip({ noteContent }) {
   
   const [explanation, setExplanation] = useState("");
   const [loading, setLoading] = useState(false);
-  
   const [isMobile, setIsMobile] = useState(false);
+  const [copied, setCopied] = useState(false);
   
   // Typewriter effect for AI explanation
   const { displayedText, isTyping, skipTyping } = useTypewriter(explanation, 8, !!explanation);
@@ -101,6 +101,19 @@ export default function AiSelectionTooltip({ noteContent }) {
     setSelection("");
     setIsOpen(false);
     setExplanation("");
+    setCopied(false);
+  };
+
+  const handleCopyExplanation = () => {
+    navigator.clipboard.writeText(explanation);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSearchInDoc = () => {
+    // Fire the same event the AiSummaryPanel uses to highlight a quote
+    const trimmed = selection.substring(0, 120); // use first 120 chars as the quote
+    window.dispatchEvent(new CustomEvent('ai-highlight-quote', { detail: { quote: trimmed } }));
   };
 
   const triggerExplanation = async (textOverride = null) => {
@@ -162,29 +175,51 @@ export default function AiSelectionTooltip({ noteContent }) {
              <span className="font-bold text-[12px] text-gray-800 tracking-wide uppercase">สรุปเนื้อหาส่วนนี้</span>
            </div>
 
-           <div className="text-gray-700 min-h-[60px] max-h-[300px] overflow-y-auto scrollbar-hide">
-             {loading ? (
-                <div className="flex flex-col gap-2.5 mt-2 opacity-70">
-                  <div className="h-2.5 bg-gray-200 rounded w-full animate-pulse"></div>
-                  <div className="h-2.5 bg-gray-200 rounded w-5/6 animate-pulse"></div>
-                  <div className="h-2.5 bg-gray-200 rounded w-4/6 animate-pulse"></div>
-                  <div className="h-2.5 bg-gray-200 rounded w-1/2 animate-pulse mt-1"></div>
-                </div>
-             ) : (
-                <div className="prose prose-sm prose-gray prose-p:leading-relaxed text-[13px] leading-relaxed relative group">
-                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {displayedText}
-                   </ReactMarkdown>
-                   {isTyping && <span className="inline-block w-1.5 h-3.5 ml-1 bg-gray-400 animate-pulse align-middle"></span>}
-                   
-                   {isTyping && (
-                     <button onClick={skipTyping} className="absolute right-0 bottom-0 text-[10px] px-2 py-0.5 bg-gray-100 text-gray-500 rounded hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity">
-                       Skip ⏭
-                     </button>
-                   )}
-                </div>
-             )}
+           <div className="text-gray-700 min-h-[60px] max-h-[260px] overflow-y-auto scrollbar-hide">
+              {loading ? (
+                 <div className="flex flex-col gap-2.5 mt-2 opacity-70">
+                   <div className="h-2.5 bg-gray-200 rounded w-full animate-pulse"></div>
+                   <div className="h-2.5 bg-gray-200 rounded w-5/6 animate-pulse"></div>
+                   <div className="h-2.5 bg-gray-200 rounded w-4/6 animate-pulse"></div>
+                   <div className="h-2.5 bg-gray-200 rounded w-1/2 animate-pulse mt-1"></div>
+                 </div>
+              ) : (
+                 <div className="prose prose-sm prose-gray prose-p:leading-relaxed text-[13px] leading-relaxed relative group">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                       {displayedText}
+                    </ReactMarkdown>
+                    {isTyping && <span className="inline-block w-1.5 h-3.5 ml-1 bg-gray-400 animate-pulse align-middle"></span>}
+                    
+                    {isTyping && (
+                      <button onClick={skipTyping} className="absolute right-0 bottom-0 text-[10px] px-2 py-0.5 bg-gray-100 text-gray-500 rounded hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity">
+                        ข้าม ⏭
+                      </button>
+                    )}
+                 </div>
+              )}
            </div>
+
+           {/* Footer actions — only show when explanation is ready */}
+           {!loading && explanation && (
+             <div className="mt-3 pt-2.5 border-t border-gray-100 flex items-center justify-between gap-2">
+               <button
+                 onClick={handleSearchInDoc}
+                 className="flex items-center gap-1.5 text-[11px] text-gray-400 hover:text-red-600 transition-colors font-medium"
+                 title="ไปยังเนื้อหานี้ในเอกสาร"
+               >
+                 <FileSearch size={12} />
+                 ค้นหาในเอกสาร
+               </button>
+               <button
+                 onClick={handleCopyExplanation}
+                 className="flex items-center gap-1.5 text-[11px] text-gray-400 hover:text-gray-700 transition-colors font-medium"
+                 title="คัดลอกคำอธิบาย"
+               >
+                 {copied ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
+                 {copied ? 'คัดลอกแล้ว' : 'คัดลอก'}
+               </button>
+             </div>
+           )}
         </div>
       )}
     </div>,

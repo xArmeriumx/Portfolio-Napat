@@ -88,6 +88,24 @@ export default async function handler(req, res) {
   "explanation": "คำอธิบายที่อ่านง่าย"
 }`;
        userMessage = `ข้อมูลแนบ (Context):\n${context}\n\nข้อความที่ผู้ใช้คลุมดำ (Selection): "${selection}"\n\nคำสั่ง: โปรดอธิบายข้อความนี้ให้เข้าใจง่ายที่สุด:`;
+    } else if (action === 'review_code') {
+       const { code, language } = payload;
+       systemPrompt = `You are a Senior Staff Software Engineer.
+Your task is to thoroughly review the provided code and give constructive feedback.
+
+Rules:
+1. Analyze this${language ? ` ${language}` : ''} code for correctness, performance, and security.
+2. Point out what is good, what are the issues/risks, and suggest improvements.
+3. If there is a better way to write it, provide the improved code.
+4. Respond in brief, direct English.
+5. Return strictly valid JSON in this format:
+{
+  "summary": "Short summary of what the code does",
+  "issues": ["Issue/Warning 1", "Issue/Warning 2"],
+  "suggestions": "Overall suggestions for best practices",
+  "improved_code": "The refactored code (put null if it's already perfect)"
+}`;
+       userMessage = `Code to review:\n\`\`\`${language || ''}\n${code}\n\`\`\``;
     } else {
        return res.status(400).json({ error: 'Unknown Action Type' });
     }
@@ -123,7 +141,7 @@ export default async function handler(req, res) {
             ],
             temperature: action === 'search_rag' ? 0.1 : 0.3,
             max_tokens: 600,
-            ...(action === 'search_rag' && { response_format: { type: 'json_object' } })
+            ...((['search_rag', 'review_code'].includes(action)) && { response_format: { type: 'json_object' } })
           })
         });
 
