@@ -169,13 +169,17 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
               spellCheck={false}
             />
           ) : hasChanges ? (
-            <code className={`${className} bg-transparent p-4 block whitespace-pre-wrap text-gray-800`} {...props}>
-              {editedCode}
-            </code>
+            <pre className="m-0 p-0 bg-transparent border-none">
+              <code className={`${className} bg-transparent p-4 block text-gray-800 font-mono text-[13px] leading-[1.6]`} {...props}>
+                {editedCode}
+              </code>
+            </pre>
           ) : (
-            <code className={`${className} bg-transparent p-4 block`} {...props}>
-              {children}
-            </code>
+            <pre className="m-0 p-0 bg-transparent border-none">
+              <code className={`${className} bg-transparent p-4 block font-mono text-[13px] leading-[1.6]`} {...props}>
+                {children}
+              </code>
+            </pre>
           )}
         </div>
 
