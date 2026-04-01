@@ -208,7 +208,7 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                 {/* Explanation with Markdown Formatting and forced word-wraps */}
                 {aiText && (
                   <div className="relative group/typewriter">
-                    <div className="prose prose-sm prose-gray max-w-none w-full text-gray-700 font-medium 
+                    <div className="prose prose-sm prose-gray max-w-none w-full text-gray-700 font-medium pb-8
                         prose-p:leading-relaxed prose-p:my-2
                         prose-headings:text-gray-900 prose-headings:font-bold prose-headings:mt-4 prose-headings:mb-2
                         prose-ul:pl-4 prose-ol:pl-4 prose-li:my-0.5
@@ -218,17 +218,20 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                         prose-pre:bg-gray-50 prose-pre:border prose-pre:border-gray-200 prose-pre:text-gray-800 prose-pre:p-3 prose-pre:overflow-x-auto [&_pre_code]:bg-transparent [&_pre_code]:text-gray-800 [&_pre_code]:border-none [&_pre_code]:p-0
                         [&_p]:break-words [&_li]:break-words [&_li>p]:my-0"
                     >
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      <ReactMarkdown 
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeRaw, rehypeHighlight]}
+                      >
                         {displayedText}
                       </ReactMarkdown>
                       {isTyping && <span className="inline-block w-1.5 h-4 ml-1 bg-gray-400 animate-pulse align-middle"></span>}
                     </div>
 
-                    {/* Skip button appears only while typing on hover (or stays if mobile but fade is elegant) */}
+                    {/* Skip button is slightly faded normally, solid on hover. Fixes invisible button on mobile */}
                     {isTyping && (
                        <button 
                          onClick={skipTyping} 
-                         className="absolute right-0 bottom-0 text-[11px] font-bold px-2 py-1 bg-white text-gray-500 rounded hover:bg-gray-100 transition-colors opacity-0 group-hover/typewriter:opacity-100 shadow border border-gray-100"
+                         className="absolute right-0 bottom-4 text-[11px] font-bold px-2 py-1 bg-white text-gray-500 rounded hover:bg-gray-100 transition-colors opacity-70 hover:opacity-100 shadow border border-gray-100"
                        >
                          ข้ามการพิมพ์ ⏯
                        </button>
