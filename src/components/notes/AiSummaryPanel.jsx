@@ -253,6 +253,21 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
          </div>
       </div>
 
+      {/* 1.5. Keybindings & Shortcuts Formal Hint */}
+      {!summaryText && !searchStatus && (
+         <div className="bg-white px-4 sm:px-3 py-2 border-b border-gray-100 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11.5px] text-gray-500 animate-fade-in-down">
+           <span className="flex items-center gap-1.5 font-medium whitespace-nowrap">
+             <kbd className="bg-gray-100/80 text-gray-500 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold border border-gray-200/60 shadow-[0_1px_0_rgba(200,200,200,0.5)]">Tab ⇥</kbd> 
+             เติมข้อความอัจฉริยะแบบ Copilot
+           </span>
+           <span className="hidden sm:block w-1 h-1 bg-gray-200 rounded-full"></span>
+           <span className="flex items-center gap-1.5 font-medium whitespace-nowrap">
+             <kbd className="bg-gray-100/80 text-gray-500 px-1.5 py-0.5 rounded text-[10px] font-bold border border-gray-200/60 shadow-[0_1px_0_rgba(200,200,200,0.5)]">Double Click</kbd> 
+             อธิบายคำศัพท์หรือโค้ดอัตโนมัติด้วย AI
+           </span>
+         </div>
+      )}
+
       {/* 2. Streaming Summary Render Panel */}
       {summaryText && (
         <div className="relative p-5 sm:p-4 bg-white animate-fade-in-down border-t border-gray-100 group">
