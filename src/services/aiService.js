@@ -152,7 +152,7 @@ export async function reviewCode(code, language) {
       return JSON.parse(cleaned);
     } catch (e) {
       // If AI returned plain text instead of JSON, wrap it
-      return { summary: result, issues: [], suggestions: '', improved_code: null };
+      return { explanation: result };
     }
   } catch (error) {
     console.error('reviewCode error:', error);

@@ -181,49 +181,35 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
             ) : reviewResult && (
               <div className="space-y-4">
                 {/* Panel header */}
-                <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-                  <span className="text-[11px] font-bold text-gray-800 uppercase tracking-widest flex items-center gap-1.5">
-                    <Sparkles size={13} className="text-gray-500" /> Review Results
+                <div className="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
+                  <span className="text-[12px] font-bold text-gray-800 uppercase tracking-widest flex items-center gap-1.5">
+                    <Sparkles size={14} className="text-gray-500" /> คำอธิบายการทำงาน
                   </span>
                   <button onClick={() => setReviewResult(null)} className="p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-800 rounded transition-colors">
                     <X size={14} />
                   </button>
                 </div>
 
-                {/* Summary */}
-                {reviewResult.summary && (
-                  <p className="text-[13px] text-gray-600 leading-relaxed font-medium break-words whitespace-pre-line">{reviewResult.summary}</p>
-                )}
-
-                {/* Issues */}
-                {reviewResult.issues?.length > 0 && (
-                  <div>
-                    <p className="text-[11px] font-bold text-gray-800 uppercase tracking-wider mb-2">Issues & Warnings</p>
-                    <ul className="space-y-1.5 list-disc pl-4">
-                      {reviewResult.issues.map((issue, i) => (
-                        <li key={i} className="text-[13px] text-gray-600 break-words pr-2">
-                          {issue}
-                        </li>
-                      ))}
-                    </ul>
+                {/* Explanation with Markdown Formatting and forced word-wraps */}
+                {reviewResult.explanation && (
+                  <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed font-medium 
+                      prose-p:my-2 prose-p:break-words prose-p:whitespace-pre-wrap
+                      prose-a:text-red-500 prose-ul:my-2 prose-li:my-1
+                      prose-strong:text-gray-900 prose-strong:font-bold
+                      prose-code:px-1.5 prose-code:py-0.5 prose-code:bg-white prose-code:text-red-600 prose-code:rounded prose-code:border prose-code:border-gray-200 prose-code:text-[12px] prose-code:break-words prose-code:before:content-none prose-code:after:content-none
+                      prose-pre:bg-white prose-pre:border prose-pre:border-gray-200 prose-pre:text-gray-800 prose-pre:p-3 prose-pre:whitespace-pre-wrap prose-pre:break-words">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {reviewResult.explanation}
+                    </ReactMarkdown>
                   </div>
                 )}
-
-                {/* Suggestions */}
-                {reviewResult.suggestions && (
-                  <div>
-                    <p className="text-[11px] font-bold text-gray-800 uppercase tracking-wider mb-2">Suggestions</p>
-                    <p className="text-[13px] text-gray-600 leading-relaxed break-words whitespace-pre-line">{reviewResult.suggestions}</p>
-                  </div>
-                )}
-
-                {/* Improved code */}
-                {reviewResult.improved_code && reviewResult.improved_code !== 'null' && (
-                  <div className="mt-2">
-                    <p className="text-[11px] font-bold text-gray-800 uppercase tracking-wider mb-2">Improved Code</p>
-                    <div className="bg-white rounded border border-gray-200 p-4 font-mono text-[12px] text-gray-700 overflow-x-auto whitespace-pre-wrap shadow-sm">
-                      {reviewResult.improved_code}
-                    </div>
+                
+                {/* Fallback code to support previous cached summaries before the schema update */}
+                {reviewResult.summary && !reviewResult.explanation && (
+                  <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed font-medium prose-p:break-words prose-p:whitespace-pre-wrap">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {reviewResult.summary}
+                    </ReactMarkdown>
                   </div>
                 )}
               </div>
