@@ -17,6 +17,10 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
   // Follow-up chips
   const [followUps, setFollowUps] = useState([]);
   const [followUpsLoading, setFollowUpsLoading] = useState(false);
+  
+  // Typeahead (Predictive Input)
+  const [suggestedPrompts, setSuggestedPrompts] = useState([]);
+  const [typeahead, setTypeahead] = useState('');
 
   // Note: We no longer use useTypewriter because we have real streaming (SSE) from the backend!
 
@@ -35,11 +39,23 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
     if (!noteContent || !noteId) return;
     const timer = setTimeout(() => {
       // โหลดทิ้งไว้ในแบคกราวด์ ไม่เอาผลมาโชว์ (Fire and forget)
-      generatePrompts(noteContent.substring(0, 1500)).catch(() => {});
+      generatePrompts(noteContent.substring(0, 1500))
+        .then(chips => { if (Array.isArray(chips)) setSuggestedPrompts(chips); })
+        .catch(() => {});
       summarizeContent(noteContent).catch(() => {});
     }, 3500); // ดีเลย์ 3.5 วินาที
     return () => clearTimeout(timer);
   }, [noteContent, noteId]);
+
+  // 1.5 Typeahead Ghost Text effect
+  useEffect(() => {
+    if (!query) {
+      setTypeahead('');
+      return;
+    }
+    const match = suggestedPrompts.find(p => p.toLowerCase().startsWith(query.toLowerCase()));
+    setTypeahead(match || '');
+  }, [query, suggestedPrompts]);
 
 
   // Listen for cross-component highlight requests (from AiSelectionTooltip)
@@ -168,12 +184,33 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center bg-gray-50 border-b border-gray-100">
          <form onSubmit={(e) => handleSearch(e)} className="relative flex-1 group border-b sm:border-b-0 sm:border-r border-gray-200 bg-white sm:bg-transparent transition-colors">
            {statusIcon}
+           
+           {/* Ghost Text (Typeahead) Layer */}
+           <div className="absolute inset-0 flex items-center pl-12 sm:pl-10 pr-14 sm:pr-10 text-[16px] sm:text-[13px] leading-relaxed pointer-events-none whitespace-pre overflow-hidden">
+             <span className="opacity-0">{query}</span>
+             {typeahead && typeahead.toLowerCase().startsWith(query.toLowerCase()) && (
+               <span className="text-gray-400 font-medium tracking-wide">
+                 {typeahead.slice(query.length)}
+               </span>
+             )}
+             {/* Key Hint Button for Tab */}
+             {query && typeahead && typeahead.toLowerCase().startsWith(query.toLowerCase()) && (
+               <span className="ml-2 text-[10px] bg-gray-100 text-gray-400 px-1 rounded border border-gray-200 uppercase animate-fade-in-up">Tab ⇥</span>
+             )}
+           </div>
+
            <input 
              type="text"
              value={query}
              onChange={(e) => setQuery(e.target.value)}
+             onKeyDown={(e) => {
+               if (e.key === 'Tab' && typeahead) {
+                  e.preventDefault();
+                  setQuery(typeahead);
+               }
+             }}
              placeholder={inputPlaceholder}
-             className="w-full py-3.5 sm:py-2.5 pl-12 sm:pl-10 pr-14 sm:pr-10 bg-transparent border-none text-[16px] sm:text-[13px] leading-relaxed text-gray-800 focus:outline-none focus:bg-white transition-colors placeholder-gray-400"
+             className="relative z-10 w-full py-3.5 sm:py-2.5 pl-12 sm:pl-10 pr-14 sm:pr-10 bg-transparent border-none text-[16px] sm:text-[13px] leading-relaxed text-gray-800 focus:outline-none transition-colors placeholder-gray-400"
              autoComplete="off"
              spellCheck="false"
              disabled={loading}

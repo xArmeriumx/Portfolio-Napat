@@ -66,6 +66,41 @@ export default function AiSelectionTooltip({ noteContent }) {
       }
     };
 
+    // ⚡ 3. Double-Tap Shortcut (Haptic Auto-Explain)
+    // ถอดแบบจาก claude-code: ดับเบิลคลิกเพื่อรัน AI ทันทีโดยไม่ต้องกดปุ่ม
+    const handleDoubleClick = (e) => {
+      if (popoverRef.current && popoverRef.current.contains(e.target)) return;
+
+      const fullSelection = window.getSelection();
+      const text = fullSelection.toString().trim();
+
+      if (text.length > 0 && text.length < 800) {
+        let isInsideProse = false;
+        let node = fullSelection.getRangeAt(0)?.commonAncestorContainer;
+        while (node) {
+           if (node.nodeType === 1 && node?.classList?.contains('prose')) {
+              isInsideProse = true; break;
+           }
+           node = node.parentNode;
+        }
+
+        if (isInsideProse) {
+          const range = fullSelection.getRangeAt(0);
+          const rect = range.getBoundingClientRect();
+          const clientRects = range.getClientRects();
+          const preciseRect = clientRects.length > 0 ? clientRects[0] : rect;
+          
+          const autoPos = {
+            top: preciseRect.top - 8,
+            left: preciseRect.left + (preciseRect.width / 2)
+          };
+          
+          setSelection(text);
+          triggerExplanation(text, autoPos);
+        }
+      }
+    };
+
     const handleCustomExplain = (e) => {
        const { text, rect } = e.detail;
        setSelection(text);
@@ -87,10 +122,12 @@ export default function AiSelectionTooltip({ noteContent }) {
     };
 
     document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('dblclick', handleDoubleClick);
     document.addEventListener('mousedown', handleDocumentClick);
     window.addEventListener('ai-explain-block', handleCustomExplain);
     return () => {
       document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('dblclick', handleDoubleClick);
       document.removeEventListener('mousedown', handleDocumentClick);
       window.removeEventListener('ai-explain-block', handleCustomExplain);
     };
@@ -116,14 +153,17 @@ export default function AiSelectionTooltip({ noteContent }) {
     window.dispatchEvent(new CustomEvent('ai-highlight-quote', { detail: { quote: trimmed } }));
   };
 
-  const triggerExplanation = async (textOverride = null) => {
+  const triggerExplanation = async (textOverride = null, forcePos = null) => {
     const textToExplain = textOverride || selection;
     setIsOpen(true);
     setLoading(true);
     
     if (!isMobile) {
-      // Move position down slightly to act as a proper modal popup on desktop
-      setPosition(prev => ({ ...prev, top: prev.top + 30 }));
+      if (forcePos) {
+         setPosition({ top: forcePos.top + 30, left: forcePos.left });
+      } else {
+         setPosition(prev => ({ ...prev, top: prev.top + 30 }));
+      }
     }
     
     // Notice: We don't remove ranges natively anymore! This allows the user to still use OS Copy tools!
