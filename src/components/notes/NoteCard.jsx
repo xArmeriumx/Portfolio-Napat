@@ -319,6 +319,30 @@ const InteractiveBlock = ({ node, children, tagName: Tag, ...props }) => {
   );
 };
 
+// Stable references for Markdown components to prevent React from unmounting and destroying state
+const MarkdownPre = ({ node, children, ...props }) => (
+  <div className="not-prose" {...props}>
+    {children}
+  </div>
+);
+
+const MarkdownTable = ({ node, ...props }) => (
+  <div className="w-full overflow-x-auto mb-6 rounded-lg border-x border-gray-200">
+    <table className="!my-0 border-0" {...props} />
+  </div>
+);
+
+const markdownComponents = {
+  p: (props) => <InteractiveBlock tagName="p" {...props} />,
+  h1: (props) => <InteractiveBlock tagName="h1" {...props} />,
+  h2: (props) => <InteractiveBlock tagName="h2" {...props} />,
+  h3: (props) => <InteractiveBlock tagName="h3" {...props} />,
+  li: (props) => <InteractiveBlock tagName="li" {...props} />,
+  pre: MarkdownPre,
+  code: CodeBlock,
+  table: MarkdownTable
+};
+
 export default function NoteCard({ markdown }) {
   // Extracting title assuming it's the first heading # Title
   const titleMatch = markdown.match(/^#\s+(.+)$/m);
@@ -346,24 +370,7 @@ export default function NoteCard({ markdown }) {
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeRaw, rehypeSlug, rehypeHighlight]}
-          components={{ 
-            p: (props) => <InteractiveBlock tagName="p" {...props} />,
-            h1: (props) => <InteractiveBlock tagName="h1" {...props} />,
-            h2: (props) => <InteractiveBlock tagName="h2" {...props} />,
-            h3: (props) => <InteractiveBlock tagName="h3" {...props} />,
-            li: (props) => <InteractiveBlock tagName="li" {...props} />,
-            pre: ({ node, children, ...props }) => (
-              <div className="not-prose" {...props}>
-                {children}
-              </div>
-            ),
-            code: CodeBlock,
-            table: ({node, ...props}) => (
-              <div className="w-full overflow-x-auto mb-6 rounded-lg border-x border-gray-200">
-                <table className="!my-0 border-0" {...props} />
-              </div>
-            )
-          }}
+          components={markdownComponents}
         >
           {markdown}
         </ReactMarkdown>
