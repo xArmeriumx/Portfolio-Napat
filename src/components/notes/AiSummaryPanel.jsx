@@ -211,7 +211,9 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
         setSummaryText(chunk);
       });
 
+      // Set done BEFORE clearing searchStatus so status bar can show completion
       setStreamStatus('done');
+      setSearchStatus(null);
 
       // Generate follow-up chips after summary is ready
       setFollowUpsLoading(true);
@@ -228,7 +230,9 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
         : 'ขออภัย ไม่สามารถประมวลผลข้อมูลได้ในเวลานี้');
     } finally {
       setLoading(false);
-      setSearchStatus(null);
+      // searchStatus อาจถูก clear ไปแล้วใน try block (success path)
+      // ถ้ายังไม่ clear (error path) → clear ตรงนี้
+      setSearchStatus(prev => prev === 'summarizing' ? null : prev);
     }
   };
 
@@ -319,8 +323,12 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
                   className="px-5 sm:px-3 py-2 sm:py-1 bg-white border border-gray-200 text-gray-700 rounded-lg sm:rounded text-[14px] sm:text-xs hover:bg-gray-50 hover:text-gray-900 shadow-sm transition-colors font-semibold flex items-center gap-2 sm:gap-1 disabled:opacity-50"
                   title="สรุปใจความสำคัญจากเนื้อหา"
                 >
-                  {searchStatus === 'summarizing' ? (
+                  {/* ใช้ spinner ในปุ่มเฉพาะตอน connecting เท่านั้น (ก่อน status bar จะขึ้น) */}
+                  {/* พอ streamStatus เปลี่ยนจาก connecting → status bar จะ take over แทน */}
+                  {searchStatus === 'summarizing' && streamStatus === 'connecting' ? (
                      <div className="sm:w-3 sm:h-3 w-4 h-4 rounded-full border border-gray-300 border-t-gray-600 animate-spin"></div>
+                  ) : searchStatus === 'summarizing' ? (
+                     <Wifi size={16} className="sm:w-3 sm:h-3 text-blue-400" />
                   ) : (
                      <FileText size={16} className="sm:w-3 sm:h-3" />
                   )}
@@ -350,7 +358,8 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
       )}
 
       {/* Streaming Status Bar (Sheet Part 6 §5) */}
-      {streamStatusMsg && searchStatus === 'summarizing' && (
+      {/* แสดงเฉพาะตอน active streaming states — ไม่แสดงตอน idle/done/connecting */}
+      {streamStatusMsg && ['thinking', 'streaming', 'stalled', 'error'].includes(streamStatus) && (
         <div className={`px-4 sm:px-3 py-1.5 flex items-center gap-2 text-[11px] font-medium transition-colors duration-300 ${
           streamStatus === 'stalled' 
             ? 'bg-amber-50 text-amber-600 border-b border-amber-100' 
@@ -400,7 +409,8 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {summaryText}
               </ReactMarkdown>
-              {searchStatus === 'summarizing' && <span className="inline-block w-1.5 h-4 ml-1 bg-gray-400 animate-pulse align-middle"></span>}
+              {/* Cursor blink: แสดงเฉพาะตอน streaming จริงๆ — ไม่ซ้ำกับ status bar animation */}
+              {streamStatus === 'streaming' && <span className="inline-block w-1.5 h-4 ml-1 bg-gray-400 animate-pulse align-middle"></span>}
            </div>
 
           {/* Follow-up question chips */}
