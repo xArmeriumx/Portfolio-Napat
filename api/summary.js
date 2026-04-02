@@ -1,41 +1,129 @@
 /**
- * Vercel Serverless Function: AI Gateway
+ * Vercel Serverless Function: AI Gateway (Enhanced with Claude Code Patterns)
  * Path: api/summary.js 
- * Note: Named generically to obscure the backend provider logic.
+ * 
+ * Patterns applied from Sheet/:
+ *  - Input Validation (Part 5 Philosophy 3 — 4-Phase Tool Lifecycle)
+ *  - Observability / Stats Tracking (Part 4 Philosophy 2)
+ *  - Proactive Rate Limit Warning Headers (Part 4 Philosophy 7)
+ *  - AbortSignal timeout for upstream calls (Part 7 Philosophy 3)
  */
 
-// In-Memory Rate Limiter Store (per Hot Vercel Container)
-// Format: { "IP": { count: number, resetTime: number } }
+// ============================================================
+// 🛡️ Rate Limiter (enhanced with warning headers)
+// ============================================================
 const rateLimitMap = new Map();
 const MAX_REQUESTS_PER_MINUTE = 10;
-const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 
-function checkRateLimit(ip) {
+function checkRateLimit(ip, res) {
   const now = Date.now();
   if (rateLimitMap.has(ip)) {
      const data = rateLimitMap.get(ip);
      if (now > data.resetTime) {
-        // Window expired, reset counter
         rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+        res.setHeader('X-RateLimit-Remaining', MAX_REQUESTS_PER_MINUTE - 1);
         return true;
      }
      
      if (data.count >= MAX_REQUESTS_PER_MINUTE) {
-        return false; // Rate limit exceeded!
+        const resetIn = Math.ceil((data.resetTime - now) / 1000);
+        res.setHeader('X-RateLimit-Remaining', '0');
+        res.setHeader('X-RateLimit-Reset', resetIn.toString());
+        return false;
      }
      
      data.count += 1;
+     const remaining = MAX_REQUESTS_PER_MINUTE - data.count;
+     res.setHeader('X-RateLimit-Remaining', remaining.toString());
+     
+     // Proactive Warning (Sheet Part 4 §7): บอก frontend ก่อนถูก limit
+     if (remaining <= 2) {
+       res.setHeader('X-RateLimit-Warning', 'approaching-limit');
+     }
      return true;
   } else {
-     // First time seeing this IP in this window
      rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+     res.setHeader('X-RateLimit-Remaining', (MAX_REQUESTS_PER_MINUTE - 1).toString());
      return true;
   }
 }
 
+
+// ============================================================
+// 📊 Observability Stats (Sheet Part 4 §2)
+// ============================================================
+// Simple in-memory counters per hot container — ไม่ต้อง external service
+const stats = {
+  totalCalls: 0,
+  totalErrors: 0,
+  fallbackCount: 0,
+  modelUsage: {},
+  actionUsage: {},
+  avgLatencyMs: 0,
+  _latencySum: 0,
+};
+
+function recordStats(model, action, latencyMs, isFallback = false) {
+  stats.totalCalls++;
+  stats.modelUsage[model] = (stats.modelUsage[model] || 0) + 1;
+  stats.actionUsage[action] = (stats.actionUsage[action] || 0) + 1;
+  stats._latencySum += latencyMs;
+  stats.avgLatencyMs = Math.round(stats._latencySum / stats.totalCalls);
+  if (isFallback) stats.fallbackCount++;
+}
+
+
+// ============================================================
+// 🔍 Input Validation (Sheet Part 5 §3 — Phase 1: Validation)
+// ============================================================
+const VALID_ACTIONS = new Set(['summarize', 'search_rag', 'generate_prompts', 'explain_selection', 'review_code']);
+const MAX_PAYLOAD_SIZE = 15000; // 15KB max payload
+
+function validateRequest(action, payload) {
+  if (!action || !payload) {
+    return 'Bad Request. Missing action or payload.';
+  }
+  if (!VALID_ACTIONS.has(action)) {
+    return `Unknown action: "${action}". Valid actions: ${[...VALID_ACTIONS].join(', ')}`;
+  }
+  
+  // Size check
+  const payloadStr = typeof payload === 'object' ? JSON.stringify(payload) : String(payload);
+  if (payloadStr.length > MAX_PAYLOAD_SIZE) {
+    return `Payload too large (${payloadStr.length} chars). Max: ${MAX_PAYLOAD_SIZE}`;
+  }
+  
+  // Action-specific validation
+  if (action === 'search_rag') {
+    if (!payload.query || !payload.context) {
+      return 'search_rag requires "query" and "context" in payload.';
+    }
+    if (typeof payload.query !== 'string' || payload.query.trim().length === 0) {
+      return 'search_rag "query" must be a non-empty string.';
+    }
+  }
+  if (action === 'explain_selection') {
+    if (!payload.selection || !payload.context) {
+      return 'explain_selection requires "selection" and "context" in payload.';
+    }
+  }
+  if (action === 'review_code') {
+    if (!payload.code) {
+      return 'review_code requires "code" in payload.';
+    }
+  }
+  
+  return null; // valid
+}
+
+// ============================================================
+// 🚀 Main Handler
+// ============================================================
 export default async function handler(req, res) {
+  const requestStart = Date.now();
+
   // 1. Basic Security: CORS & Origin Check
-  // Allow local development and the production domain
   const allowedOrigins = ['http://localhost:5173', 'https://napatdev.com', 'http://127.0.0.1:5173'];
   const origin = req.headers.origin;
   
@@ -44,9 +132,8 @@ export default async function handler(req, res) {
   }
   
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-turnstile-token');
 
-  // Fast return for CORS preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -55,18 +142,17 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // Rate Limit Execution
+  // 2. Rate Limit (enhanced with warning headers)
   const forwardedFor = req.headers['x-forwarded-for'];
   const rawIp = forwardedFor ? forwardedFor.split(',')[0].trim() : (req.socket?.remoteAddress || 'unknown');
   
-  if (!checkRateLimit(rawIp)) {
+  if (!checkRateLimit(rawIp, res)) {
     return res.status(429).json({ error: 'Too Many Requests (Rate Limit Exceeded). Please slow down and try again later.' });
   }
 
-  // Security Protection: Validate request source to prevent stolen quota
+  // 3. Security (Turnstile CAPTCHA)
   const isDev = process.env.NODE_ENV === 'development';
   if (!isDev) {
-    // 1. Check Origin/Referer: Blocks other websites from requesting our API via browser fetch (CORS spoofing is blocked by browsers natively)
     const origin = req.headers.origin || req.headers.referer || '';
     const isAllowedDomain = origin.includes('napatdev.com') || origin.includes('vercel.app') || origin.includes('localhost');
     
@@ -74,7 +160,6 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: 'Forbidden: Origin validation failed' });
     }
 
-    // 2. CAPTCHA / Cloudflare Turnstile Validation (Final Boss)
     const turnstileToken = req.headers['x-turnstile-token'];
     const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
     
@@ -86,7 +171,6 @@ export default async function handler(req, res) {
     formData.append('secret', turnstileSecret);
     formData.append('response', turnstileToken);
     
-    // Check if behind proxy or retrieve normal IP
     const remoteIp = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '';
     if (remoteIp) formData.append('remoteip', remoteIp);
 
@@ -102,12 +186,14 @@ export default async function handler(req, res) {
     }
   }
 
+  // 4. Input Validation (Sheet Part 5 §3)
   const { action, payload, stream } = req.body || {};
-  if (!action || !payload) {
-    return res.status(400).json({ error: 'Bad Request. Missing action or payload.' });
+  
+  const validationError = validateRequest(action, payload);
+  if (validationError) {
+    return res.status(400).json({ error: validationError });
   }
 
-  // Process.env holds secrets securely in Vercel Cloud Server
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: 'Internal Configuration Error. API Key not found.' });
@@ -117,7 +203,7 @@ export default async function handler(req, res) {
     let systemPrompt = "";
     let userMessage = "";
 
-    // 2. Routing logic (Summarize vs RAG)
+    // 5. Routing logic
     if (action === 'summarize') {
        systemPrompt = "คุณคือ AI ผู้ช่วยนักพัฒนาซอฟต์แวร์สุดล้ำ ช่วยสรุปประเด็นสำคัญจากเอกสารโน้ต/Cheatsheet นี้ให้อ่านง่ายที่สุด โดยดึงแก่นสำคัญออกมาเป็น Bullet Points 3-5 ข้อ ด้วยภาษาที่เป็นมิตรและเข้าใจง่าย (เขียนเป็นภาษาไทย)";
        userMessage = payload;
@@ -179,108 +265,130 @@ export default async function handler(req, res) {
   "explanation": "คำอธิบายการทำงานของโค้ดที่ร้อยเรียงมาอย่างสวยงามพร้อม Markdown Formatting..."
 }`);
        userMessage = `โค้ดที่ต้องการคำอธิบาย:\n\`\`\`${language || ''}\n${code}\n\`\`\``;
-    } else {
-       return res.status(400).json({ error: 'Unknown Action Type' });
     }
 
-    // 3. Multi-Model Fallback Queue
-    // We loop through available models. If one hits Rate Limit (429), we silently switch to the next!
+    // 6. Multi-Model Fallback Queue (เดิมมีอยู่แล้ว)
     const FALLBACK_MODELS = [
       'llama-3.1-8b-instant', 
       'qwen-2.5-32b',
       'moonshotai/kimi-k2-instruct',
-      'openai/gpt-oss-120b',         // Adding custom requested model
-      'openai/gpt-oss-20b',          // Adding custom requested model
+      'openai/gpt-oss-120b',
+      'openai/gpt-oss-20b',
       'llama-3.3-70b-versatile',
       'llama3-8b-8192',
       'llama3-70b-8192'
     ];
 
     let lastError = null;
+    let modelIndex = 0;
 
     for (const model of FALLBACK_MODELS) {
+      modelIndex++;
+      const isFallback = modelIndex > 1;
+      
       try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', { // Can be changed to openrouter URL if using those models
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json'
-          },
+        // AbortSignal timeout สำหรับ upstream call (Sheet Part 7 §3)
+        const abortController = new AbortController();
+        const upstreamTimeout = setTimeout(() => abortController.abort(), 25000); // 25s timeout
+
+        try {
+          const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${apiKey}`,
+              'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
-            model: model,
-            messages: [
-              { role: 'system', content: systemPrompt },
-              ...(action === 'search_rag' && payload.history ? payload.history.map(h => ({
-                  role: h.role === 'assistant' ? 'assistant' : 'user',
-                  content: h.role === 'system' ? `[Memory]: ${h.content}` : h.content
-              })) : []),
-              { role: 'user', content: userMessage }
-            ],
-            temperature: action === 'search_rag' ? 0.1 : 0.3,
-            max_tokens: 600,
-            stream: !!stream,
-            ...((['search_rag', 'review_code'].includes(action) && !stream) && { response_format: { type: 'json_object' } })
-          })
-        });
-
-        if (response.status === 429) {
-          console.warn(`[AI] Rate limit hit for model: ${model}. Falling back to next model...`);
-          lastError = new Error(`Rate limit exceeded for ${model}`);
-          continue; // Trigger fallback
-        }
-
-        if (!response.ok) {
-           const errText = await response.text();
-           console.error(`[AI] Error with model ${model}:`, response.status, errText);
-           // If it's a model not found error (like kimi on groq), we should fallback too
-           if (response.status === 404 || response.status === 400) {
-              continue;
-           }
-           throw new Error(`Upstream API Error: ${response.status}`);
-        }
-
-        if (stream) {
-          res.writeHead(200, {
-            'Content-Type': 'text/event-stream',
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
+              model: model,
+              messages: [
+                { role: 'system', content: systemPrompt },
+                ...(action === 'search_rag' && payload.history ? payload.history.map(h => ({
+                    role: h.role === 'assistant' ? 'assistant' : 'user',
+                    content: h.role === 'system' ? `[Memory]: ${h.content}` : h.content
+                })) : []),
+                { role: 'user', content: userMessage }
+              ],
+              temperature: action === 'search_rag' ? 0.1 : 0.3,
+              max_tokens: 600,
+              stream: !!stream,
+              ...((['search_rag', 'review_code'].includes(action) && !stream) && { response_format: { type: 'json_object' } })
+            }),
+            signal: abortController.signal
           });
-          
-          if (response.body && response.body.getReader) {
-            const reader = response.body.getReader();
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              res.write(value);
-            }
-          } else if (response.body) {
-            for await (const chunk of response.body) {
-              res.write(chunk);
-            }
+
+          clearTimeout(upstreamTimeout);
+
+          if (response.status === 429) {
+            console.warn(`[AI] Rate limit hit for model: ${model}. Falling back to next model...`);
+            lastError = new Error(`Rate limit exceeded for ${model}`);
+            continue;
           }
-          res.end();
-          return;
+
+          if (!response.ok) {
+             const errText = await response.text();
+             console.error(`[AI] Error with model ${model}:`, response.status, errText);
+             if (response.status === 404 || response.status === 400) {
+                continue;
+             }
+             throw new Error(`Upstream API Error: ${response.status}`);
+          }
+
+          // Streaming mode
+          if (stream) {
+            res.writeHead(200, {
+              'Content-Type': 'text/event-stream',
+              'Cache-Control': 'no-cache',
+              'Connection': 'keep-alive',
+            });
+            
+            if (response.body && response.body.getReader) {
+              const reader = response.body.getReader();
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                res.write(value);
+              }
+            } else if (response.body) {
+              for await (const chunk of response.body) {
+                res.write(chunk);
+              }
+            }
+            res.end();
+
+            // 📊 Record stats (Sheet Part 4 §2)
+            const latency = Date.now() - requestStart;
+            recordStats(model, action, latency, isFallback);
+            console.log(`[AI OK] model=${model} action=${action} latency=${latency}ms fallback=${isFallback}`);
+            return;
+          }
+
+          const data = await response.json();
+          const resultText = data.choices[0]?.message?.content || "";
+
+          // 📊 Record stats
+          const latency = Date.now() - requestStart;
+          recordStats(model, action, latency, isFallback);
+          console.log(`[AI OK] model=${model} action=${action} latency=${latency}ms fallback=${isFallback}`);
+
+          return res.status(200).json({ result: resultText.trim() });
+
+        } finally {
+          clearTimeout(upstreamTimeout);
         }
-
-        const data = await response.json();
-        const resultText = data.choices[0]?.message?.content || "";
-
-        // 4. Send back securely on first success!
-        // Note: intentionally omitting _usedModel to hide architecture implementation details
-        return res.status(200).json({ result: resultText.trim() });
 
       } catch (err) {
         lastError = err;
-        console.warn(`[AI] Exception with model ${model}:`, err.message);
-        // Continue to next model on fetch failures
+        const isAbort = err.name === 'AbortError';
+        console.warn(`[AI] ${isAbort ? 'Timeout' : 'Exception'} with model ${model}:`, err.message);
+        stats.totalErrors++;
       }
     }
 
-    // If loop finishes without returning, all models failed (or limit totally reached)
     throw lastError || new Error("All fallback models failed.");
 
   } catch (error) {
     console.error('Serverless Execution Error:', error);
+    stats.totalErrors++;
     return res.status(500).json({ error: 'Failed to process AI request temporarily.' });
   }
 }

@@ -1,8 +1,70 @@
-import { useState, useEffect } from 'react';
-import { X, Search, ArrowRight, FileText, CheckCircle2, AlertCircle, Sparkles, Copy, Check, CornerDownRight } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X, Search, ArrowRight, FileText, CheckCircle2, AlertCircle, Sparkles, Copy, Check, CornerDownRight, Wifi, WifiOff } from 'lucide-react';
 import { summarizeContent, askAiContext, generatePrompts } from '../../services/aiService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+
+// ============================================================
+// 🔄 useStreamingStatus — Adaptive Activity Indicator (Sheet Part 6 §5)
+// ============================================================
+// Stall Detection + Minimum Display Time + Context-Aware Status
+function useStreamingStatus() {
+  const [status, setStatus] = useState('idle'); 
+  // idle | connecting | thinking | streaming | stalled | done | error
+  const lastTokenTimeRef = useRef(Date.now());
+  const thinkingStartRef = useRef(null);
+  const [thinkingDuration, setThinkingDuration] = useState(null);
+
+  // Stall detection: ถ้าไม่ได้รับ token ใหม่ > 10 วินาที → stalled
+  useEffect(() => {
+    if (status !== 'streaming') return;
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - lastTokenTimeRef.current;
+      if (elapsed > 10000) setStatus('stalled');
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [status]);
+
+  // Minimum display time for "thinking" (Sheet Part 6 §5: 2 seconds minimum)
+  useEffect(() => {
+    if (status === 'thinking') {
+      thinkingStartRef.current = Date.now();
+      setThinkingDuration(null);
+    } else if (status !== 'thinking' && thinkingStartRef.current !== null) {
+      const duration = ((Date.now() - thinkingStartRef.current) / 1000).toFixed(1);
+      setThinkingDuration(duration);
+      thinkingStartRef.current = null;
+      // Show duration briefly
+      const timer = setTimeout(() => setThinkingDuration(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
+
+  const onToken = () => {
+    lastTokenTimeRef.current = Date.now();
+    if (status === 'stalled' || status === 'thinking' || status === 'connecting') {
+      setStatus('streaming');
+    }
+  };
+
+  return { status, setStatus, onToken, thinkingDuration };
+}
+
+// Context-aware status verbs (Sheet Part 6 §5)
+function getStatusMessage(status, thinkingDuration) {
+  switch (status) {
+    case 'connecting': return 'กำลังเชื่อมต่อ...';
+    case 'thinking':   return 'กำลังวิเคราะห์เนื้อหา...';
+    case 'streaming':  return 'กำลังเขียนผลสรุป...';
+    case 'stalled':    return 'การเชื่อมต่อค้าง กรุณารอสักครู่...';
+    case 'done':       return thinkingDuration ? `วิเคราะห์เสร็จใน ${thinkingDuration}s` : null;
+    case 'error':      return 'เกิดข้อผิดพลาด';
+    default:           return null;
+  }
+}
+
+
+
 
 export default function AiSummaryPanel({ noteContent, noteId }) {
   const [query, setQuery] = useState('');
@@ -22,7 +84,8 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
   const [suggestedPrompts, setSuggestedPrompts] = useState([]);
   const [typeahead, setTypeahead] = useState('');
 
-  // Note: We no longer use useTypewriter because we have real streaming (SSE) from the backend!
+  // Streaming Status (Sheet Part 6 §5)
+  const { status: streamStatus, setStatus: setStreamStatus, onToken, thinkingDuration } = useStreamingStatus();
 
   if (currentEvalId !== noteId && (summaryText || searchStatus)) {
     setSummaryText('');
@@ -33,17 +96,14 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
   }
 
   // 1. Proactive Cache-Warming (Kairos/Daemon effect)
-  // แอบคอมพิวท์คำตอบ(Summary, Prompts) ไว้ใน Background หลังจากที่ผู้ใช้อ่านเนื้อหาเกิน 3 วินาที
-  // ผลลัพธ์จะถูกเซฟเงียบๆ ลง Cache ฝั่ง Client ทำให้ตอนที่ผู้ใช้กดปุ่มจะได้ข้อมูลทันที 0ms!
   useEffect(() => {
     if (!noteContent || !noteId) return;
     const timer = setTimeout(() => {
-      // โหลดทิ้งไว้ในแบคกราวด์ ไม่เอาผลมาโชว์ (Fire and forget)
       generatePrompts(noteContent.substring(0, 1500))
         .then(chips => { if (Array.isArray(chips)) setSuggestedPrompts(chips); })
         .catch(() => {});
       summarizeContent(noteContent).catch(() => {});
-    }, 3500); // ดีเลย์ 3.5 วินาที
+    }, 3500);
     return () => clearTimeout(timer);
   }, [noteContent, noteId]);
 
@@ -135,11 +195,23 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
     setSummaryText('');
     setFollowUps([]);
     setCopied(false);
+    setStreamStatus('connecting'); // Phase 1: connecting
     
     try {
+      // Minimum display for "connecting" phase
+      const connectStart = Date.now();
+      
       await summarizeContent(noteContent, (chunk) => {
-         setSummaryText(chunk);
+        // First token → switch from thinking to streaming
+        if (Date.now() - connectStart < 500) {
+          setStreamStatus('thinking');
+        } else {
+          onToken(); // triggers 'streaming' status + resets stall timer
+        }
+        setSummaryText(chunk);
       });
+
+      setStreamStatus('done');
 
       // Generate follow-up chips after summary is ready
       setFollowUpsLoading(true);
@@ -150,7 +222,10 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
       setFollowUpsLoading(false);
 
     } catch (err) {
-      setSummaryText('ขออภัย ไม่สามารถประมวลผลข้อมูลได้ในเวลานี้');
+      setStreamStatus('error');
+      setSummaryText(err.message?.includes('temporarily paused')
+        ? err.message
+        : 'ขออภัย ไม่สามารถประมวลผลข้อมูลได้ในเวลานี้');
     } finally {
       setLoading(false);
       setSearchStatus(null);
@@ -176,6 +251,9 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
   if (searchStatus === 'found') inputPlaceholder = "เจอจุดที่เกี่ยวข้องแล้ว!";
   else if (searchStatus === 'not_found') inputPlaceholder = "ไม่พบเนื้อหาที่เกี่ยวข้องในเอกสารนี้";
   else if (searchStatus === 'searching') inputPlaceholder = "กำลังหาจุดที่เกี่ยวข้อง...";
+
+  // Context-aware streaming status message
+  const streamStatusMsg = getStatusMessage(streamStatus, thinkingDuration);
 
   return (
     <div className="mb-6 w-full border border-gray-200 bg-white rounded-xl sm:rounded-lg shadow-sm overflow-hidden text-sm transition-all duration-300">
@@ -227,7 +305,7 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
          <div className="flex items-center justify-between sm:justify-start px-4 sm:px-2 py-3 sm:py-0 w-full sm:w-auto bg-gray-50/50 sm:bg-transparent">
             {summaryText && (
               <button 
-                onClick={() => setSummaryText('')}
+                onClick={() => { setSummaryText(''); setStreamStatus('idle'); }}
                 className="px-2 py-1 text-[13px] sm:text-xs text-gray-500 hover:text-red-500 font-medium flex items-center gap-1.5 sm:gap-1 transition-colors"
               >
                  <X size={14} className="sm:w-3 sm:h-3" /> ปิดผลสรุป
@@ -253,7 +331,7 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
          </div>
       </div>
 
-      {/* 1.5. Keybindings & Shortcuts Formal Hint */}
+      {/* 1.5. Keybindings & Shortcuts Hint */}
       {!summaryText && !searchStatus && (
          <div className="bg-white px-4 sm:px-3 py-2 border-b border-gray-100 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11.5px] text-gray-500 animate-fade-in-down">
            <span className="flex items-center gap-1.5 font-medium whitespace-nowrap">
@@ -271,6 +349,26 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
          </div>
       )}
 
+      {/* Streaming Status Bar (Sheet Part 6 §5) */}
+      {streamStatusMsg && searchStatus === 'summarizing' && (
+        <div className={`px-4 sm:px-3 py-1.5 flex items-center gap-2 text-[11px] font-medium transition-colors duration-300 ${
+          streamStatus === 'stalled' 
+            ? 'bg-amber-50 text-amber-600 border-b border-amber-100' 
+            : streamStatus === 'error'
+            ? 'bg-red-50 text-red-500 border-b border-red-100'
+            : 'bg-blue-50 text-blue-500 border-b border-blue-100'
+        }`}>
+          {streamStatus === 'stalled' ? (
+            <WifiOff size={11} className="animate-pulse" />
+          ) : streamStatus === 'error' ? (
+            <AlertCircle size={11} />
+          ) : (
+            <Wifi size={11} className={streamStatus === 'streaming' ? 'animate-pulse' : ''} />
+          )}
+          {streamStatusMsg}
+        </div>
+      )}
+
       {/* 2. Streaming Summary Render Panel */}
       {summaryText && (
         <div className="relative p-5 sm:p-4 bg-white animate-fade-in-down border-t border-gray-100 group">
@@ -279,6 +377,11 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
           <div className="flex items-center justify-between mb-3">
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
               <Sparkles size={11} /> ผลสรุปเนื้อหา
+              {thinkingDuration && streamStatus === 'done' && (
+                <span className="text-[10px] font-normal text-gray-300 ml-1 animate-fade-in-up">
+                  ({thinkingDuration}s)
+                </span>
+              )}
             </span>
             <button
               onClick={handleCopySummary}
