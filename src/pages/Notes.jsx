@@ -218,9 +218,8 @@ export default function Notes() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen pt-16 text-gray-400 gap-3 bg-[#fdfdfd]">
-        <div className="w-6 h-6 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-        Loading workspace...
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="w-6 h-6 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin"></div>
       </div>
     );
   }
