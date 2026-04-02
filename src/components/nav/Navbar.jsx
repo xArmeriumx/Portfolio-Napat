@@ -28,6 +28,9 @@ export default function Navbar() {
     notes: "Notes",
   };
 
+  const preloadProjects = () => import("../../pages/ProjectList.jsx");
+  const preloadNotes = () => import("../../pages/Notes.jsx");
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm transition-all duration-300">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -105,6 +108,7 @@ export default function Navbar() {
           </NavLink>
           <NavLink
             to="/projects"
+            onMouseEnter={preloadProjects}
             className={({ isActive }) =>
               `text-sm font-bold uppercase tracking-wide transition-all py-1 border-b-2 ${
                 isActive
@@ -117,6 +121,7 @@ export default function Navbar() {
           </NavLink>
           <NavLink
             to="/notes"
+            onMouseEnter={preloadNotes}
             className={({ isActive }) =>
               `text-sm font-bold uppercase tracking-wide transition-all py-1 border-b-2 ${
                 isActive
@@ -211,6 +216,7 @@ export default function Navbar() {
               </NavLink>
               <NavLink
                 to="/projects"
+                onMouseEnter={preloadProjects}
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
                   `text-3xl font-bold font-['Prompt'] transition-colors duration-200 ${
@@ -224,6 +230,7 @@ export default function Navbar() {
               </NavLink>
               <NavLink
                 to="/notes"
+                onMouseEnter={preloadNotes}
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
                   `text-3xl font-bold font-['Prompt'] transition-colors duration-200 ${
