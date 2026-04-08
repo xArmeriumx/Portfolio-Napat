@@ -279,6 +279,8 @@ export default function Notes() {
                     <span className="text-orange-500 font-mono text-[9px] font-bold bg-orange-50 px-1 rounded shadow-sm">GIT</span>
                   ) : note.rawName.toLowerCase().includes('react') ? (
                     <span className="text-blue-400 font-mono text-[9px] font-bold bg-blue-50 px-1 rounded shadow-sm">JSX</span>
+                  ) : note.rawName.toLowerCase().includes('typescript') || note.rawName.toLowerCase().includes('ts') ? (
+                    <span className="text-blue-600 font-mono text-[9px] font-bold bg-blue-50 px-1 rounded shadow-sm">TS</span>
                   ) : (
                     <FileText size={14} className={activeNote?.id === note.id ? 'text-red-500' : 'text-gray-400 group-hover:text-gray-600'} />
                   )}
@@ -399,11 +401,10 @@ export default function Notes() {
                       <a
                         href={`#${heading.id}`}
                         onClick={(e) => scrollToHeading(e, heading.id, heading.text)}
-                        className={`block line-clamp-2 leading-tight transition-all duration-200 ${
-                          isActive
+                        className={`block line-clamp-2 leading-tight transition-all duration-200 ${isActive
                             ? 'text-red-600 font-semibold'
                             : 'text-gray-500 hover:text-red-600'
-                        }`}
+                          }`}
                       >
                         {/* Active indicator dot */}
                         {isActive && (

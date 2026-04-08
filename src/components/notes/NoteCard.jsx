@@ -4,8 +4,9 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
-import { Copy, Check, Pencil, Sparkles, X, RotateCcw, Save } from 'lucide-react';
+import { Copy, Check, Pencil, Sparkles, X, RotateCcw, Save, Play } from 'lucide-react';
 import { reviewCode } from '../../services/aiService';
+import LiveRunner from './LiveRunner';
 import 'highlight.js/styles/github.css';
 
 // Helper to extract raw text from react-markdown AST
@@ -25,6 +26,7 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
 
   const [copied, setCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isLive, setIsLive] = useState(false);
   const [editedCode, setEditedCode] = useState(rawCode);
   const [tempCode, setTempCode] = useState(rawCode);
   
@@ -41,6 +43,9 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
   const aiText = extractExplanation();
   const isTyping = reviewResult?.isStreaming;
   const hasChanges = editedCode !== rawCode;
+
+  const supportedRunners = ['javascript', 'js', 'typescript', 'ts'];
+  const isRunnable = supportedRunners.includes(language.toLowerCase());
 
   const handleCopy = () => {
     navigator.clipboard.writeText(editedCode);
@@ -84,7 +89,7 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
     return (
       <div className="relative group rounded-md overflow-hidden my-4 border border-gray-200 shadow-sm">
         {/* ── Header Bar ── */}
-        <div className="flex items-center justify-between px-4 py-2 bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 px-4 py-2.5 sm:py-2 bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-200">
           <span className="flex items-center gap-2">
             {language}
             {hasChanges && !isEditing && (
@@ -92,13 +97,18 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                 EDITED
               </span>
             )}
-            {isEditing && (
+            {isEditing && !isLive && (
               <span className="px-1.5 py-0.5 rounded border border-gray-300 bg-gray-200 text-gray-600">
                 EDITING
               </span>
             )}
+            {isLive && (
+               <span className="px-1.5 py-0.5 rounded border border-red-300 bg-red-100 text-red-600 flex items-center gap-1">
+                 <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span> LIVE
+               </span>
+            )}
           </span>
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             {isEditing ? (
               <>
                 <button
@@ -149,6 +159,26 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                   )}
                   <span>Review</span>
                 </button>
+                {isRunnable && !isLive && (
+                  <button
+                    onClick={() => setIsLive(true)}
+                    className="flex items-center gap-1.5 px-2 py-1 bg-red-50 border border-red-200 text-red-600 rounded shadow-sm hover:bg-red-100 transition-colors text-[11px] font-bold"
+                    title="Run code interactively"
+                  >
+                    <Play size={12} className="fill-red-600" />
+                    <span>Run</span>
+                  </button>
+                )}
+                {isLive && (
+                  <button
+                    onClick={() => setIsLive(false)}
+                    className="flex items-center gap-1.5 px-2 py-1 bg-white border border-gray-200 text-gray-500 rounded shadow-sm hover:text-gray-900 transition-colors text-[11px] font-bold"
+                    title="Close Live Runner"
+                  >
+                    <X size={12} />
+                    <span>Close Run</span>
+                  </button>
+                )}
                 <button
                   onClick={handleCopy}
                   className="flex items-center gap-1.5 px-2 py-1 bg-white border border-gray-200 text-gray-500 rounded shadow-sm hover:text-gray-900 transition-colors text-[11px] font-bold"
@@ -164,7 +194,12 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
 
         {/* ── Code Area ── */}
         <div className="overflow-x-auto text-sm bg-white">
-          {isEditing ? (
+          {isLive ? (
+             <LiveRunner 
+                initialCode={editedCode} 
+                language={language}
+             />
+          ) : isEditing ? (
             <textarea
               value={tempCode}
               onChange={(e) => setTempCode(e.target.value)}
