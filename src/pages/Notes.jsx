@@ -279,6 +279,8 @@ export default function Notes() {
                     <span className="text-orange-500 font-mono text-[9px] font-bold bg-orange-50 px-1 rounded shadow-sm">GIT</span>
                   ) : note.rawName.toLowerCase().includes('react') ? (
                     <span className="text-blue-400 font-mono text-[9px] font-bold bg-blue-50 px-1 rounded shadow-sm">JSX</span>
+                  ) : note.rawName.toLowerCase().includes('next') ? (
+                    <span className="text-gray-800 font-mono text-[9px] font-bold bg-gray-100 px-1 rounded shadow-sm border border-gray-200">NEXT</span>
                   ) : note.rawName.toLowerCase().includes('typescript') || note.rawName.toLowerCase().includes('ts') ? (
                     <span className="text-blue-600 font-mono text-[9px] font-bold bg-blue-50 px-1 rounded shadow-sm">TS</span>
                   ) : (
