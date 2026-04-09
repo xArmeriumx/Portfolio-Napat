@@ -167,6 +167,23 @@ function generateOgPages(baseHtml) {
       );
     }
 
+    // ---- Inject dynamic JSON-LD Schema for SoftwareApplication ----
+    const projectSchema = {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": project.title,
+      "description": project.description,
+      "image": ogImage,
+      "applicationCategory": "WebApplication",
+      "author": {
+        "@type": "Person",
+        "name": "Napat Pamornsut"
+      }
+    };
+    
+    const projectSchemaHtml = `    <!-- Dynamic JSON-LD Structured Data - SoftwareApplication -->\n    <script type="application/ld+json">\n      ${JSON.stringify(projectSchema, null, 2).replace(/\n/g, '\n      ')}\n    </script>\n  </head>`;
+    html = html.replace("</head>", projectSchemaHtml);
+
     // Write the file
     fs.writeFileSync(path.join(projectDir, "index.html"), html, "utf-8");
     console.log(`  ✅ projects/${project.slug}/index.html`);
@@ -224,6 +241,30 @@ function generateOgPages(baseHtml) {
       html = replaceMetaProperty(html, "og:title", fullTitle);
       html = replaceMetaProperty(html, "og:description", safeDesc);
       html = replaceMetaProperty(html, "og:url", ogUrl);
+
+      // ---- Inject dynamic JSON-LD Schema for TechArticle ----
+      const noteSchema = {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": pageTitle,
+        "description": safeDesc,
+        "image": `${SITE_URL}/favicon.png`,
+        "author": {
+          "@type": "Person",
+          "name": "Napat Pamornsut"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Napatdev",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://napatdev.com/favicon.png"
+          }
+        }
+      };
+      
+      const noteSchemaHtml = `    <!-- Dynamic JSON-LD Structured Data - TechArticle -->\n    <script type="application/ld+json">\n      ${JSON.stringify(noteSchema, null, 2).replace(/\n/g, '\n      ')}\n    </script>\n  </head>`;
+      html = html.replace("</head>", noteSchemaHtml);
       
       fs.writeFileSync(path.join(noteDir, "index.html"), html, "utf-8");
       console.log(`  ✅ notes/${filename}/index.html`);

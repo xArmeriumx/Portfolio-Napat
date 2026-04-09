@@ -328,8 +328,8 @@ export default function Header() {
 
 ---
 
-## หมวดที่ 4: การตั้งค่า, SEO และความปลอดภัย (Config & Security)
-หมวดสุดท้าย ที่จัดว่ามีความสำคัญมากเพื่อเตรียมความพร้อมระบบขึ้นโปรดักชันอย่างสมบูรณ์และเชื่อถือได้
+## หมวดที่ 4: การตั้งค่า, SEO และความปลอดภัย (Config, SEO & Security)
+หมวดสุดท้าย ที่จัดว่ามีความสำคัญมากเพื่อเตรียมความพร้อมระบบขึ้นโปรดักชันอย่างสมบูรณ์และเชื่อถือได้ รวมถึงเครื่องมืออรรถประโยชน์ต่างๆ
 
 ### 11. Metadata & SEO
 หนึ่งกระบวนการสร้างความน่าเชื่อถือคือการตั้งค่าข้อมูลอธิบายและส่งเสริมการมองเห็นของการแบ่งปัน (SEO)
@@ -398,3 +398,45 @@ import Button from '../../../../components/ui/Button';
 import Button from '@/components/ui/Button';
 import { db } from '@/lib/database';
 ```
+
+### 15. สรุปฟังก์ชันเสริมและฮุกอรรถประโยชน์ (Built-in Utility Functions)
+นอกจากคอมโพเนนต์หลักแล้ว Next.js ยังจัดเตรียมชุดคำสั่งสำเร็จรูปแบบเจาะจง ให้นักพัฒนานำไปแทรกแซงกระบวนการทำงานต่างๆ ซึ่งมีการแบ่งการเรียกใช้งานตามตำแหน่งสถาปัตยกรรมอย่างชัดเจน:
+
+**ฟังก์ชันสำหรับใช้งานฝั่ง Server Component**
+ฟังก์ชันเหล่านี้มุ่งเน้นการจัดการข้อมูล HTTP Headers และการเปลี่ยนเส้นทางบนแวดล้อมฝั่งเซิร์ฟเวอร์:
+- `headers()`: เรียกและกำหนดข้อมูล Headers จาก Request ปัจจุบัน
+- `cookies()`: เรียกใช้และจัดการข้อมูล Cookies (ตัวอย่างการนำไปตรวจสอบสถานะการล็อคอินแบบรวดเร็ว)
+- `notFound()`: ยกเลิกการประมวลผลหน้านั้นแบบฉับพลัน พร้อมแสดงสลับเส้นทางนำไปสู่หน้า `not-found.tsx` อัตโนมัติ (นิยมใช้เมื่อไม่พบรายการจากฐานข้อมูล)
+- `redirect(path)`: คำสั่งเปลี่ยนเส้นทางไปยังเป้าหมายแบบชั่วคราว (HTTP Status 307)
+- `permanentRedirect(path)`: คำสั่งเปลี่ยนเส้นทางเป้าหมายแบบถาวร (HTTP Status 308) ซึ่งส่งผลดีต่อหลักการทำ SEO
+
+```tsx
+// แนวทางการใช้งานฟังก์ชันฝั่ง Server
+import { cookies } from 'next/headers';
+import { redirect, notFound } from 'next/navigation';
+
+export async function checkAccessAndFetch(id: string) {
+  const cookieStore = await cookies();
+  
+  if (!cookieStore.has('auth_token')) {
+    redirect('/login'); // เปลี่ยนเส้นทางหากยังไม่ยืนยันตัวตน
+  }
+  
+  const data = await getSecureData(id);
+  
+  if (!data) {
+    notFound(); // ทิ้งน้ำหนักหน้าไปสู่ 404 ทันที
+  }
+  
+  return data;
+}
+```
+
+**ฮุกสำหรับใช้งานฝั่ง Client Component (จำเป็นต้องมี `"use client"`)**
+ฮุกเหล่านี้ออกแบบมาเพื่อช่วยอำนวยความสะดวกในการควบคุม URL ให้กับฝั่งหน้าเบราว์เซอร์:
+- `useParams()`: สำหรับการเรียกวิเคราะห์ค่า Dynamic Route Segment Params (เช่น `[id]`)
+- `usePathname()`: สำหรับการเรียกวิเคราะห์ที่อยู่ของลิงก์และพาร์ธปัจจุบัน
+- `useSearchParams()`: สำหรับการเข้าถึงและแก้ไขชุดตัวแปรแบบ URL Search Params (เช่น `?page=1`)
+- `useRouter()`: ใช้เพื่อเข้าถึงระบบการสลับหน้าสเกลการจัดการกว้าง (Router แบบ Programmatically)
+
+*ศึกษาฟังก์ชันทั้งหมดเชิงลึกเพิ่มเติมของ Next.js ได้ที่ศูนย์ข้อมูลอ้างอิง: [nextjs.org/docs/app/api-reference/functions](https://nextjs.org/docs/app/api-reference/functions)*
