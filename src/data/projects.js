@@ -23,9 +23,9 @@ real-time stock tracking, and a dedicated POS interface. Prioritizes data integr
 robust audit trails, and seamless user onboarding.
     `,
     description_th: `
-เว็บแอปพลิเคชันจัดการสต็อกและงานขายหน้าร้าน (POS) แบบครบวงจร พัฒนาด้วย Next.js 14 และ TypeScript (Full-stack)
-รองรับการใช้งานหลายร้านค้า (Multi-tenant Architecture) มีระบบจัดการสิทธิ์ผู้ใช้ (RBAC) ที่ยืดหยุ่นและการตัดสต็อกแบบ Real-time
-เก็บข้อมูลด้วย Prisma ORM และ PostgreSQL ระบบตรวจสอบย้อนกลับ (Audit Logging) และการจัดการไฟล์ผ่าน Supabase
+ระบบบริหารจัดการสต็อกและงานขายหน้าร้าน (POS) พัฒนาด้วย Next.js 14 และ TypeScript
+ออกแบบให้รองรับหลายร้านค้าในระบบเดียว (Multi-tenant) โดยแต่ละร้านแยกข้อมูลกันอย่างชัดเจน
+มีระบบจัดการสิทธิ์ผู้ใช้ (RBAC) ควบคุมการเข้าถึงตามบทบาท พร้อมระบบตรวจสอบย้อนกลับ (Stock Log) 
     `,
 
     technologies: [
@@ -52,14 +52,14 @@ robust audit trails, and seamless user onboarding.
       "Automated Tax Invoice and Receipt generation",
     ],
     keyFeatures_th: [
-      "สถาปัตยกรรม Multi-tenant แบ่งแยกข้อมูลแต่ละร้านค้าอย่างชัดเจน รองรับการขยายตัว",
-      "ระบบจัดการสิทธิ์ (RBAC) กำหนดสิทธิ์การเข้าถึงละเอียดตามบทบาท (Owner, Manager, Cashier)",
-      "ระบบ POS รองรับการเชื่อมต่อเครื่องอ่านบาร์โค้ด และตัดสต็อกทันทีเมื่อขาย",
-      "ระบบจัดการสินค้าคงคลัง ติดตามความเคลื่อนไหวสินค้า และแจ้งเตือนสินค้าใกล้หมด",
-      "ระบบตรวจสอบย้อนกลับ (Audit Trail) บันทึกทุกธุรกรรม และตรวจสอบสาเหตุการยกเลิกบิล",
-      "แดชบอร์ดสรุปยอดขายแสดงผลกราฟด้วย Recharts (รายรับ, รายจ่าย, กำไร)",
-      "ระบบจัดการไฟล์และเอกสาร เก็บหลักฐานการโอนและสลิปผ่าน Supabase",
-      "สร้างเอกสารอัตโนมัติ ทั้งใบกำกับภาษีและใบเสร็จรับเงินเป็นไฟล์ PDF",
+      "Multi-tenant — แต่ละร้านค้าแยกข้อมูลกันในระบบเดียว ไม่ปนกัน",
+      "RBAC — ออกแบบระบบสิทธิ์ตามบทบาท (Owner, Manager, Cashier) แต่ละ Role เห็นและทำได้ต่างกัน",
+      "POS — รองรับการต่อเครื่องอ่านบาร์โค้ด และตัดสต็อกทันทีเมื่อมีการขาย",
+      "Inventory — ติดตามการเคลื่อนไหวของสินค้า และแจ้งเตือนเมื่อสินค้าใกล้หมด",
+      "Audit Trail — บันทึกทุกธุรกรรม รวมถึงเหตุผลการยกเลิกบิล เพื่อตรวจสอบย้อนกลับ",
+      "Dashboard — แสดงสรุปยอดรายรับ รายจ่าย และกำไรด้วยกราฟ Recharts",
+      "File Management — เก็บสลิปและหลักฐานการชำระเงินผ่าน Supabase Storage",
+      "Auto PDF — สร้างใบกำกับภาษีและใบเสร็จเป็นไฟล์ PDF อัตโนมัติ",
     ],
 
     highlights: [
@@ -69,10 +69,10 @@ robust audit trails, and seamless user onboarding.
       "Real-time permission enforcement",
     ],
     highlights_th: [
-      "พัฒนาด้วย Next.js 14 App Router ใช้ฟีเจอร์ Server Components และ Server Actions",
-      "ตรวจสอบชนิดข้อมูล (Type Safety) ทั้งระบบด้วย TypeScript และ Zod",
-      "ออกแบบฐานข้อมูลเน้นประสิทธิภาพและการขยายตัวด้วย Prisma ORM",
-      "ระบบยืนยันตัวตน NextAuth.js พร้อมการตรวจสอบสิทธิ์แบบ Real-time",
+      "ใช้ Next.js 14 App Router ร่วมกับ Server Components และ Server Actions",
+      "ตรวจสอบชนิดข้อมูลทั้งระบบด้วย TypeScript และ Zod",
+      "ออกแบบ Schema ฐานข้อมูลด้วย Prisma ORM รองรับโครงสร้าง Multi-tenant",
+      "ระบบยืนยันตัวตนด้วย NextAuth.js พร้อมตรวจสิทธิ์ทุก Request",
     ],
 
     responsibilities: [
@@ -84,12 +84,12 @@ robust audit trails, and seamless user onboarding.
       "Setup automated CI/CD and deployment to Vercel",
     ],
     responsibilities_th: [
-      "ออกแบบโครงสร้างฐานข้อมูล (Schema Design) รองรับระบบ Multi-tenant และความสัมพันธ์ข้อมูลที่ซับซ้อน",
-      "พัฒนาระบบยืนยันตัวตนและการจัดการสิทธิ์ (Auth & RBAC) ให้มีความปลอดภัยสูง",
-      "พัฒนาส่วนติดต่อผู้ใช้ (Frontend) ระบบ POS ให้รองรับการใช้งานบน Desktop และ Tablet",
-      "เขียน Logic การคำนวณสินค้าคงคลัง การตัดสต็อก และการวิเคราะห์ต้นทุน",
-      "สร้างระบบรายงานและการแสดงผลกราฟข้อมูลทางการเงิน",
-      "ตั้งค่าระบบ CI/CD และการ Deploy ขึ้นบน Vercel",
+      "ออกแบบ Schema ฐานข้อมูลสำหรับระบบ Multi-tenant และความสัมพันธ์ระหว่างข้อมูล",
+      "พัฒนาระบบ Authentication และออกแบบ RBAC สำหรับจัดการสิทธิ์ผู้ใช้",
+      "พัฒนาหน้า UI ระบบ POS ให้ใช้งานได้บน Desktop และ Tablet",
+      "เขียน Logic การคำนวณสต็อก การตัดสินค้า และการวิเคราะห์ต้นทุน",
+      "สร้างหน้า Dashboard แสดงข้อมูลทางการเงินด้วยกราฟ",
+      "ตั้งค่า CI/CD Pipeline และ Deploy ขึ้น Vercel",
     ],
 
     links: {
@@ -100,7 +100,7 @@ robust audit trails, and seamless user onboarding.
   {
     slug: "jodbill-expense-tracker",
     title: "JodBill — Smart Expense Tracker",
-    title_th: "JodBill — แอปบันทึกรายรับรายจ่ายอัจฉริยะ (AI-Powered PWA)",
+    title_th: "JodBill — แอปบันทึกรายรับรายจ่าย (AI-Powered PWA)",
     images: [
       `${import.meta.env.BASE_URL}images/jodbill-1.png`,
       `${import.meta.env.BASE_URL}images/jodbill-2.png`,
@@ -117,9 +117,9 @@ set budgets, and get AI-driven financial coaching. Designed as a mobile-first
 app with native-like UX that can be installed on any device.
     `,
     description_th: `
-แอปบันทึกรายรับรายจ่ายส่วนตัว — สแกนใบเสร็จด้วย AI บันทึกรายรับรายจ่าย 
-ตั้งงบประมาณ และรับคำแนะนำทางการเงินจาก AI ออกแบบเป็น Mobile-first PWA 
-ติดตั้งได้ทุกอุปกรณ์ ใช้งานง่ายเหมือนแอปจริง
+แอปบันทึกรายรับรายจ่ายส่วนตัว พัฒนาเป็น PWA ให้ติดตั้งได้เหมือนแอปปกติโดยไม่ต้องผ่าน Store
+ฟีเจอร์หลักคือการใช้ AI สแกนใบเสร็จ บันทึกรายการ ตั้งงบประมาณ และรับคำแนะนำการเงินจาก AI
+ออกแบบเน้น Mobile-first ให้ใช้งานลื่นบนมือถือ และรองรับโหมด Offline
     `,
 
     technologies: [
@@ -142,11 +142,11 @@ app with native-like UX that can be installed on any device.
       "PWA & Offline — Installable on mobile, works offline, native-app-like UX",
     ],
     keyFeatures_th: [
-      "AI สแกนใบเสร็จ — ถ่ายรูปใบเสร็จ แล้ว AI ดึงข้อมูลร้านค้า รายการ และยอดเงินให้อัตโนมัติ",
-      "AI Financial Coach — วิเคราะห์พฤติกรรมการใช้จ่ายและให้คำแนะนำทางการเงินเฉพาะบุคคล",
-      "งบประมาณ & ออมเงิน — ตั้งงบรายเดือน ติดตามเป้าหมายออมเงิน พร้อมกราฟสรุปผล",
-      "รายงาน & ประวัติ — ดูสรุปรายเดือน เปรียบเทียบแนวโน้ม ค้นหาและจัดการรายการย้อนหลัง",
-      "PWA & Offline — ติดตั้งได้บนมือถือ ใช้งานแบบ Offline พร้อม UX ระดับ Native App",
+      "AI สแกนใบเสร็จ — ถ่ายรูปใบเสร็จ แล้ว AI ดึงชื่อร้าน รายการสินค้า และยอดเงินให้อัตโนมัติ",
+      "AI Financial Coach — วิเคราะห์พฤติกรรมการใช้จ่าย และให้คำแนะนำการเงินเฉพาะบุคคล",
+      "งบประมาณ & ออมเงิน — ตั้งงบรายเดือน ติดตามเป้าหมายออมเงิน พร้อมกราฟแสดงความคืบหน้า",
+      "รายงาน & ประวัติ — ดูสรุปรายเดือน เปรียบเทียบแนวโน้ม และค้นหารายการย้อนหลัง",
+      "PWA & Offline — ติดตั้งได้บนมือถือ ใช้งานได้แม้ไม่มีอินเทอร์เน็ต",
     ],
 
     highlights: [
@@ -155,9 +155,9 @@ app with native-like UX that can be installed on any device.
       "Full-stack — Built frontend, backend, database, and AI integration end-to-end",
     ],
     highlights_th: [
-      "AI-Powered — สแกนใบเสร็จ + วิเคราะห์การเงินด้วย AI ในแอปเดียว",
-      "Mobile-First PWA — ใช้งานได้ทุกอุปกรณ์ ติดตั้งได้ ใช้ Offline ได้",
-      "Full-stack — พัฒนา Frontend, Backend, Database, และ AI Integration ด้วยตัวเอง",
+      "เชื่อมต่อ AI เพื่อสแกนใบเสร็จและวิเคราะห์การเงินในแอปเดียว",
+      "ออกแบบเป็น Mobile-first PWA ติดตั้งได้และใช้งาน Offline ได้",
+      "พัฒนาครบทั้ง Frontend, Backend, Database และ AI Integration",
     ],
 
     responsibilities: [
@@ -170,9 +170,9 @@ app with native-like UX that can be installed on any device.
     responsibilities_th: [
       "พัฒนา Full-stack ด้วย Next.js 14 (App Router, Server Actions)",
       "ออกแบบและสร้างฐานข้อมูลด้วย Prisma ORM",
-      "เชื่อมต่อ AI — ระบบสแกนใบเสร็จและ Financial Coach",
-      "ระบบยืนยันตัวตน, Security, และการป้องกัน API",
-      "ตั้งค่า PWA พร้อม Service Worker และ Offline Support",
+      "เชื่อมต่อ AI สำหรับฟีเจอร์สแกนใบเสร็จและ Financial Coach",
+      "ออกแบบระบบ Authentication และป้องกัน API",
+      "ตั้งค่า PWA ด้วย Service Worker เพื่อรองรับ Offline Mode",
     ],
 
     links: {
@@ -199,10 +199,10 @@ IoT sensors via MQTT. Features include admin dashboard, user mapping,
 issue reporting, and LINE LIFF authentication.
     `,
     description_th: `
-ระบบติดตามคุณภาพน้ำแบบ Real-time (IoT Full-stack Application)
-พัฒนาด้วย React และ Node.js/Express รับส่งข้อมูลจากเซ็นเซอร์ผ่าน MQTT Protocol
-ใช้ Firebase สำหรับจัดการข้อมูลแบบ Real-time และยืนยันตัวตนผู้ใช้ผ่าน LINE LIFF
-แสดงผลข้อมูลผ่าน Dashboard กราฟ และแผนที่ Leaflet
+โปรเจกต์ปริญญานิพนธ์ — ระบบติดตามคุณภาพน้ำแบบ Real-time
+เซ็นเซอร์ IoT ส่งข้อมูลผ่าน MQTT มาเก็บใน Firebase แล้วแสดงผลบน Dashboard
+พัฒนาด้วย React (Frontend) และ Node.js/Express (Backend) แยก Deployment ที่ Vercel และ Render
+ผู้ใช้ทั่วไปเข้าผ่าน LINE LIFF ส่วน Admin ใช้ JWT Authentication
     `,
 
     technologies: [
@@ -231,15 +231,15 @@ issue reporting, and LINE LIFF authentication.
       "RESTful API with 6 route modules (auth, locations, issues, users, devices, logs)",
     ],
     keyFeatures_th: [
-      "Real-time Dashboard แสดงผลกราฟค่า pH, TDS, ความขุ่น, อุณหภูมิ ด้วย Chart.js",
-      "แผนที่จุดให้บริการน้ำดื่ม พัฒนาด้วย Leaflet.js แสดงตำแหน่งแบบแผนที่โลก",
-      "ระบบยืนยันตัวตน 2 รูปแบบ: LINE LIFF (ผู้ใช้ทั่วไป) และ JWT (ผู้ดูแลระบบ)",
-      "ระบบแจ้งปัญหาการใช้งาน พร้อมอัปโหลดรูปภาพผ่าน Cloudinary API",
-      "ระบบจัดการเอกสารผลการตรวจสอบคุณภาพน้ำ (Lab Report)",
-      "จัดการผู้ใช้งานตามสิทธิ์ (Admin, Lab Staff, User) แบ่งการเข้าถึงข้อมูลชัดเจน",
-      "บันทึกประวัติการใช้งาน (Activity Logs) เพื่อตรวจสอบย้อนหลัง",
-      "ระบบจัดการอุปกรณ์ IoT ลงทะเบียนและตรวจสอบสถานะเซ็นเซอร์",
-      "RESTful API รองรับ 6 โมดูลหลัก (Authentication, Locations, Issues, Users, Devices, Logs)",
+      "Real-time Dashboard — แสดงกราฟค่า pH, TDS, ความขุ่น, อุณหภูมิ อัปเดตทันทีจากเซ็นเซอร์ ด้วย Chart.js",
+      "แผนที่จุดให้บริการน้ำ — แสดงตำแหน่งจุดบริการน้ำดื่มบนแผนที่ด้วย Leaflet.js",
+      "ระบบยืนยันตัวตน 2 รูปแบบ — ผู้ใช้ทั่วไปเข้าผ่าน LINE LIFF, Admin เข้าด้วย JWT",
+      "แจ้งปัญหาได้พร้อมแนบรูปภาพ — อัปโหลดรูปเก็บไว้ที่ Cloudinary",
+      "จัดการเอกสารผลตรวจน้ำ — อัปโหลดและดาวน์โหลดรายงาน Lab",
+      "จัดการสิทธิ์ผู้ใช้ตามบทบาท — Admin, Lab Staff, User เห็นข้อมูลต่างกัน",
+      "Activity Logs — บันทึกประวัติการใช้งานเพื่อตรวจสอบย้อนกลับ",
+      "Device Management — ลงทะเบียนและตรวจสอบสถานะอุปกรณ์เซ็นเซอร์",
+      "REST API 6 โมดูล — auth, locations, issues, users, devices, logs",
     ],
 
     highlights: [
@@ -249,10 +249,10 @@ issue reporting, and LINE LIFF authentication.
       "Admin dashboard + User portal",
     ],
     highlights_th: [
-      "พัฒนาแบบ Full-stack (React SPA + Express.js REST API) เชื่อมต่อกันสมบูรณ์",
-      "การทำงานร่วมกับอุปกรณ์ IoT ผ่านโปรโตคอล MQTT เพื่อรับส่งข้อมูล Real-time",
-      "การใช้ LINE Platform (LIFF SDK) เพื่อให้ผู้ใช้เข้าถึงระบบได้ง่าย",
-      "ส่วนหน้าจอแยกการทำงานระหว่าง Admin Dashboard และ User Portal",
+      "พัฒนา Full-stack แยก React SPA กับ Express API คนละ Service",
+      "รับข้อมูลจากเซ็นเซอร์ IoT ผ่าน MQTT Protocol แบบ Real-time",
+      "ใช้ LINE LIFF SDK ให้ผู้ใช้เข้าระบบผ่าน LINE Account ได้เลย",
+      "แยก Admin Dashboard ออกจาก User Portal ชัดเจน",
     ],
 
     responsibilities: [
@@ -266,14 +266,14 @@ issue reporting, and LINE LIFF authentication.
       "Deploy frontend to Vercel, backend to Render",
     ],
     responsibilities_th: [
-      "พัฒนา Backend REST API ด้วย Express.js ครอบคลุมการทำงานหลัก 6 โมดูล",
-      "พัฒนา Frontend แบบ Single Page Application ด้วย React และ Chakra UI",
-      "เชื่อมต่อและจัดการฐานข้อมูล Firebase Realtime Database",
-      "ตั้งค่าระบบรับส่งข้อมูล IoT ผ่าน MQTT Broker",
-      "เชื่อมต่อระบบยืนยันตัวตน LINE LIFF SDK และจัดการ JWT Token",
-      "สร้างระบบจัดการข้อมูล (CRUD) สำหรับจุดให้บริการ ผู้ใช้ และอุปกรณ์ IoT",
-      "พัฒนาระบบอัปโหลดรูปภาพเชื่อมต่อกับ Cloudinary",
-      "Deploy ระบบ Frontend บน Vercel และ Backend บน Render",
+      "ออกแบบและพัฒนา REST API ด้วย Express.js ครบ 6 โมดูล",
+      "พัฒนา Frontend ด้วย React และ Chakra UI",
+      "เชื่อมต่อ Firebase Realtime Database สำหรับจัดเก็บและ sync ข้อมูลเซ็นเซอร์",
+      "ตั้งค่า MQTT Broker เพื่อรับข้อมูลจากอุปกรณ์ IoT",
+      "เชื่อมต่อ LINE LIFF SDK และจัดการ JWT Token สำหรับ Admin",
+      "สร้างระบบ CRUD สำหรับจัดการจุดบริการ ผู้ใช้ และอุปกรณ์ IoT",
+      "พัฒนาระบบอัปโหลดรูปภาพผ่าน Cloudinary",
+      "Deploy Frontend บน Vercel และ Backend บน Render",
     ],
 
     links: { demo: "https://cleanwatermonitoring.com/", repo: "" },
@@ -296,9 +296,9 @@ Covers API testing (6 modules), Admin UI testing, and E2E flows using Playwright
 Includes custom scripts for test pipeline, result export, and Google Sheets integration.
     `,
     description_th: `
-ระบบทดสอบอัตโนมัติ (Automated Testing Framework) พัฒนาด้วย Playwright (TypeScript)
-ครอบคลุมทั้ง API, UI และ End-to-End Testing มี Custom Scripts (Node.js) สำหรับควบคุม Pipeline
-เชื่อมต่อ Google Sheets เพื่อรายงานผลการทดสอบอัตโนมัติ และรองรับ CI/CD Workflow ผ่าน GitHub Actions
+ชุดทดสอบอัตโนมัติสำหรับโปรเจกต์ Clean Water Monitoring พัฒนาด้วย Playwright และ TypeScript
+ครอบคลุม API Testing (6 โมดูล), Admin UI Testing และ E2E Testing ตาม User Flow จริง
+มี Custom Script (Node.js) สำหรับควบคุมลำดับการรันเทส ส่งออกผลลัพธ์ และอัปโหลดขึ้น Google Sheets
     `,
 
     technologies: [
@@ -321,14 +321,14 @@ Includes custom scripts for test pipeline, result export, and Google Sheets inte
       "GitHub Actions CI/CD workflow",
     ],
     keyFeatures_th: [
-      "API Testing - ชุดทดสอบครอบคลุม 6 โมดูลหลัก (Auth, Devices, Issues, Locations, Logs, Users)",
-      "UI Testing - ทดสอบการทำงานของ Admin Dashboard และองค์ประกอบต่างๆ หน้าเว็บ",
-      "E2E Testing - ทดสอบจำลองการใช้งานจริงของผู้ใช้ตาม User Flow ด้วย Page Object Model",
-      "Multi-environment - รองรับการตั้งค่า Environment แยก (Dev, Staging, Production)",
-      "Custom Pipeline - สคริปต์ Node.js สำหรับตรวจสอบความพร้อมระบบและรันเทส",
-      "Result Export - สร้างไฟล์รายงานผลลัพธ์การทดสอบแบบ CSV และ JSON อัตโนมัติ",
-      "Google Sheets Integration - อัปโหลดผลการทดสอบขึ้น Google Sheets ผ่าน API",
-      "CI/CD Integration - ทำงานอัตโนมัติร่วมกับ GitHub Actions Workflow",
+      "API Testing — ทดสอบ API ครบ 6 โมดูล ตรวจสอบ Response, Status Code และโครงสร้างข้อมูล",
+      "UI Testing — ทดสอบการทำงานของหน้า Admin Dashboard และ Flow การจัดการข้อมูล",
+      "E2E Testing — จำลอง User Flow จริงตั้งแต่ Login จนถึงการใช้งานฟีเจอร์ต่างๆ ด้วย Page Object Model",
+      "Multi-environment — ตั้งค่า Environment แยกสำหรับ Dev, Staging และ Production",
+      "Custom Pipeline — สคริปต์ Node.js ตรวจสอบสถานะ Server ก่อนรัน และควบคุมลำดับการทดสอบ",
+      "Result Export — แปลงผลการทดสอบเป็นไฟล์ CSV และ JSON อัตโนมัติ",
+      "Google Sheets Integration — อัปโหลดผลการทดสอบขึ้น Google Sheets ผ่าน API",
+      "CI/CD — ทำงานอัตโนมัติผ่าน GitHub Actions ทุกครั้งที่มีการ Push Code",
     ],
 
     highlights: [
@@ -338,10 +338,10 @@ Includes custom scripts for test pipeline, result export, and Google Sheets inte
       "Google Sheets auto-upload for test results",
     ],
     highlights_th: [
-      "ครอบคลุมการทดสอบครบวงจร (Test Coverage) ทั้ง API, UI และ E2E",
-      "ระบบ Automation แบบกำหนดเองด้วย Node.js (Pipeline & Export Scripts)",
-      "จัดการ Environment Configuration ผ่านไฟล์ .env อย่างเป็นระบบ",
-      "รายงานผลอัตโนมัติแบบ Real-time ขึ้น Google Sheets",
+      "ครอบคลุมทั้ง API, UI และ E2E Testing ในโปรเจกต์เดียว",
+      "เขียน Custom Script (Node.js) สำหรับควบคุม Pipeline และส่งออกผลลัพธ์",
+      "จัดการ Environment แยกด้วยไฟล์ .env ตาม Stage การ Deploy",
+      "รายงานผลอัตโนมัติขึ้น Google Sheets หลังการทดสอบเสร็จ",
     ],
 
     responsibilities: [
@@ -357,11 +357,11 @@ Includes custom scripts for test pipeline, result export, and Google Sheets inte
     responsibilities_th: [
       "ออกแบบโครงสร้าง Test Framework ด้วยรูปแบบ Page Object Model (POM)",
       "เขียน Test Cases สำหรับ API ทั้ง 6 โมดูล และ UI ฝั่ง Admin",
-      "พัฒนา Pipeline Script (Node.js) เพื่อควบคุมลำดับการทำงานของชุดทดสอบ",
-      "สร้าง Script สำหรับแปลงผลลัพธ์เป็นไฟล์ CSV/JSON (Data Formatting)",
-      "เชื่อมต่อ API เพื่อส่งข้อมูลผลการทดสอบไปยัง Google Sheets",
-      "ตั้งค่า Playwright ให้รองรับการทำงานหลาย Browser และหลาย Environment",
-      "ติดตั้งและกำหนดค่า CI/CD Workflow บน GitHub Actions",
+      "พัฒนา pipeline.js สำหรับควบคุมลำดับการรันเทสและตรวจสถานะ Server",
+      "เขียน Script แปลงผลลัพธ์เป็น CSV และ JSON",
+      "เชื่อมต่อ Google Sheets API เพื่ออัปโหลดผลการทดสอบ",
+      "ตั้งค่า Playwright รองรับหลาย Browser และหลาย Environment",
+      "ตั้งค่า GitHub Actions Workflow พร้อมจัดการ Secrets",
     ],
 
     links: {
@@ -389,9 +389,9 @@ tracking, purchase order management, and real-time notifications for
 stock alerts and expiring items.
   `,
     description_th: `
-ออกแบบระบบจัดการสินค้าคงคลังร้านอาหาร (UX/UI Design) โดยใช้ Figma และ Adobe XD
-เน้นการใช้งานจริงในธุรกิจร้านอาหาร (Restaurant Business Logic) เช่น การจัดการวัตถุดิบแยกประเภท,
-ระบบติดตามวันหมดอายุ, และ Workflow การสั่งซื้อสินค้า (Purchase Order) ที่ใช้งานง่ายและลดความผิดพลาด
+ออกแบบ UX/UI สำหรับระบบจัดการสินค้าคงคลังของร้านอาหาร ใช้ Figma และ Adobe XD
+วิเคราะห์ Business Logic ของธุรกิจร้านอาหาร เช่น การแยกประเภทวัตถุดิบ การติดตามวันหมดอายุ
+และ Workflow การสั่งซื้อ แล้วนำมาออกแบบเป็น Prototype ที่ใช้งานได้จริง
     `,
 
     technologies: ["Figma", "Adobe XD"],
@@ -405,12 +405,12 @@ stock alerts and expiring items.
       "Notification center – Alert system for low stock and expiring products",
     ],
     keyFeatures_th: [
-      "การจัดการหมวดหมู่สินค้า - ออกแบบรองรับการแยกประเภท อาหารสด, ของแห้ง, ผักผลไม้",
-      "ระบบติดตามสต็อก - แสดงรายละเอียดสินค้า รูปภาพ หน่วยนับ และวันหมดอายุ",
-      "การแจ้งเตือนวันหมดอายุ - ออกแบบระบบ Alert แจ้งเตือนล่วงหน้า 2 วัน",
-      "การแบ่งสิทธิ์ผู้ใช้งาน - หน้าจอ UI แยกเฉพาะสำหรับ Admin และ Head Chef",
-      "Purchase Order Workflow - ออกแบบขั้นตอนการสั่งซื้อ ตั้งแต่สร้างใบสั่งจนถึงรับของ",
-      "ศูนย์แจ้งเตือน - รวบรวมรายการสินค้าใกล้หมดและใกล้หมดอายุไว้ในที่เดียว",
+      "จัดการหมวดหมู่สินค้า — แบ่งแยกประเภทวัตถุดิบ เช่น อาหารสด, ของแห้ง, ผักผลไม้",
+      "ติดตามสต็อก — แสดงรายละเอียดสินค้า รูปภาพ หน่วยนับ และวันหมดอายุ",
+      "แจ้งเตือนวันหมดอายุ — ออกแบบระบบ Alert แจ้งเตือนล่วงหน้า 2 วันก่อนหมดอายุ",
+      "แบ่งสิทธิ์ UI ตามบทบาท — Admin และ Head Chef เห็น Dashboard และเมนูต่างกัน",
+      "Purchase Order Workflow — ออกแบบขั้นตอนตั้งแต่สร้างใบสั่งซื้อจนถึงรับสินค้าเข้าสต็อก",
+      "Notification Center — รวมแจ้งเตือนสินค้าใกล้หมดและใกล้หมดอายุไว้ในที่เดียว",
     ],
 
     highlights: [
@@ -420,10 +420,10 @@ stock alerts and expiring items.
       "Role-based dashboards (Admin/Chef)",
     ],
     highlights_th: [
-      "Product Catalog - ออกแบบการแสดงผลสินค้าในรูปแบบ Grid พร้อมรูปภาพ",
-      "Expiration Tracking - ระบบแจ้งเตือนอัจฉริยะสำหรับสินค้าควบคุมอายุ",
-      "PO Management - ออกแบบ Flow การจัดการใบสั่งซื้อให้เข้าใจง่าย",
-      "Role-based Dashboard - แดชบอร์ดข้อมูลสรุปแยกตามหน้าที่ความรับผิดชอบ",
+      "ออกแบบ Catalog แสดงสินค้าพร้อมรูปภาพและหมวดหมู่",
+      "ระบบแจ้งเตือนวันหมดอายุล่วงหน้า 2 วัน",
+      "ออกแบบ Flow การสั่งซื้อสินค้าให้เข้าใจง่าย",
+      "Dashboard แยกตาม Role ของผู้ใช้งาน",
     ],
 
     responsibilities: [
@@ -434,11 +434,11 @@ stock alerts and expiring items.
       "Develop purchase order workflow",
     ],
     responsibilities_th: [
-      "ออกแบบโครงสร้างฐานข้อมูล (Database Schema Flow) สำหรับสินค้าและคำสั่งซื้อ",
-      "ออกแบบระบบการจัดการสิทธิ์ (Authentication Flow) ของแต่ละบทบาท",
-      "สร้าง UI Mockups แบบ Responsive ด้วย Figma และ Adobe XD",
-      "ออกแบบ User Experience (UX) สำหรับระบบแจ้งเตือนสินค้า",
-      "วางแผนและออกแบบขั้นตอนการทำงาน (Workflow Design) ของระบบจัดซื้อ",
+      "วิเคราะห์ความต้องการและออกแบบ Database Schema สำหรับสินค้าและคำสั่งซื้อ",
+      "ออกแบบระบบสิทธิ์และ Flow การยืนยันตัวตนของแต่ละบทบาท",
+      "สร้าง UI Mockups แบบ Hi-Fidelity ด้วย Figma และ Adobe XD",
+      "ออกแบบ UX สำหรับระบบแจ้งเตือนสินค้า",
+      "ออกแบบ Workflow การสั่งซื้อสินค้าตั้งแต่ต้นจนจบ",
     ],
 
     links: { demo: "", repo: "" },
@@ -450,7 +450,6 @@ stock alerts and expiring items.
     title_th: "Pharmacy E-commerce System (PHP + MySQL)",
     images: [
       `${import.meta.env.BASE_URL}images/p3-phamacy.png`,
-      // เพิ่มรูปเพิ่มเติมได้
       `${import.meta.env.BASE_URL}images/p3-phamacy1.png`,
       `${import.meta.env.BASE_URL}images/p3-phamacy2.png`,
     ],
@@ -462,10 +461,9 @@ Features product catalog with categories, shopping cart management, order proces
 and admin dashboard for inventory and customer management.
   `,
     description_th: `
-แพลตฟอร์ม E-commerce ร้านขายยา พัฒนาด้วย PHP และ MySQL
-มีระบบตะกร้าสินค้าแบบ Session Management, การจัดการคำสั่งซื้อครบวงจร
-และระบบหลังบ้าน (Admin Dashboard) สำหรับบริหารจัดการสินค้าและลูกค้า
-รองรับการแสดงผลทุกหน้าจอ (Responsive Web Design)
+ระบบ E-commerce สำหรับร้านขายยา พัฒนาด้วย PHP และ MySQL
+Flow การซื้อขายครบตั้งแต่เลือกสินค้า → ใส่ตะกร้า → Checkout
+มีหน้า Admin สำหรับจัดการสินค้า คำสั่งซื้อ และข้อมูลสมาชิก
     `,
 
     technologies: ["PHP", "MySQL", "HTML", "CSS", "JavaScript"],
@@ -481,14 +479,14 @@ and admin dashboard for inventory and customer management.
       "Responsive design for mobile and desktop",
     ],
     keyFeatures_th: [
-      "Product Catalog - จัดหมวดหมู่สินค้า (ยา, วิตามิน, เวชภัณฑ์) ให้ค้นหาง่าย",
-      "Shopping Cart - ระบบตะกร้าสินค้า เพิ่ม/ลบ และแก้ไขจำนวนได้ทันที",
-      "Order Management - จัดการสถานะคำสั่งซื้อตั้งแต่สั่งซื้อจนถึงจัดส่ง",
-      "Search & Filter - ระบบค้นหาและกรองสินค้าตามประเภท",
-      "Admin Dashboard - จัดการข้อมูลสินค้า คำสั่งซื้อ และสมาชิก ในหน้าเดียว",
-      "Inventory Management - เพิ่มลบแก้ไขสินค้า พร้อมระบบอัปโหลดรูปภาพ",
-      "Customer Management - ระบบสมาชิกและจัดการข้อมูลส่วนตัว",
-      "Responsive Design - ออกแบบเว็บไซต์ให้ใช้งานได้ดีทั้งบนมือถือและคอมพิวเตอร์",
+      "Product Catalog — จัดหมวดหมู่สินค้า (ยา, วิตามิน, เวชภัณฑ์) ให้ค้นหาและกรองตามประเภทได้",
+      "Shopping Cart — เพิ่ม/ลบ/แก้ไขจำนวนสินค้าในตะกร้า จัดการด้วย PHP Session",
+      "Order Management — ติดตามสถานะคำสั่งซื้อตั้งแต่ Cart จนถึงจัดส่ง",
+      "Search & Filter — ค้นหาสินค้าและกรองตามหมวดหมู่",
+      "Admin Dashboard — จัดการสินค้า คำสั่งซื้อ และสมาชิกในหน้าเดียว",
+      "Inventory CRUD — เพิ่ม แก้ไข ลบสินค้า พร้อมระบบอัปโหลดรูปภาพ",
+      "Customer Management — จัดการข้อมูลสมาชิกและประวัติการซื้อ",
+      "Responsive Design — ใช้งานได้ทั้งบนมือถือและคอมพิวเตอร์",
     ],
 
     highlights: [
@@ -498,10 +496,10 @@ and admin dashboard for inventory and customer management.
       "Real-time cart total calculation",
     ],
     highlights_th: [
-      "E-commerce Flow - ระบบซื้อขายสมบูรณ์แบบ (เลือกสินค้า → ตะกร้า → ชำระเงิน)",
-      "Admin Panel - หน้าจัดการหลังบ้านที่ใช้งานง่าย",
-      "Category Structure - โครงสร้างสินค้าที่เป็นระเบียบ",
-      "Real-time Cart - คำนวณราคาสินค้าในตะกร้าทันที",
+      "Flow การซื้อขายสมบูรณ์ครบวงจร (เลือกสินค้า → ตะกร้า → ชำระเงิน)",
+      "Admin Panel สำหรับจัดการสินค้าและออเดอร์",
+      "โครงสร้างสินค้าแบ่งตามหมวดหมู่",
+      "คำนวณราคารวมในตะกร้าทันทีเมื่อมีการเปลี่ยนแปลง",
     ],
 
     responsibilities: [
@@ -513,12 +511,12 @@ and admin dashboard for inventory and customer management.
       "Handle product CRUD operations with image upload",
     ],
     responsibilities_th: [
-      "ออกแบบฐานข้อมูล MySQL สำหรับระบบ E-commerce (สินค้า, ออเดอร์, ลูกค้า)",
-      "พัฒนาระบบตะกร้าสินค้าด้วย PHP Session",
-      "สร้างหน้า Admin Dashboard เพื่อจัดการข้อมูลต่างๆ (CRUD Operations)",
-      "เขียน HTML/CSS จัดหน้าเว็บแบบ Responsive Layout",
+      "ออกแบบ Database Schema สำหรับสินค้า ออเดอร์ และสมาชิก",
+      "พัฒนาระบบตะกร้าสินค้าโดยใช้ PHP Session จัดการสถานะ",
+      "สร้างหน้า Admin สำหรับ CRUD สินค้าและจัดการคำสั่งซื้อ",
+      "เขียน HTML/CSS ให้หน้าเว็บรองรับทุกขนาดหน้าจอ (Responsive)",
       "พัฒนาระบบ Checkout และประมวลผลคำสั่งซื้อ",
-      "จัดการระบบไฟล์สำหรับอัปโหลดและแสดงผลรูปภาพสินค้า",
+      "พัฒนาระบบอัปโหลดและแสดงผลรูปภาพสินค้า",
     ],
 
     links: {
@@ -531,7 +529,6 @@ and admin dashboard for inventory and customer management.
     slug: "uat-testkit",
     title: "UAT / Test Case & Bug Report Template",
     title_th: "UAT / Test Case & Bug Report Template",
-    //stack: "System Analyst • Software Tester",
     images: [`${import.meta.env.BASE_URL}images/p4-testcase.png`],
     role: ["System Analyst", "Software Tester"],
 
@@ -541,10 +538,9 @@ used in real projects to improve communication between
 dev, tester, and business.
   `,
     description_th: `
-ชุดเทมเพลตมาตรฐานสำหรับการทดสอบระบบ (Standardized Testing Templates)
-ประกอบด้วย UAT, Test Case Design, และ Bug Reporting
-ช่วยปรับปรุงการสื่อสารระหว่างทีม Developer, Tester และ Business
-ออกแบบให้สามารถนำไปปรับใช้ซ้ำได้กับโปรเจกต์อื่นๆ (Reusable Structure)
+ชุดเทมเพลตมาตรฐานสำหรับการทดสอบระบบ ประกอบด้วย UAT, Test Case Design และ Bug Report
+ออกแบบให้ใช้ได้กับโปรเจกต์จริง ช่วยให้ทีม Developer, Tester และ Business คุยกันเข้าใจตรงกัน
+สร้างขึ้นจากประสบการณ์ใช้งานจริง และออกแบบให้นำไปปรับใช้ซ้ำกับโปรเจกต์อื่นได้
     `,
 
     technologies: [
@@ -561,10 +557,10 @@ dev, tester, and business.
       "Reusable structure for teams & clients",
     ],
     keyFeatures_th: [
-      "Test Case Template - รูปแบบมาตรฐานพร้อมช่องระบุเกณฑ์การยอมรับ (Acceptance Criteria)",
-      "Bug Report Format - ฟอร์มแจ้งบั๊กที่ระบุขั้นตอนชัดเจน (Steps, Expected/Actual Results)",
-      "Regression Checklist - รายการตรวจสอบความพร้อมก่อนปล่อยระบบ (Pre-release)",
-      "Reusable Structure - โครงสร้างที่ยืดหยุ่น ปรับใช้ได้กับหลากหลายทีมและโครงการ",
+      "Test Case Template — มีช่องระบุ Acceptance Criteria ชัดเจน ตรวจสอบได้ว่าผ่านหรือไม่ผ่าน",
+      "Bug Report Format — ระบุขั้นตอนการ Reproduce, ผลที่คาดหวัง vs ผลที่เกิดจริง และระดับความรุนแรง",
+      "Regression Checklist — รายการตรวจสอบก่อน Release ว่าฟีเจอร์เดิมยังทำงานได้ถูกต้อง",
+      "Reusable Structure — โครงสร้างยืดหยุ่น ปรับให้เข้ากับโปรเจกต์ต่างๆ ได้",
     ],
 
     highlights: [
@@ -573,9 +569,9 @@ dev, tester, and business.
       "Regression checklist for releases",
     ],
     highlights_th: [
-      "Test Case Structure - โครงสร้างที่เชื่อมโยงกับความต้องการทางธุรกิจ",
-      "Bug Report Format - รูปแบบที่ช่วยให้ทีมพัฒนาแก้ไขปัญหาได้ง่ายขึ้น",
-      "Regression Checklist - เครื่องมือช่วยตรวจสอบความครบถ้วนก่อนขึ้นระบบจริง",
+      "โครงสร้าง Test Case เชื่อมโยงกับ Acceptance Criteria ของฝั่ง Business",
+      "Bug Report ที่ระบุข้อมูลครบ ช่วยให้ Developer แก้ไขได้ตรงจุด",
+      "Regression Checklist สำหรับตรวจสอบความพร้อมก่อน Deploy",
     ],
 
     responsibilities: [
@@ -584,9 +580,9 @@ dev, tester, and business.
       "Create reusable test templates",
     ],
     responsibilities_th: [
-      "ออกแบบโครงสร้างเอกสาร UAT (Document Architecture)",
-      "กำหนดรูปแบบการเขียน Acceptance Criteria เพื่อความชัดเจน",
-      "พัฒนาเทมเพลตการทดสอบที่นำกลับมาใช้ใหม่ได้ (Reusable Templates)",
+      "ออกแบบโครงสร้างเอกสาร UAT ให้ครอบคลุมทุก Scenario",
+      "กำหนดรูปแบบ Acceptance Criteria ให้ตรวจสอบได้ชัดเจน",
+      "สร้าง Test Template ที่นำกลับมาใช้ซ้ำได้กับโปรเจกต์อื่น",
     ],
 
     links: {
