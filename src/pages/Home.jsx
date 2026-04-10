@@ -4,10 +4,13 @@ import Breadcrumbs from "../components/utils/Breadcrumbs.jsx";
 import { usePageMeta } from "../hooks/usePageMeta.js";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
+import { useScrollToNextPage } from "../hooks/useScrollToNextPage.js";
 import { profile } from "../data/profile.js";
 
 export default function Home() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // Scroll ถึงก้นหน้า → navigate ไป About (ผ่าน overlay)
+  useScrollToNextPage("/about");
 
   // SEO Meta Tags handled by SEO component
 
@@ -16,7 +19,6 @@ export default function Home() {
       const { clientX, clientY } = e;
       const x = (clientX / window.innerWidth - 0.5) * 20;
       const y = (clientY / window.innerHeight - 0.5) * 20;
-      // setMousePosition({ x, y });
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -152,6 +154,7 @@ export default function Home() {
           </div>
         </section>
       </PageTransition>
+
     </>
   );
 }

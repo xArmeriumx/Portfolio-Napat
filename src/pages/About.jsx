@@ -1,11 +1,13 @@
 import SEO from "../components/utils/SEO.jsx";
 import Breadcrumbs from "../components/utils/Breadcrumbs.jsx";
 import { useTranslation } from "../context/LanguageContext.jsx";
+import { useEffect } from "react";
 import Section from "../components/ui/Section.jsx";
 import Card from "../components/ui/Card.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
-import PageTransition from "../components/ui/PageTransition.jsx"; // Ensure this is imported
+import PageTransition from "../components/ui/PageTransition.jsx";
 import AnimatedText from "../components/ui/AnimatedText.jsx";
+import { useScrollToNextPage } from "../hooks/useScrollToNextPage.js";
 import { profile } from "../data/profile.js";
 
 /* ========================================
@@ -53,6 +55,15 @@ function SectionHeader({ title }) {
 
 export default function About() {
   const { getContent, language } = useTranslation();
+
+  // Preload หน้า Projects ไว้เลย ขณะที่ user กำลังอ่าน About
+  // เพื่อให้ตอน scroll ถึงก้นแล้ว navigate ไป /projects จะเป็น instant
+  useEffect(() => {
+    import("../pages/ProjectList.jsx");
+  }, []);
+
+  // Scroll ถึงก้นหน้า → navigate ไป Projects (ผ่าน overlay)
+  useScrollToNextPage("/projects");
 
   // Labels for section titles - Always English
   const labels = {
@@ -187,6 +198,7 @@ export default function About() {
           </div>
         </div>
       </PageTransition>
+
     </>
   );
 }
