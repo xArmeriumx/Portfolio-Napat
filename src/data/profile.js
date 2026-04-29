@@ -14,9 +14,9 @@ export const profile = {
     phone: "",
   },
   about:
-    "I have experience in web development and software testing, with a strong focus on quality, validation, and practical usage. I approach development with a testing mindset to ensure reliable and maintainable systems.",
+    "I have experience as a Web Developer and Software Tester, with a strong focus on quality, validation, and practical usage. I approach development with a testing mindset to ensure reliable and maintainable systems.",
   about_th:
-    "มีประสบการณ์ด้าน Web Development และการทดสอบซอฟต์แวร์ โดยเน้นที่คุณภาพและการตรวจสอบความถูกต้อง ใช้แนวคิดด้านการทดสอบในการพัฒนาเพื่อสร้างระบบที่เชื่อถือได้และบำรุงรักษาง่าย",
+    "มีประสบการณ์เป็น Web Developer และ Software Tester โดยเน้นที่คุณภาพและการตรวจสอบความถูกต้อง ใช้แนวคิดด้านการทดสอบในการพัฒนาเพื่อสร้างระบบที่เชื่อถือได้และบำรุงรักษาง่าย",
   education: [
     "King Mongkut's University of Technology North Bangkok",
     "B.Sc. in Computer and Information Science — Faculty of Applied Science",

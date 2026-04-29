@@ -182,9 +182,9 @@ export default function ProjectList() {
     <>
       <SEO
         title={`${pageTitle} | Napat Pamornsut (ณภัทร ภมรสูตร)`}
-        description="Explore my projects including web development, frontend, system analysis, and software testing work."
+        description="Explore my projects as a Web Developer and Software Tester, including system analysis work."
         path="/projects"
-        keywords="Napat Pamornsut, ณภัทร ภมรสูตร, Projects, Portfolio, Web Development, React, Software Testing"
+        keywords="Napat Pamornsut, ณภัทร ภมรสูตร, Projects, Portfolio, Web Developer, React, Software Tester"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",
