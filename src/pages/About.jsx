@@ -93,7 +93,7 @@ export default function About() {
             "@type": "Person",
             name: profile.name,
             alternateName: "ณภัทร ภมรสูตร",
-            jobTitle: "Frontend Developer",
+            jobTitle: "Web Developer",
             description: profile.tagline,
             image: "https://napatdev.com/favicon.png",
             sameAs: [profile.links.github, profile.links.linkedin].filter(

@@ -41,9 +41,9 @@ export default function Home() {
   return (
     <>
       <SEO
-        title={`${profile.name} (ณภัทร ภมรสูตร) | Frontend Developer & Software Tester`}
+        title={`${profile.name} (ณภัทร ภมรสูตร) | Web Developer & Software Tester`}
         description={profile.tagline}
-        keywords="Napat Pamornsut, ณภัทร ภมรสูตร, Napatdev, Frontend Developer, Software Tester, React Developer, Node.js, Playwright, Bangkok, Thailand"
+        keywords="Napat Pamornsut, ณภัทร ภมรสูตร, Napatdev, Web Developer, Software Tester, React Developer, Node.js, Playwright, Bangkok, Thailand"
         structuredData={webSiteSchema}
       />
       <Breadcrumbs />
@@ -83,7 +83,7 @@ export default function Home() {
 
               {/* Role */}
               <div className="text-xl md:text-3xl font-bold text-gray-800 mb-6">
-                Frontend Developer{" "}
+                Web Developer{" "}
                 <span className="text-gray-400 font-light px-2">|</span>{" "}
                 Software Tester
               </div>
