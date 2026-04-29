@@ -4,7 +4,7 @@ export const profile = {
   tagline:
     "Building reliable web applications with a focus on quality and testing. Turning requirements into practical, testable solutions.",
   links: {
-    github: "https://github.com/NapatPamornsuT",
+    github: "https://github.com/xArmeriumx",
     linkedin: "#",
     resume: "#", // ใส่เป็น "/resume.pdf" ถ้าวางไฟล์ไว้ใน public
     email: "napat.pamornsut@gmail.com",
