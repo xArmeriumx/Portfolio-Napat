@@ -185,32 +185,112 @@ export default function Dashboard() {
 }
 ```
 
-### 7. จัดการ Form ด้วย Server Actions (ไม่ต้องสร้าง API แยก)
-เทคนิคนี้เป็นกลไกที่ช่วยให้สามารถเขียนและการเรียกฟังก์ชันที่ทำงานบนระดับสคริปต์ของเซิฟเวอร์ ผูกเชื่อมต่อโดยตรงจากการโต้ตอบแบบฟอร์มฝั่งคลายเอนต์ โดยลดขั้นตอนการสร้าง API แยกต่างหาก
+### 7. Server Actions & Server Functions (เจาะลึกการทำงาน)
 
+#### 7.1 แนวคิดและความแตกต่าง
+
+ก่อนลงโค้ด ควรเข้าใจว่าทั้งสองคำนี้หมายถึงอะไร และแตกต่างกันอย่างไร:
+
+| | **Server Function** | **Server Action** |
+|---|---|---|
+| **คืออะไร** | ฟังก์ชัน `async` ทั่วไปที่ประกาศ `"use server"` เพื่อบอกว่าโค้ดชุดนี้รันบนเซิร์ฟเวอร์เท่านั้น | Server Function ที่ถูก**ผูกเข้ากับ Form หรือ Event** (เช่น `action={fn}`) ซึ่งกระตุ้นผ่านการกระทำของผู้ใช้ |
+| **เรียกได้จากที่ไหน** | Server Component, Client Component (ต้อง import), หรือ Server Action อื่น | Client Component ผ่าน Form `action` หรือ `.startTransition()` |
+| **ข้อมูลที่รับ** | รับ argument ทั่วไปได้เลย | รับ `FormData` อัตโนมัติเมื่อผูกกับ `<form>` |
+
+> **สรุปสั้น:** Server Action คือ Server Function ที่ถูกเรียกจาก Client ผ่าน HTTP Request ภายใน (Next.js จัดการ Endpoint ให้อัตโนมัติ)
+
+#### 7.1.1 Server Function vs Traditional API (เปรียบเทียบความเข้าใจ)
+
+เพื่อให้เข้าใจง่ายขึ้น **Server Function ก็คือ API Endpoint ที่ Next.js สร้างและจัดการให้เราโดยอัตโนมัติ**
+
+| หัวข้อเปรียบเทียบ | API แบบดั้งเดิม (Route Handler) | Server Function / Action |
+|---|---|---|
+| **การเรียกใช้งาน** | `fetch('/api/user', { method: 'POST', ... })` | `createUser(data)` (เรียกเหมือนฟังก์ชันปกติ) |
+| **การรับส่งข้อมูล** | ต้องจัดการ JSON.stringify / JSON.parse เอง | ส่ง Object/FormData เข้าไปได้เลย |
+| **ความปลอดภัย** | ต้องเขียนระบบตรวจสอบ Token/Auth เองทุก Route | ใช้ `cookies()`, `headers()` ตรวจสอบได้ทันที |
+| **Type Safety** | ต้องระบุ Type เองทั้งสองฝั่ง (Client/Server) | **Full Type Safety** (แชร์ Type กันได้ทันที) |
+| **เบื้องหลัง (Network)** | เรียกไปที่ URL ที่เราตั้งไว้ | เรียกไปที่ URL ปัจจุบันด้วย HTTP POST (Internal) |
+
+---
+
+#### 7.2 การประกาศ `"use server"` ทำงานอย่างไร
+
+`"use server"` เป็น React Directive ที่บอก Next.js ให้ **แยกโค้ดนี้ออกไปรันบน Server เท่านั้น** — ไม่มีวันถูก Bundle ส่งไปให้ Browser เห็น
+
+มีสองรูปแบบการประกาศ:
+
+**แบบที่ 1: ประกาศระดับไฟล์ (แนะนำ — เหมาะกับมีหลายฟังก์ชัน)**
 ```ts
-// app/actions/userActions.ts
-"use server"; // ประกาศเพื่อให้ระบบทำงานบนแวดล้อมเฉพาะฝั่งเซิร์ฟเวอร์
+// app/actions/postActions.ts
+"use server"; // ← ทุกฟังก์ชัน export ในไฟล์นี้จะกลายเป็น Server Function ทั้งหมด
 
+import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
-export async function createUser(prevState: any, formData: FormData) {
-  const email = formData.get("email");
-
-  // ตรวจสอบความถูกต้องทางข้อมูลเบื้องต้น
-  if (!email || typeof email !== "string") {
-    return { error: "รูปแบบอีเมลไม่ถูกต้อง ข้อมูลขัดข้อง" };
-  }
-
-  // สมมติว่าจัดเก็บเข้า Database เรียบร้อยแล้ว (เช่น await db.user.create({ email }))
-
-  // ส่งคำสั่งรีเฟรชเส้นทางหน้าเพจของรายชื่อผู้ใช้ให้แสดงข้อมูลใหม่ล่าสุด
-  revalidatePath("/users");
+export async function createPost(data: { title: string; content: string }) {
+  await db.post.create({ data });
+  revalidatePath("/posts");
   return { success: true };
+}
+
+export async function deletePost(id: string) {
+  await db.post.delete({ where: { id } });
+  revalidatePath("/posts");
 }
 ```
 
-สามารถนำฟังก์ชันฝั่งเซิร์ฟเวอร์มาประสานเข้ากับ UI Component ได้โดยใช้ `useActionState` ตัวช่วยในการบริหารสถานะขณะทำงานและดักจับข้อความข้อผิดพลาดกลับมา:
+**แบบที่ 2: ประกาศระดับฟังก์ชัน (เหมาะเมื่อฝังใน Server Component โดยตรง)**
+```tsx
+// app/posts/page.tsx  ← ไฟล์นี้เป็น Server Component (ไม่มี "use client")
+export default function PostsPage() {
+
+  // ประกาศ Server Action ข้างในได้เลย ไม่ต้องแยกไฟล์
+  async function handleDelete(formData: FormData) {
+    "use server"; // ← ประกาศเฉพาะฟังก์ชันนี้
+    const id = formData.get("id") as string;
+    await db.post.delete({ where: { id } });
+    revalidatePath("/posts");
+  }
+
+  return (
+    <form action={handleDelete}>
+      <input type="hidden" name="id" value="post-123" />
+      <button type="submit">ลบโพสต์</button>
+    </form>
+  );
+}
+```
+
+> **⚠️ ข้อจำกัดสำคัญ:** ถ้าเป็น Client Component (`"use client"`) จะ **ไม่สามารถ** ประกาศ `"use server"` ภายในได้โดยตรง — ต้องแยกออกเป็นไฟล์ต่างหาก แล้ว import เข้ามา
+
+---
+
+#### 7.3 ผูก Server Action เข้ากับ Form (Form Action Pattern)
+
+รูปแบบพื้นฐานที่สุด — Next.js จะส่ง `FormData` ให้โดยอัตโนมัติเมื่อ Form ถูก Submit:
+
+```ts
+// app/actions/userActions.ts
+"use server";
+
+import { revalidatePath } from "next/cache";
+
+// signature สำหรับใช้กับ useActionState: (prevState, formData)
+export async function createUser(prevState: any, formData: FormData) {
+  const name  = formData.get("name") as string;
+  const email = formData.get("email") as string;
+
+  if (!name || !email) {
+    return { error: "กรุณากรอกข้อมูลให้ครบถ้วน" };
+  }
+
+  // เชื่อมต่อ Database ได้โดยตรง (โค้ดส่วนนี้ไม่มีวันรั่วไปยัง Browser)
+  await db.user.create({ data: { name, email } });
+
+  revalidatePath("/users"); // บอก Next.js ให้ทำการ Re-fetch หน้า /users ใหม่
+  return { success: true, message: `เพิ่มผู้ใช้ "${name}" สำเร็จแล้ว` };
+}
+```
 
 ```tsx
 // app/users/create/page.tsx
@@ -220,21 +300,237 @@ import { useActionState } from "react";
 import { createUser } from "@/actions/userActions";
 
 export default function CreateUserForm() {
+  // useActionState(action, initialState)
+  // → state   : ค่า return ล่าสุดจาก action
+  // → formAction : ฟังก์ชันที่ส่งให้ form action={...}
+  // → isPending  : true ขณะรอ Server ประมวลผล
   const [state, formAction, isPending] = useActionState(createUser, null);
 
   return (
     <form action={formAction}>
-      <input type="email" name="email" required />
-      
+      <input type="text"  name="name"  placeholder="ชื่อผู้ใช้" required />
+      <input type="email" name="email" placeholder="อีเมล" required />
+
       <button type="submit" disabled={isPending}>
-        {isPending ? "กำลังบันทึกข้อมูล..." : "เพิ่มผู้ใช้งาน"}
+        {isPending ? "กำลังบันทึก..." : "เพิ่มผู้ใช้"}
       </button>
-      
-      {state?.error && <p style={{ color: 'red' }}>{state.error}</p>}
+
+      {/* แสดงผลลัพธ์จาก Server */}
+      {state?.error   && <p className="text-red-500">{state.error}</p>}
+      {state?.success && <p className="text-green-500">{state.message}</p>}
     </form>
   );
 }
 ```
+
+---
+
+#### 7.4 เรียก Server Function แบบ Programmatic (ไม่ผ่าน Form)
+
+บ่อยครั้งที่ต้องการเรียก Server Function จากปุ่มทั่วไป หรือหลังจาก Logic อื่นทำงานเสร็จ — สามารถเรียกได้โดยตรงเหมือนฟังก์ชันปกติ:
+
+```ts
+// app/actions/likeActions.ts
+"use server";
+
+import { revalidatePath } from "next/cache";
+
+// รับ argument ปกติได้เลย (ไม่บังคับ FormData)
+export async function toggleLike(postId: string, userId: string) {
+  const existing = await db.like.findFirst({ where: { postId, userId } });
+
+  if (existing) {
+    await db.like.delete({ where: { id: existing.id } });
+  } else {
+    await db.like.create({ data: { postId, userId } });
+  }
+
+  revalidatePath(`/posts/${postId}`);
+  return { liked: !existing };
+}
+```
+
+```tsx
+// app/components/LikeButton.tsx
+"use client";
+
+import { useState, useTransition } from "react";
+import { toggleLike } from "@/actions/likeActions";
+
+export function LikeButton({ postId, userId, initialLiked }: {
+  postId: string;
+  userId: string;
+  initialLiked: boolean;
+}) {
+  const [liked, setLiked] = useState(initialLiked);
+  const [isPending, startTransition] = useTransition();
+
+  const handleClick = () => {
+    // startTransition ป้องกัน UI กระตุก และติดตามสถานะ pending ให้
+    startTransition(async () => {
+      const result = await toggleLike(postId, userId); // เรียก Server Function โดยตรง
+      setLiked(result.liked);
+    });
+  };
+
+  return (
+    <button onClick={handleClick} disabled={isPending}>
+      {liked ? "❤️ ถูกใจแล้ว" : "🤍 ถูกใจ"}
+    </button>
+  );
+}
+```
+
+> **💡 หลักการ:** ใช้ `useTransition` ทุกครั้งเมื่อเรียก Server Function จากปุ่ม — ช่วยให้ UI ไม่กระตุก และได้สถานะ `isPending` มาควบคุม Loading State
+
+---
+
+#### 7.5 การส่ง Argument เพิ่มเติมให้ Server Action ที่ผูกกับ Form
+
+บางกรณีต้องการส่งค่า ID หรือข้อมูลเพิ่มเติมที่ไม่ใช่ Input ในฟอร์ม สามารถทำได้ด้วย `.bind()`:
+
+```ts
+// app/actions/postActions.ts
+"use server";
+
+export async function updatePost(postId: string, prevState: any, formData: FormData) {
+  //                            ↑ bind argument    ↑ useActionState args
+  const title = formData.get("title") as string;
+  await db.post.update({ where: { id: postId }, data: { title } });
+  revalidatePath(`/posts/${postId}`);
+  return { success: true };
+}
+```
+
+```tsx
+// app/posts/[id]/edit/page.tsx
+"use client";
+
+import { useActionState } from "react";
+import { updatePost } from "@/actions/postActions";
+
+export default function EditPostForm({ postId }: { postId: string }) {
+  // ผูก postId เข้าไปเป็น argument แรกถาวร ด้วย .bind()
+  const updatePostWithId = updatePost.bind(null, postId);
+  const [state, formAction, isPending] = useActionState(updatePostWithId, null);
+
+  return (
+    <form action={formAction}>
+      <input type="text" name="title" defaultValue="ชื่อโพสต์เดิม" />
+      <button type="submit" disabled={isPending}>บันทึกการแก้ไข</button>
+    </form>
+  );
+}
+```
+
+---
+
+#### 7.6 Optimistic UI — อัปเดต UI ก่อนรอ Server ตอบกลับ
+
+เทคนิคนี้ช่วยให้ UX รู้สึกลื่นไหลมากขึ้น โดยการอัปเดต UI ให้เห็นผลทันที ก่อนที่ Server จะยืนยัน — หาก Server ผิดพลาด ค่าจะถูก Rollback อัตโนมัติ:
+
+```tsx
+// app/components/TodoItem.tsx
+"use client";
+
+import { useOptimistic, useTransition } from "react";
+import { toggleTodo } from "@/actions/todoActions";
+
+export function TodoItem({ todo }: { todo: { id: string; done: boolean; text: string } }) {
+  const [optimisticDone, setOptimisticDone] = useOptimistic(todo.done);
+  const [, startTransition] = useTransition();
+
+  const handleToggle = () => {
+    startTransition(async () => {
+      setOptimisticDone(!optimisticDone); // ← อัปเดต UI ทันทีเลย
+      await toggleTodo(todo.id);          // ← รอ Server ทำงานเงียบๆ อยู่เบื้องหลัง
+    });
+  };
+
+  return (
+    <div>
+      <input type="checkbox" checked={optimisticDone} onChange={handleToggle} />
+      <span style={{ textDecoration: optimisticDone ? "line-through" : "none" }}>
+        {todo.text}
+      </span>
+    </div>
+  );
+}
+```
+
+---
+
+#### 7.7 การจัดการ Error ใน Server Action
+
+Server Action ควรจัดการ Error ด้วย `try/catch` และส่งข้อความกลับในรูปแบบ Object (ไม่ใช่การ `throw`) เพื่อให้ Client Component แสดงผลได้โดยไม่ Crash:
+
+```ts
+// app/actions/safeActions.ts
+"use server";
+
+export async function safeCreateUser(prevState: any, formData: FormData) {
+  try {
+    const email = formData.get("email") as string;
+
+    // validation
+    if (!email.includes("@")) {
+      return { status: "error", message: "รูปแบบอีเมลไม่ถูกต้อง" };
+    }
+
+    // ตรวจสอบซ้ำใน Database
+    const exists = await db.user.findUnique({ where: { email } });
+    if (exists) {
+      return { status: "error", message: "อีเมลนี้มีในระบบแล้ว" };
+    }
+
+    await db.user.create({ data: { email } });
+    revalidatePath("/users");
+
+    return { status: "success", message: "สร้างบัญชีสำเร็จแล้ว!" };
+
+  } catch (e) {
+    // กรณี Database ล่มหรือมี unexpected error
+    console.error("[safeCreateUser]", e);
+    return { status: "error", message: "เซิร์ฟเวอร์ขัดข้อง กรุณาลองใหม่อีกครั้ง" };
+  }
+}
+```
+
+> **⚠️ อย่า throw Error ออกจาก Server Action** โดยตรง — เพราะจะทำให้ `error.tsx` ของ Next.js รับไป แทนที่จะแสดง Inline Error ใน Form ซึ่งมักไม่ใช่สิ่งที่ต้องการ
+
+---
+
+#### 7.8 สรุปภาพรวมการเลือกใช้
+
+คำถาม: **สถานการณ์ของคุณคืออะไร?**
+
+- **ส่งข้อมูลผ่านฟอร์ม (Form Submit)** 
+  → ใช้ `Server Action` ควบคู่กับ `useActionState`
+- **คลิกปุ่มหรือตอบสนอง Event ทั่วไป** 
+  → เรียก `Server Function` โดยตรงภายใต้ `useTransition`
+- **อยากให้ UI เปลี่ยนทันทีก่อน Server ตอบ (Optimistic UI)** 
+  → เพิ่มการใช้ `useOptimistic` เข้ามาช่วย
+- **ต้องแนบ ID หรือค่าพารามิเตอร์จำเพาะเข้าไปด้วย** 
+  → ประยุกต์ใช้ `<action_function>.bind(null, id)` 
+- **ต้องการให้ระบบอื่นหรือ Mobile App เข้ามาใช้งาน** 
+  → สร้างเป็น API ด้วย `Route Handler` เช่นเดิมข้ามเรื่อง Server Action ได้เลย
+
+#### 7.9 หลักการตัดสินใจ: Server Action vs Route Handler
+
+หากไม่แน่ใจว่างานนี้ควรเขียนเป็น API หรือ Server Action ให้ใช้เกณฑ์นี้ตัดสินใจ:
+
+| กรณีการใช้งาน | เลือกใช้ **Server Action** | เลือกใช้ **Route Handler (API)** |
+|---|:---:|:---:|
+| ส่งข้อมูลจาก Form ในหน้าเว็บ | ✅ (แนะนำ) | ❌ |
+| คลิกปุ่มเปลี่ยนสถานะ (เช่น Like) | ✅ (แนะนำ) | ❌ |
+| ให้แอปมือถือเรียกใช้งาน | ❌ | ✅ (จำเป็น) |
+| รับ Webhook จากระบบอื่น (Stripe/LINE) | ❌ | ✅ (จำเป็น) |
+| สร้างไฟล์ให้โหลด (PDF/CSV) | ❌ | ✅ |
+| ต้องการความรวดเร็วในการเขียนโค้ด | ✅ | ❌ |
+
+**กฎเหล็ก:** 
+- ถ้า **"User ในเว็บเราเป็นคนทำ"** → **Server Action** 
+- ถ้า **"ระบบอื่นหรือแอปอื่นเป็นคนเรียก"** → **Route Handler**
 
 ### 8. Route Handlers (สร้างเส้นทาง API)
 นอกเหนือระบบ Server Actions แล้ว ทางโปรเจกต์มักจะมีความจำเป็นที่ต้องสร้าง API แบบอิสระ เพื่อรองรับระบบภายนอกอื่นๆ สามารถดำเนินการสร้างขึ้นได้ผ่านการสร้างไฟล์ชื่อ `route.ts` 
