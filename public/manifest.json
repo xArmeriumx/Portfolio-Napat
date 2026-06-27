@@ -1,8 +1,10 @@
 {
-    "name": "Napat Pamornsut (Napat-Dev)",
-    "short_name": "Napat Dev",
-    "description": "Web Developer and Software Tester based in Bangkok, Thailand",
+    "name": "Napat Pamornsut (ณภัทร ภมรสูตร) | Napatdev",
+    "short_name": "Napatdev",
+    "description": "Web Developer and Software Tester based in Bangkok, Thailand. Portfolio of React, Next.js, Node.js, and Playwright projects.",
     "start_url": "/",
+    "id": "/",
+    "lang": "en",
     "display": "standalone",
     "background_color": "#0b0b0b",
     "theme_color": "#0b0b0b",

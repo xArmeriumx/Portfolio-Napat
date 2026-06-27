@@ -1,13 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
+import BrandWordmark from "./BrandWordmark.jsx";
 
 /**
- * PageOverlay
- * Full-screen overlay สี #f9fafb ไหลเข้า-ออกแนวตั้ง
- * ปิดทับระหว่าง page transition เพื่อซ่อนรอยต่อ
- *
- * Flow:
- *   Slide in from bottom  → [y: 100% → 0]  (350ms)
- *   Slide out to top      → [y: 0 → -100%]  (350ms)
+ * PageOverlay — full-screen transition with centered logo (inline)
  */
 export default function PageOverlay({ isVisible }) {
   return (
@@ -22,14 +17,20 @@ export default function PageOverlay({ isVisible }) {
             duration: 0.35,
             ease: [0.76, 0, 0.24, 1],
           }}
-          style={{
-            position: "fixed",
-            inset: 0,
-            backgroundColor: "#f9fafb",
-            zIndex: 9999,
-            borderTop: "2px solid #e5e7eb",
-          }}
-        />
+          className="fixed inset-0 z-[9999] w-full bg-[#f9fafb]"
+        >
+          <div className="flex h-full w-full items-center justify-center px-6">
+            <motion.div
+              className="flex items-center justify-center"
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.04 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+            >
+              <BrandWordmark title="Napatdev" compact />
+            </motion.div>
+          </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

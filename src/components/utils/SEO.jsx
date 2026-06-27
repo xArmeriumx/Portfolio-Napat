@@ -1,21 +1,13 @@
-import React from "react";
-
-// Production URL for Canonical tags (Strict SEO)
-const PROD_URL = "https://napatdev.com";
+import {
+  SITE_URL,
+  SEO_DEFAULTS,
+  absoluteUrl,
+  toAbsoluteImageUrl,
+  normalizeMetaDescription,
+} from "../../config/seo.js";
 
 /**
- * SEO Component - Uses React 19 Native Document Metadata key features
- * Renders <title>, <meta>, and <link> tags that are hoisted to the document <head>.
- *
- * @param {object} props
- * @param {string} props.title - Page title
- * @param {string} props.description - Meta description
- * @param {string} props.ogTitle - Open Graph title (optional)
- * @param {string} props.ogDescription - Open Graph description (optional)
- * @param {string} props.ogType - Open Graph type (optional, default: "website")
- * @param {string} props.ogImage - Open Graph image URL (optional)
- * @param {string} props.path - Path for canonical URL (optional, e.g., "/about")
- * @param {string} props.keywords - Additional keywords (optional)
+ * SEO Component - React 19 document metadata hoisting
  */
 export default function SEO({
   title,
@@ -24,69 +16,96 @@ export default function SEO({
   ogDescription,
   ogType = "website",
   ogImage,
+  ogImageAlt,
+  ogImageWidth,
+  ogImageHeight,
   path = "",
   keywords,
   noindex,
   structuredData,
+  locale = SEO_DEFAULTS.locale,
+  alternateLocale = SEO_DEFAULTS.alternateLocale,
 }) {
-  // Determine Base URL: use window.location.origin if available (Dev/Preview), else fallback to PROD
   const origin =
     typeof window !== "undefined" && window.location.origin
       ? window.location.origin
-      : PROD_URL;
+      : SITE_URL;
 
-  // OG/Twitter tags follow the current environment
   const fullUrl = `${origin}${path}`;
-
-  // Canonical always points to production to prevent duplicate content issues
-  const canonicalUrl = `${PROD_URL}${path}`;
-
-  // Handle Image URL
-  let imageUrl = ogImage || "/favicon.png"; // Default to relative favicon
-  // If it's a relative path, prepend origin
-  if (imageUrl.startsWith("/")) {
-    imageUrl = `${origin}${imageUrl}`;
-  }
-  // If it's already an absolute URL (http...), leave it as is
-
+  const canonicalUrl = absoluteUrl(path);
+  const imageUrl = toAbsoluteImageUrl(ogImage || SEO_DEFAULTS.ogImage);
   const effectiveTitle = ogTitle || title;
-  const effectiveDesc = ogDescription || description;
+  const effectiveDesc = normalizeMetaDescription(
+    ogDescription || description,
+    ogType === "article" ? 200 : 160,
+  );
+  const pageDescription = normalizeMetaDescription(description, 160);
+  const effectiveKeywords = keywords || SEO_DEFAULTS.keywords;
+  const effectiveImageAlt =
+    ogImageAlt || `${effectiveTitle} — Napat Pamornsut Portfolio`;
+  const isProjectImage = Boolean(ogImage && ogImage !== SEO_DEFAULTS.ogImage);
+  const imageWidth = ogImageWidth || (isProjectImage ? 1200 : 512);
+  const imageHeight = ogImageHeight || (isProjectImage ? 630 : 512);
+
+  const schemas = Array.isArray(structuredData)
+    ? structuredData
+    : structuredData
+      ? [structuredData]
+      : [];
 
   return (
     <>
-      {/* Primary Meta Tags */}
       {title && <title>{title}</title>}
-      {description && <meta name="description" content={description} />}
-      {keywords && <meta name="keywords" content={keywords} />}
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      {title && <meta name="title" content={title} />}
+      {pageDescription && <meta name="description" content={pageDescription} />}
+      {effectiveKeywords && <meta name="keywords" content={effectiveKeywords} />}
+      {noindex ? (
+        <meta name="robots" content="noindex, nofollow" />
+      ) : (
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+      )}
 
-      {/* Open Graph / Facebook */}
+      <meta name="author" content="Napat Pamornsut (ณภัทร ภมรสูตร)" />
+      <meta name="geo.region" content="TH-10" />
+      <meta name="geo.placename" content="Bangkok" />
+
       <meta property="og:type" content={ogType} />
-      <meta property="og:url" content={fullUrl} />
+      <meta property="og:url" content={canonicalUrl} />
       <meta property="og:title" content={effectiveTitle} />
       <meta property="og:description" content={effectiveDesc} />
       <meta property="og:image" content={imageUrl} />
+      <meta property="og:image:secure_url" content={imageUrl} />
+      <meta property="og:image:alt" content={effectiveImageAlt} />
+      <meta property="og:image:width" content={String(imageWidth)} />
+      <meta property="og:image:height" content={String(imageHeight)} />
       <meta property="og:site_name" content="Napatdev" />
-      <meta property="og:locale" content="en_US" />
+      <meta property="og:locale" content={locale} />
+      <meta property="og:locale:alternate" content={alternateLocale} />
 
-      {/* Twitter */}
+      {ogType === "article" && (
+        <>
+          <meta property="article:author" content="Napat Pamornsut" />
+          <meta property="article:section" content="Portfolio Projects" />
+        </>
+      )}
+
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:url" content={fullUrl} />
+      <meta name="twitter:url" content={canonicalUrl} />
       <meta name="twitter:title" content={effectiveTitle} />
       <meta name="twitter:description" content={effectiveDesc} />
       <meta name="twitter:image" content={imageUrl} />
+      <meta name="twitter:image:alt" content={effectiveImageAlt} />
 
-      {/* Canonical URL */}
-      {/* Note: React 19 currently supports hoisting <title> and <meta>. 
-          For <link> tags, it also supports them but key property helps prevent duplication. */}
       <link rel="canonical" href={canonicalUrl} />
+      <link rel="alternate" hrefLang="en" href={canonicalUrl} />
+      <link rel="alternate" hrefLang="th" href={canonicalUrl} />
+      <link rel="alternate" hrefLang="x-default" href={canonicalUrl} />
 
-      {/* Structured Data (JSON-LD) */}
-      {structuredData && (
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
+      {schemas.map((schema, index) => (
+        <script key={`jsonld-${index}`} type="application/ld+json">
+          {JSON.stringify(schema)}
         </script>
-      )}
+      ))}
     </>
   );
 }

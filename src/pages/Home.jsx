@@ -6,13 +6,11 @@ import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import { useScrollToNextPage } from "../hooks/useScrollToNextPage.js";
 import { profile } from "../data/profile.js";
+import { SEO_DEFAULTS, getHomeGraphSchema } from "../config/seo.js";
 
 export default function Home() {
-
   // Scroll ถึงก้นหน้า → navigate ไป About (ผ่าน overlay)
   useScrollToNextPage("/about");
-
-  // SEO Meta Tags handled by SEO component
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -25,26 +23,13 @@ export default function Home() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // WebSite Schema for Sitelinks Search Box Candidate
-  const webSiteSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "Napatdev",
-    url: "https://napatdev.com/",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: "https://napatdev.com/projects?q={search_term_string}",
-      "query-input": "required name=search_term_string",
-    },
-  };
-
   return (
     <>
       <SEO
-        title={`${profile.name} (ณภัทร ภมรสูตร) | Web Developer & Software Tester`}
-        description={profile.tagline}
-        keywords="Napat Pamornsut, ณภัทร ภมรสูตร, Napatdev, Web Developer, Software Tester, React Developer, Node.js, Playwright, Bangkok, Thailand"
-        structuredData={webSiteSchema}
+        title={SEO_DEFAULTS.title}
+        description={SEO_DEFAULTS.description}
+        keywords={SEO_DEFAULTS.keywords}
+        structuredData={getHomeGraphSchema()}
       />
       <Breadcrumbs />
       <PageTransition>
@@ -154,7 +139,6 @@ export default function Home() {
           </div>
         </section>
       </PageTransition>
-
     </>
   );
 }

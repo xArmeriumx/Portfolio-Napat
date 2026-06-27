@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext.jsx";
+import BrandWordmark from "../ui/BrandWordmark.jsx";
 
 export default function Navbar() {
   const { language, toggleLanguage } = useLanguage();
@@ -37,20 +38,17 @@ export default function Navbar() {
         {/* Brand */}
         <Link
           to="/"
-          className={`flex items-center gap-2 z-[60] group transition-opacity ${
+          className={`flex items-center z-[60] group transition-opacity ${
             isOpen
               ? "opacity-0 pointer-events-none duration-0 md:opacity-100 md:pointer-events-auto"
               : "opacity-100 duration-300"
           }`}
+          aria-label="Napatdev home"
         >
-          <img
-            src="/favicon.ico"
-            alt="Napat-Dev Logo"
-            className="h-10 w-auto transition-transform duration-300 group-hover:scale-110 mix-blend-multiply"
+          <BrandWordmark
+            className="transition-transform duration-300 group-hover:scale-[1.02]"
+            compact
           />
-          <span className="text-xl font-extrabold text-gray-900 tracking-tight transition-colors group-hover:text-red-700 hidden sm:block">
-            Napat-Dev();
-          </span>
         </Link>
 
         {/* Hamburger Toggle (Mobile) */}
@@ -171,16 +169,7 @@ export default function Navbar() {
           {/* Drawer Header (Logo Left, Close Button Right) */}
           <div className="h-16 flex items-center justify-between px-6 border-b border-gray-100">
             {/* Logo inside Drawer */}
-            <div className="flex items-center gap-2">
-              <img
-                src="/favicon.ico"
-                alt="Logo"
-                className="h-8 w-auto mix-blend-multiply"
-              />
-              <span className="text-lg font-bold text-gray-900">
-                Napat-Dev();
-              </span>
-            </div>
+            <BrandWordmark className="text-gray-900" compact />
             {/* Close button is handled by the main toggle button which is z-60 */}
           </div>
 

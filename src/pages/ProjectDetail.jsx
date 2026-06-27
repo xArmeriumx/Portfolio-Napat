@@ -8,6 +8,7 @@ import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import AnimatedText from "../components/ui/AnimatedText.jsx";
 import { projects } from "../data/projects.js";
+import { getProjectSchema, getProjectSeoMeta } from "../config/seo.js";
 
 // Libraries
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -276,28 +277,30 @@ export default function ProjectDetail() {
     back: "← Back",
   };
 
+  const projectSeo = getProjectSeoMeta(project, getContent);
+
   return (
     <>
       <SEO
-        title={`${getContent(project, "title")} | Projects`}
-        description={getContent(project, "description")}
-        ogImage={projectImages?.[0]}
+        title={projectSeo.title}
+        description={projectSeo.description}
+        ogTitle={projectSeo.ogTitle}
+        ogDescription={projectSeo.ogDescription}
+        ogImage={projectSeo.ogImage}
+        ogImageAlt={projectSeo.ogImageAlt}
+        ogImageWidth={projectSeo.ogImageWidth}
+        ogImageHeight={projectSeo.ogImageHeight}
         ogType="article"
-        path={`/projects/${slug}`}
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "SoftwareSourceCode",
-          name: title,
-          description: description,
-          url: `https://napatdev.com/projects/${slug}`,
+        path={projectSeo.path}
+        keywords={projectSeo.keywords}
+        structuredData={getProjectSchema({
+          slug,
+          title,
+          description,
           image: projectImages?.[0],
-          author: {
-            "@type": "Person",
-            name: "Napat Pamornsut",
-            url: "https://napatdev.com",
-          },
-          programmingLanguage: stack ? stack.split(", ") : technologies,
-        }}
+          technologies,
+          links,
+        })}
       />
       <Breadcrumbs />
       <PageTransition>

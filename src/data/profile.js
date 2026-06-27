@@ -69,6 +69,10 @@ export const profile = {
           name: "Chakra UI",
           logo: "https://avatars.githubusercontent.com/u/54212428?s=200&v=4",
         },
+        {
+          name: "Flutter",
+          logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg",
+        },
       ],
     },
     {
@@ -84,6 +88,14 @@ export const profile = {
           logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg",
         },
         {
+          name: "NestJS",
+          logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nestjs/nestjs-original.svg",
+        },
+        {
+          name: "FastAPI",
+          logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg",
+        },
+        {
           name: "REST API",
           logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swagger/swagger-original.svg",
         },
@@ -94,6 +106,10 @@ export const profile = {
         {
           name: "Prisma",
           logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prisma/prisma-original.svg",
+        },
+        {
+          name: "Zod",
+          logo: "https://cdn.simpleicons.org/zod/3E67B1",
         },
         {
           name: "Supabase",
@@ -107,6 +123,10 @@ export const profile = {
           name: "NextAuth.js",
           logo: "https://next-auth.js.org/img/logo/logo-sm.png",
         },
+        {
+          name: "JWT",
+          logo: "https://cdn.simpleicons.org/jsonwebtokens/000000",
+        },
       ],
     },
     {
@@ -118,8 +138,24 @@ export const profile = {
           logo: "https://playwright.dev/img/playwright-logo.svg",
         },
         {
+          name: "Vitest",
+          logo: "https://cdn.simpleicons.org/vitest/6E9F18",
+        },
+        {
           name: "Git",
           logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
+        },
+        {
+          name: "GitHub Actions",
+          logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/githubactions/githubactions-original.svg",
+        },
+        {
+          name: "Docker",
+          logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg",
+        },
+        {
+          name: "Nginx",
+          logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg",
         },
         {
           name: "VS Code",

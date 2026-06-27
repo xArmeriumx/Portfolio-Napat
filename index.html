@@ -12,16 +12,22 @@
         />
         <meta
             name="description"
-            content="Web Developer and Software Tester based in Bangkok, Thailand. - Building reliable web applications with a focus on quality and testing. Turning requirements into practical, testable solutions."
+            content="Building reliable web applications with a focus on quality and testing. Turning requirements into practical, testable solutions. Based in Bangkok, Thailand. Portfolio of web development and software testing projects using React, Next.js, Node.js, Playwright, and more."
         />
         <meta
             name="keywords"
-            content="Napat Pamornsut, ณภัทร ภมรสูตร, Napatdev, Web Developer, Software Tester, React Developer, Node.js, Playwright, Bangkok, Thailand, Web Developer, Automation Testing, QA Engineer"
+            content="Napat Pamornsut, ณภัทร ภมรสูตร, Napatdev, Napat Dev, Web Developer, Software Tester, QA Engineer, React Developer, Next.js Developer, Node.js, Playwright, Automation Testing, Bangkok, Thailand, Portfolio, TypeScript, Prisma, PostgreSQL, Supabase"
         />
         <meta name="author" content="Napat Pamornsut (ณภัทร ภมรสูตร)" />
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta name="theme-color" content="#0b0b0b" />
+        <meta name="geo.region" content="TH-10" />
+        <meta name="geo.placename" content="Bangkok" />
         <link rel="canonical" href="https://napatdev.com/" />
+        <link rel="alternate" hreflang="en" href="https://napatdev.com/" />
+        <link rel="alternate" hreflang="th" href="https://napatdev.com/" />
+        <link rel="alternate" hreflang="x-default" href="https://napatdev.com/" />
+        <link rel="me" href="https://github.com/xArmeriumx" />
 
         <!-- Favicon -->
         <link rel="icon" href="/favicon.ico" />
@@ -37,16 +43,18 @@
         />
         <meta
             property="og:description"
-            content="Web Developer and Software Tester based in Bangkok, Thailand. - Building reliable web applications with a focus on quality and testing. Turning requirements into practical, testable solutions."
+            content="Building reliable web applications with a focus on quality and testing. Turning requirements into practical, testable solutions. Based in Bangkok, Thailand."
         />
         <meta property="og:image" content="https://napatdev.com/favicon.png" />
+        <meta property="og:image:alt" content="Napat Pamornsut — Web Developer & Software Tester Portfolio" />
         <meta property="og:image:width" content="512" />
         <meta property="og:image:height" content="512" />
         <meta property="og:site_name" content="Napatdev" />
         <meta property="og:locale" content="en_US" />
+        <meta property="og:locale:alternate" content="th_TH" />
 
         <!-- Twitter -->
-        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content="https://napatdev.com/" />
         <meta
             name="twitter:title"
@@ -54,9 +62,10 @@
         />
         <meta
             name="twitter:description"
-            content="Web Developer and Software Tester based in Bangkok, Thailand. - Building reliable web applications with a focus on quality and testing. Turning requirements into practical, testable solutions."
+            content="Building reliable web applications with a focus on quality and testing. Turning requirements into practical, testable solutions. Based in Bangkok, Thailand."
         />
         <meta name="twitter:image" content="https://napatdev.com/favicon.png" />
+        <meta name="twitter:image:alt" content="Napat Pamornsut — Web Developer & Software Tester Portfolio" />
 
         <!-- Google Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -71,80 +80,115 @@
             rel="stylesheet"
         />
 
-        <!-- JSON-LD Structured Data - WebSite -->
+        <!-- JSON-LD Structured Data — linked entity graph for Google -->
         <script type="application/ld+json">
             {
                 "@context": "https://schema.org",
-                "@type": "WebSite",
-                "name": "Napat Pamornsut | Napatdev",
-                "alternateName": ["ณภัทร ภมรสูตร", "Napat Dev", "napatdev"],
-                "url": "https://napatdev.com/",
-                "potentialAction": {
-                    "@type": "SearchAction",
-                    "target": "https://napatdev.com/projects?q={search_term_string}",
-                    "query-input": "required name=search_term_string"
-                }
-            }
-        </script>
-
-        <!-- JSON-LD Structured Data - Person -->
-        <script type="application/ld+json">
-            {
-                "@context": "https://schema.org",
-                "@type": "Person",
-                "name": "Napat Pamornsut",
-                "alternateName": "ณภัทร ภมรสูตร",
-                "url": "https://napatdev.com/",
-                "image": "https://napatdev.com/favicon.png",
-                "jobTitle": ["Web Developer", "Software Tester"],
-                "worksFor": {
-                    "@type": "Organization",
-                    "name": "Freelance"
-                },
-                "address": {
-                    "@type": "PostalAddress",
-                    "addressLocality": "Bangkok",
-                    "addressCountry": "Thailand"
-                },
-                "email": "armnapat.a.03@gmail.com",
-                "sameAs": ["https://github.com/NapatPamornsuT"],
-                "alumniOf": {
-                    "@type": "EducationalOrganization",
-                    "name": "King Mongkut's University of Technology North Bangkok"
-                },
-                "knowsAbout": [
-                    "React",
-                    "Vite",
-                    "JavaScript",
-                    "HTML",
-                    "CSS",
-                    "Chakra UI",
-                    "Node.js",
-                    "Express.js",
-                    "REST API",
-                    "Firebase Realtime Database",
-                    "Playwright",
-                    "Automation Testing",
-                    "GitHub Actions",
-                    "CI/CD",
-                    "Git",
-                    "Postman",
-                    "Bruno",
-                    "System Analysis",
-                    "Web Developer"
+                "@graph": [
+                    {
+                        "@type": "Person",
+                        "@id": "https://napatdev.com/#person",
+                        "name": "Napat Pamornsut",
+                        "alternateName": ["ณภัทร ภมรสูตร", "Napat Dev", "napatdev"],
+                        "url": "https://napatdev.com/",
+                        "image": "https://napatdev.com/favicon.png",
+                        "jobTitle": ["Web Developer", "Software Tester"],
+                        "description": "I have experience as a Web Developer and Software Tester, with a strong focus on quality, validation, and practical usage.",
+                        "email": "napat.pamornsut@gmail.com",
+                        "nationality": { "@type": "Country", "name": "Thailand" },
+                        "address": {
+                            "@type": "PostalAddress",
+                            "addressLocality": "Bangkok",
+                            "addressRegion": "Bangkok",
+                            "addressCountry": "TH"
+                        },
+                        "workLocation": {
+                            "@type": "Place",
+                            "name": "Bangkok, Thailand",
+                            "address": {
+                                "@type": "PostalAddress",
+                                "addressLocality": "Bangkok",
+                                "addressCountry": "TH"
+                            }
+                        },
+                        "alumniOf": {
+                            "@type": "CollegeOrUniversity",
+                            "name": "King Mongkut's University of Technology North Bangkok",
+                            "department": "B.Sc. in Computer and Information Science — Faculty of Applied Science"
+                        },
+                        "knowsAbout": [
+                            "React", "Next.js", "TypeScript", "JavaScript", "Node.js", "Express",
+                            "PostgreSQL", "Prisma", "Supabase", "Playwright", "Automation Testing",
+                            "REST API", "TailwindCSS", "Vite", "Firebase", "Git", "QA", "UAT"
+                        ],
+                        "hasOccupation": [
+                            {
+                                "@type": "Occupation",
+                                "name": "Web Developer",
+                                "skills": "React, Next.js, Node.js, TypeScript, REST API"
+                            },
+                            {
+                                "@type": "Occupation",
+                                "name": "Software Tester",
+                                "skills": "Playwright, Automation Testing, QA, UAT"
+                            }
+                        ],
+                        "contactPoint": {
+                            "@type": "ContactPoint",
+                            "contactType": "professional inquiries",
+                            "email": "napat.pamornsut@gmail.com",
+                            "areaServed": "TH",
+                            "availableLanguage": ["English", "Thai"]
+                        },
+                        "sameAs": ["https://github.com/xArmeriumx"]
+                    },
+                    {
+                        "@type": "Organization",
+                        "@id": "https://napatdev.com/#organization",
+                        "name": "Napatdev",
+                        "alternateName": ["Napat Pamornsut Portfolio", "Napat Dev"],
+                        "url": "https://napatdev.com/",
+                        "logo": {
+                            "@type": "ImageObject",
+                            "url": "https://napatdev.com/favicon.png",
+                            "width": 512,
+                            "height": 512
+                        },
+                        "founder": { "@id": "https://napatdev.com/#person" },
+                        "sameAs": ["https://github.com/xArmeriumx"]
+                    },
+                    {
+                        "@type": "WebSite",
+                        "@id": "https://napatdev.com/#website",
+                        "name": "Napat Pamornsut | Napatdev",
+                        "alternateName": ["ณภัทร ภมรสูตร", "Napat Dev", "napatdev"],
+                        "url": "https://napatdev.com/",
+                        "description": "Portfolio of Napat Pamornsut — Web Developer and Software Tester based in Bangkok, Thailand.",
+                        "inLanguage": ["en", "th"],
+                        "publisher": { "@id": "https://napatdev.com/#organization" },
+                        "author": { "@id": "https://napatdev.com/#person" },
+                        "about": { "@id": "https://napatdev.com/#person" },
+                        "potentialAction": {
+                            "@type": "SearchAction",
+                            "target": {
+                                "@type": "EntryPoint",
+                                "urlTemplate": "https://napatdev.com/projects?q={search_term_string}"
+                            },
+                            "query-input": "required name=search_term_string"
+                        }
+                    },
+                    {
+                        "@type": "ProfilePage",
+                        "@id": "https://napatdev.com/#profilepage",
+                        "url": "https://napatdev.com/",
+                        "name": "Napat Pamornsut — Portfolio",
+                        "description": "Official portfolio of Napat Pamornsut (ณภัทร ภมรสูตร), Web Developer and Software Tester in Bangkok, Thailand.",
+                        "inLanguage": ["en", "th"],
+                        "isPartOf": { "@id": "https://napatdev.com/#website" },
+                        "mainEntity": { "@id": "https://napatdev.com/#person" },
+                        "about": { "@id": "https://napatdev.com/#person" }
+                    }
                 ]
-            }
-        </script>
-
-        <!-- JSON-LD Structured Data - Organization (For Logo in Google Search) -->
-        <script type="application/ld+json">
-            {
-                "@context": "https://schema.org",
-                "@type": "Organization",
-                "name": "Napatdev",
-                "url": "https://napatdev.com/",
-                "logo": "https://napatdev.com/favicon.png",
-                "sameAs": ["https://github.com/NapatPamornsuT"]
             }
         </script>
 
