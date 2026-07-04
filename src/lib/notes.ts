@@ -1,0 +1,121 @@
+import fs from "node:fs";
+import path from "node:path";
+import { absoluteUrl, normalizeMetaDescription, PERSON_ID, WEBSITE_ID, SITE_URL } from "@/config/seo.js";
+
+export type Note = {
+  path: string;
+  id: string;
+  content: string;
+  name: string;
+  rawName: string;
+};
+
+const notesDirectory = path.join(process.cwd(), "src", "data", "notes");
+
+export function formatFileName(filePath: string) {
+  const filename = path.basename(filePath).replace(".md", "");
+  return filename
+    .split(/[-_]/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+export function getAllNotes(): Note[] {
+  return fs
+    .readdirSync(notesDirectory)
+    .filter((file) => file.endsWith(".md"))
+    .sort((a, b) => a.localeCompare(b))
+    .map((file) => {
+      const fullPath = path.join(notesDirectory, file);
+      const id = file.replace(".md", "");
+
+      return {
+        path: `/src/data/notes/${file}`,
+        id,
+        content: fs.readFileSync(fullPath, "utf8"),
+        name: formatFileName(file),
+        rawName: file,
+      };
+    });
+}
+
+export function getFirstNoteSlug() {
+  return getAllNotes()[0]?.id;
+}
+
+export function getNoteBySlug(slug: string) {
+  return getAllNotes().find((note) => note.id === slug) || null;
+}
+
+export function getNoteDescription(note: Note, maxLength = 160) {
+  const plainText = note.content
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/[#*`_[\]()]/g, "")
+    .replace(/(\r\n|\n|\r)/gm, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return normalizeMetaDescription(
+    plainText || `Developer notes and cheatsheet document for ${note.name}.`,
+    maxLength,
+  );
+}
+
+export function getNotesCollectionSchema(notes: Note[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": `${SITE_URL}/notes#collection`,
+    url: absoluteUrl("/notes"),
+    name: "Developer Notes / โน้ตความรู้",
+    alternateName: ["Developer Notes", "โน้ตความรู้", "ชีทสรุปด้านเทคนิค"],
+    description: "Developer notes and searchable technical cheatsheets by Napat Pamornsut. โน้ตความรู้และชีทสรุปด้านเทคนิคโดย ณภัทร ภมรสูตร",
+    inLanguage: ["en", "th"],
+    isPartOf: { "@id": WEBSITE_ID },
+    author: { "@id": PERSON_ID },
+    mainEntity: {
+      "@type": "ItemList",
+      name: "Developer Notes / โน้ตความรู้",
+      numberOfItems: notes.length,
+      itemListElement: notes.map((note, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: note.name,
+        alternateName: [note.name, `โน้ต ${note.name}`],
+        url: absoluteUrl(`/notes/${note.id}`),
+      })),
+    },
+  };
+}
+
+export function getNoteSchema(note: Note) {
+  const noteUrl = absoluteUrl(`/notes/${note.id}`);
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "@id": `${noteUrl}#article`,
+        url: noteUrl,
+        headline: note.name,
+        name: note.name,
+        alternateName: [note.name, `โน้ต ${note.name}`, `Cheatsheet ${note.name}`],
+        description: `${getNoteDescription(note, 220)} โน้ตความรู้และชีทสรุปเรื่อง ${note.name} โดย ณภัทร ภมรสูตร`,
+        inLanguage: ["en", "th"],
+        author: { "@id": PERSON_ID },
+        publisher: { "@id": WEBSITE_ID },
+        isPartOf: { "@id": WEBSITE_ID },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${noteUrl}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home / หน้าแรก", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Developer Notes / โน้ตความรู้", item: absoluteUrl("/notes") },
+          { "@type": "ListItem", position: 3, name: `${note.name} / โน้ต ${note.name}`, item: noteUrl },
+        ],
+      },
+    ],
+  };
+}

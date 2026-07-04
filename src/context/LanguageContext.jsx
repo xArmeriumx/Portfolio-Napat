@@ -1,16 +1,20 @@
+"use client";
+
 import { createContext, useContext, useState, useEffect } from "react";
 
 const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
   // Default to English or check localStorage
-  const [language, setLanguage] = useState(() => {
-    const saved = localStorage.getItem("language");
-    return saved || "en";
-  });
+  const [language, setLanguage] = useState("en");
 
   useEffect(() => {
-    localStorage.setItem("language", language);
+    const saved = window.localStorage.getItem("language");
+    if (saved) setLanguage(saved);
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("language", language);
     // Optional: Add/remove 'th' class to body for specific global styling if needed
     if (language === "th") {
       document.documentElement.lang = "th";

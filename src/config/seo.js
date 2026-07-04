@@ -2,6 +2,10 @@ import { profile } from "../data/profile.js";
 
 export const SITE_URL = "https://napatdev.com";
 export const SITE_NAME = "Napatdev";
+export const SITE_DESCRIPTION_EN =
+  "Portfolio of Napat Pamornsut, a Web Developer and Software Tester in Bangkok, Thailand, featuring web applications, QA work, automation testing, and technical notes.";
+export const SITE_DESCRIPTION_TH =
+  "พอร์ตโฟลิโอของ ณภัทร ภมรสูตร นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ รวมผลงานเว็บ งาน QA ระบบอัตโนมัติ และโน้ตความรู้ด้านเทคนิค";
 
 export const PERSON_ID = `${SITE_URL}/#person`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
@@ -11,27 +15,66 @@ const skillNames = profile.skillCategories.flatMap((cat) =>
   cat.skills.map((s) => s.name),
 );
 
+export const NAVIGATION_ITEMS = [
+  {
+    key: "home",
+    name: "Home",
+    name_th: "หน้าแรก",
+    href: "/",
+    description: "Portfolio homepage for Napat Pamornsut.",
+    description_th: "หน้าแรกพอร์ตโฟลิโอของ ณภัทร ภมรสูตร",
+    searchTerms: ["Napatdev", "Napat Pamornsut", "ณภัทร ภมรสูตร", "Portfolio", "พอร์ตโฟลิโอ"],
+  },
+  {
+    key: "about",
+    name: "About Me",
+    name_th: "เกี่ยวกับฉัน",
+    href: "/about",
+    description: "Profile, education, skills, and background of Napat Pamornsut.",
+    description_th: "ประวัติ การศึกษา ทักษะ และข้อมูลเกี่ยวกับ ณภัทร ภมรสูตร",
+    searchTerms: ["About Napat Pamornsut", "เกี่ยวกับฉัน", "ประวัติ", "Web Developer Bangkok"],
+  },
+  {
+    key: "projects",
+    name: "Projects",
+    name_th: "โปรเจค",
+    href: "/projects",
+    description: "Portfolio projects, case studies, demos, repositories, and technology stacks.",
+    description_th: "รวมผลงานโปรเจค กรณีศึกษา เดโม Repository และเทคโนโลยีที่ใช้",
+    searchTerms: ["Projects", "Portfolio Projects", "โปรเจค", "ผลงาน", "Case Study"],
+  },
+  {
+    key: "contact",
+    name: "Contact",
+    name_th: "ติดต่อ",
+    href: "/contact",
+    description: "Contact information for web development, QA, and software testing inquiries.",
+    description_th: "ช่องทางติดต่อสำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์",
+    searchTerms: ["Contact", "ติดต่อ", "Napat Pamornsut email", "Web Developer Contact"],
+  },
+  {
+    key: "notes",
+    name: "Developer Notes",
+    name_th: "โน้ตความรู้",
+    href: "/notes",
+    description: "Searchable developer notes and technical cheatsheets.",
+    description_th: "โน้ตความรู้และชีทสรุปด้านเทคนิคสำหรับนักพัฒนา",
+    searchTerms: ["Developer Notes", "Cheatsheet", "โน้ต", "คู่มือ", "Next.js", "TypeScript", "SQL"],
+  },
+  {
+    key: "search",
+    name: "Search",
+    name_th: "ค้นหา",
+    href: "/search",
+    description: "Search index for portfolio pages, projects, contact details, and notes.",
+    description_th: "หน้าค้นหาและสารบัญสำหรับหน้าเว็บ โปรเจค ช่องทางติดต่อ และโน้ตความรู้",
+    searchTerms: ["Search", "ค้นหา", "Site Index", "สารบัญเว็บไซต์"],
+  },
+];
+
 export const SEO_DEFAULTS = {
-  title: `${profile.name} (ณภัทร ภมรสูตร) | Web Developer & Software Tester`,
-  description: `${profile.tagline} Based in ${profile.contact.location}. Portfolio of web development and software testing projects using React, Next.js, Node.js, Playwright, and more.`,
-  keywords: [
-    profile.name,
-    "ณภัทร ภมรสูตร",
-    "Napatdev",
-    "Napat Dev",
-    "Web Developer",
-    "Software Tester",
-    "QA Engineer",
-    "React Developer",
-    "Next.js Developer",
-    "Node.js",
-    "Playwright",
-    "Automation Testing",
-    "Bangkok",
-    "Thailand",
-    "Portfolio",
-    ...skillNames,
-  ].join(", "),
+  title: `${profile.name} | Web Developer & Software Tester`,
+  description: `${SITE_DESCRIPTION_EN} ${SITE_DESCRIPTION_TH}`,
   ogImage: `${SITE_URL}/favicon.png`,
   locale: "en_US",
   alternateLocale: "th_TH",
@@ -59,34 +102,28 @@ export function normalizeMetaDescription(text, maxLength = 160) {
 
 export function getAboutSeoMeta() {
   return {
-    title: `${profile.name} (ณภัทร ภมรสูตร) | About`,
+    title: `About ${profile.name} (ณภัทร ภมรสูตร)`,
     description: normalizeMetaDescription(
-      `About ${profile.name} (ณภัทร ภมรสูตร) — ${profile.headline}. ${profile.about} Based in ${profile.contact.location}. Skills include React, Next.js, Node.js, Playwright, and more.`,
-      300,
+      `${profile.headline}. ${profile.about} ${profile.about_th} Based in ${profile.contact.location}.`,
+      180,
     ),
     ogImage: "/favicon.png",
     ogImageAlt: `${profile.name} — Web Developer & Software Tester`,
     path: "/about",
-    keywords: [
-      profile.name,
-      "ณภัทร ภมรสูตร",
-      "About Napat Pamornsut",
-      "Web Developer Bangkok",
-      "Software Tester Thailand",
-      "Napatdev",
-      ...skillNames.slice(0, 12),
-    ].join(", "),
   };
 }
 
 export function getProjectSeoMeta(project, getContent) {
   const title = getContent(project, "title");
-  const description = normalizeMetaDescription(getContent(project, "description"), 300);
+  const description = normalizeMetaDescription(
+    `${getContent(project, "description")} ${project.description_th || ""}`,
+    180,
+  );
   const image = project.images?.[0] || project.image || SEO_DEFAULTS.ogImage;
   const technologies = (project.technologies || []).slice(0, 6).join(", ");
 
   return {
-    title: `${title} | Projects — ${profile.name}`,
+    title: `${title} | Project by ${profile.name}`,
     description,
     ogTitle: `${title} | Napat Pamornsut`,
     ogDescription: normalizeMetaDescription(
@@ -98,25 +135,43 @@ export function getProjectSeoMeta(project, getContent) {
     ogImageWidth: 1200,
     ogImageHeight: 630,
     path: `/projects/${project.slug}`,
-    keywords: [
-      title,
-      profile.name,
-      "ณภัทร ภมรสูตร",
-      "Portfolio Project",
-      ...(project.technologies || []),
-      ...(project.role || []),
-    ].join(", "),
   };
 }
 
 export function getProjectsListSeoMeta() {
   return {
-    title: `Projects | ${profile.name} (ณภัทร ภมรสูตร)`,
-    description:
-      "Explore portfolio projects by Napat Pamornsut — web development, ERP/POS systems, IoT dashboards, automation testing, and UX/UI design.",
+    title: `Projects | ${profile.name} Portfolio`,
+    description: normalizeMetaDescription(
+      "Explore portfolio projects by Napat Pamornsut — web development, ERP/POS systems, IoT dashboards, automation testing, and UX/UI design. รวมผลงานโปรเจคเว็บ ระบบ POS/ERP IoT Dashboard และงานทดสอบซอฟต์แวร์",
+      180,
+    ),
     ogImage: "/images/shop-inventory-1.png",
     ogImageAlt: "Napat Pamornsut portfolio projects",
     path: "/projects",
+  };
+}
+
+export function getContactSeoMeta() {
+  return {
+    title: `Contact ${profile.name} (ณภัทร ภมรสูตร)`,
+    description: normalizeMetaDescription(
+      `Contact ${profile.name} for web development, QA, automation testing, and software project inquiries in ${profile.contact.location}. ติดต่อ ณภัทร ภมรสูตร สำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์`,
+      180,
+    ),
+    ogImage: "/favicon.png",
+    ogImageAlt: `${profile.name} contact information`,
+    path: "/contact",
+  };
+}
+
+export function getSearchSeoMeta() {
+  return {
+    title: `Search ${SITE_NAME}`,
+    description: normalizeMetaDescription(
+      "Search Napatdev portfolio pages, contact information, projects, case studies, and developer notes. ค้นหาข้อมูลพอร์ตโฟลิโอ โปรเจค และโน้ตความรู้ของ ณภัทร ภมรสูตร",
+      180,
+    ),
+    path: "/search",
   };
 }
 
@@ -135,7 +190,7 @@ export function getPersonSchema(overrides = {}) {
     url: `${SITE_URL}/`,
     image: SEO_DEFAULTS.ogImage,
     jobTitle: profile.headline.split(" | "),
-    description: profile.about,
+    description: `${profile.about} ${profile.about_th}`,
     email: profile.links.email,
     nationality: {
       "@type": "Country",
@@ -193,7 +248,7 @@ export function getOrganizationSchema(overrides = {}) {
     "@type": "Organization",
     "@id": ORGANIZATION_ID,
     name: SITE_NAME,
-    alternateName: [`${profile.name} Portfolio`, "Napat Dev"],
+    alternateName: [`${profile.name} Portfolio`, "Napat Dev", "พอร์ตโฟลิโอ ณภัทร"],
     url: `${SITE_URL}/`,
     logo: {
       "@type": "ImageObject",
@@ -212,18 +267,27 @@ export function getWebSiteSchema(overrides = {}) {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
     name: `${profile.name} | ${SITE_NAME}`,
-    alternateName: ["ณภัทร ภมรสูตร", "Napat Dev", "napatdev"],
+    alternateName: ["ณภัทร ภมรสูตร", "Napat Dev", "napatdev", "พอร์ตโฟลิโอ ณภัทร"],
     url: `${SITE_URL}/`,
-    description: SEO_DEFAULTS.description,
+    description: `${SITE_DESCRIPTION_EN} ${SITE_DESCRIPTION_TH}`,
     inLanguage: ["en", "th"],
     publisher: { "@id": ORGANIZATION_ID },
     author: { "@id": PERSON_ID },
     about: { "@id": PERSON_ID },
+    hasPart: NAVIGATION_ITEMS.map((item) => ({
+      "@type": "WebPage",
+      name: item.name,
+      alternateName: [item.name, item.name_th],
+      description: `${item.description} ${item.description_th}`,
+      inLanguage: ["en", "th"],
+      url: absoluteUrl(item.href),
+      isPartOf: { "@id": WEBSITE_ID },
+    })),
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/projects?q={search_term_string}`,
+        urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -242,7 +306,8 @@ export function getHomeGraphSchema() {
         "@type": "ProfilePage",
         "@id": `${SITE_URL}/#profilepage`,
         url: `${SITE_URL}/`,
-        name: `${profile.name} — Portfolio`,
+        name: `${profile.name} — Portfolio / พอร์ตโฟลิโอ`,
+        alternateName: [`${profile.name} Portfolio`, `พอร์ตโฟลิโอ ${profile.name}`, "พอร์ตโฟลิโอ ณภัทร ภมรสูตร"],
         description: SEO_DEFAULTS.description,
         inLanguage: ["en", "th"],
         isPartOf: { "@id": WEBSITE_ID },
@@ -264,8 +329,9 @@ export function getAboutPageSchema() {
         "@type": "ProfilePage",
         "@id": `${aboutUrl}#profilepage`,
         url: aboutUrl,
-        name: `About ${profile.name} (ณภัทร ภมรสูตร)`,
-        description: profile.about,
+        name: `About Me / เกี่ยวกับฉัน — ${profile.name} (ณภัทร ภมรสูตร)`,
+        alternateName: ["About Me", "เกี่ยวกับฉัน", `ประวัติ ${profile.name}`],
+        description: `${profile.about} ${profile.about_th}`,
         inLanguage: ["en", "th"],
         isPartOf: { "@id": WEBSITE_ID },
         mainEntity: { "@id": PERSON_ID },
@@ -280,8 +346,9 @@ export function getAboutPageSchema() {
         "@type": "AboutPage",
         "@id": `${aboutUrl}#aboutpage`,
         url: aboutUrl,
-        name: `About ${profile.name}`,
-        description: profile.about,
+        name: `About Me / เกี่ยวกับฉัน — ${profile.name}`,
+        alternateName: ["About Me", "เกี่ยวกับฉัน"],
+        description: `${profile.about} ${profile.about_th}`,
         isPartOf: { "@id": WEBSITE_ID },
         mainEntity: { "@id": PERSON_ID },
       },
@@ -292,13 +359,13 @@ export function getAboutPageSchema() {
           {
             "@type": "ListItem",
             position: 1,
-            name: "Home",
+            name: "Home / หน้าแรก",
             item: `${SITE_URL}/`,
           },
           {
             "@type": "ListItem",
             position: 2,
-            name: "About",
+            name: "About Me / เกี่ยวกับฉัน",
             item: aboutUrl,
           },
         ],
@@ -311,26 +378,38 @@ export function getProjectsCollectionSchema(projectItems) {
   return {
     "@context": "https://schema.org",
     "@graph": [
+      getWebSiteSchema(),
       {
         "@type": "CollectionPage",
         "@id": `${SITE_URL}/projects#collection`,
         url: absoluteUrl("/projects"),
-        name: "Projects",
+        name: "Projects / โปรเจค",
+        alternateName: ["Projects", "โปรเจค", "ผลงาน"],
         description:
-          "Portfolio projects by Napat Pamornsut — web development, system design, and software testing.",
+          "Portfolio projects by Napat Pamornsut — web development, system design, and software testing. รวมผลงานโปรเจคเว็บและงานทดสอบซอฟต์แวร์ของ ณภัทร ภมรสูตร",
+        inLanguage: ["en", "th"],
         isPartOf: { "@id": WEBSITE_ID },
         author: { "@id": PERSON_ID },
         mainEntity: {
           "@type": "ItemList",
-          name: "Portfolio Projects",
+          name: "Portfolio Projects / ผลงานโปรเจค",
           numberOfItems: projectItems.length,
           itemListElement: projectItems.map((project, index) => ({
             "@type": "ListItem",
             position: index + 1,
             url: absoluteUrl(`/projects/${project.slug}`),
             name: project.name,
+            alternateName: project.name_th ? [project.name, project.name_th] : undefined,
           })),
         },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${SITE_URL}/projects#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home / หน้าแรก", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Projects / โปรเจค", item: absoluteUrl("/projects") },
+        ],
       },
     ],
   };
@@ -339,6 +418,7 @@ export function getProjectsCollectionSchema(projectItems) {
 export function getProjectSchema({
   slug,
   title,
+  titleTh,
   description,
   image,
   technologies = [],
@@ -356,6 +436,7 @@ export function getProjectSchema({
     "@type": "SoftwareApplication",
     "@id": `${projectUrl}#software`,
     name: title,
+    alternateName: titleTh ? [title, titleTh] : undefined,
     description: metaDescription,
     url: projectUrl,
     image: imageUrl,
@@ -392,6 +473,7 @@ export function getProjectSchema({
         "@id": `${projectUrl}#webpage`,
         url: projectUrl,
         name: title,
+        alternateName: titleTh ? [title, titleTh] : undefined,
         description: metaDescription,
         inLanguage: ["en", "th"],
         isPartOf: { "@id": WEBSITE_ID },
@@ -414,19 +496,19 @@ export function getProjectSchema({
           {
             "@type": "ListItem",
             position: 1,
-            name: "Home",
+            name: "Home / หน้าแรก",
             item: `${SITE_URL}/`,
           },
           {
             "@type": "ListItem",
             position: 2,
-            name: "Projects",
+            name: "Projects / โปรเจค",
             item: absoluteUrl("/projects"),
           },
           {
             "@type": "ListItem",
             position: 3,
-            name: title,
+            name: titleTh ? `${title} / ${titleTh}` : title,
             item: projectUrl,
           },
         ],

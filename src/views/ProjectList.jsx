@@ -1,12 +1,12 @@
-import SEO from "../components/utils/SEO.jsx";
-import Breadcrumbs from "../components/utils/Breadcrumbs.jsx";
-import { Link, useNavigate } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "../context/LanguageContext.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import AnimatedText from "../components/ui/AnimatedText.jsx";
 import { projects } from "../data/projects.js";
-import { getProjectsCollectionSchema, getProjectsListSeoMeta } from "../config/seo.js";
 import { ExternalLink, ArrowRight } from "lucide-react";
 
 function GitHubIcon({ className }) {
@@ -64,7 +64,7 @@ function ProjectActions({ slug, title, links, onLinkClick }) {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Link
-        to={`/projects/${slug}`}
+        href={`/projects/${slug}`}
         onClick={onLinkClick}
         className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-900 transition-colors hover:text-[#c43c3c]"
       >
@@ -101,7 +101,7 @@ function ProjectActions({ slug, title, links, onLinkClick }) {
 
 function FeaturedProjectCard({ project }) {
   const { getContent } = useTranslation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { slug, role, links, images, image, metrics, technologies } = project;
   const title = getContent(project, "title");
   const description = getContent(project, "description").trim();
@@ -110,7 +110,7 @@ function FeaturedProjectCard({ project }) {
 
   const handleCardClick = (e) => {
     if (e.target.closest("a") || e.target.closest("button")) return;
-    navigate(`/projects/${slug}`);
+    router.push(`/projects/${slug}`);
   };
 
   const stopProp = (e) => e.stopPropagation();
@@ -126,7 +126,7 @@ function FeaturedProjectCard({ project }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <Link
-          to={`/projects/${slug}`}
+          href={`/projects/${slug}`}
           onClick={stopProp}
           className="relative block min-h-[240px] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 lg:min-h-[340px]"
           aria-label={`View ${title} case study`}
@@ -198,7 +198,7 @@ function FeaturedProjectCard({ project }) {
 
 function ProjectCard({ project, index }) {
   const { getContent } = useTranslation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { slug, role, links, images, image, technologies, metrics } = project;
   const title = getContent(project, "title");
   const description = getContent(project, "description").trim();
@@ -207,7 +207,7 @@ function ProjectCard({ project, index }) {
 
   const handleCardClick = (e) => {
     if (e.target.closest("a") || e.target.closest("button")) return;
-    navigate(`/projects/${slug}`);
+    router.push(`/projects/${slug}`);
   };
 
   const stopProp = (e) => e.stopPropagation();
@@ -218,7 +218,7 @@ function ProjectCard({ project, index }) {
       className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)]"
     >
       <Link
-        to={`/projects/${slug}`}
+        href={`/projects/${slug}`}
         onClick={stopProp}
         className="relative block aspect-[16/10] overflow-hidden bg-gradient-to-br from-gray-50 to-white"
         aria-label={`View ${title} details`}
@@ -287,31 +287,10 @@ function ProjectCard({ project, index }) {
 }
 
 export default function ProjectList() {
-  const { getContent } = useTranslation();
   const [featured, ...rest] = projects;
-  const listSeo = getProjectsListSeoMeta();
 
   return (
     <>
-      <SEO
-        title={listSeo.title}
-        description={listSeo.description}
-        ogTitle={listSeo.title}
-        ogDescription={listSeo.description}
-        ogImage={listSeo.ogImage}
-        ogImageAlt={listSeo.ogImageAlt}
-        ogImageWidth={1200}
-        ogImageHeight={630}
-        path={listSeo.path}
-        keywords="Napat Pamornsut, ณภัทร ภมรสูตร, Projects, Portfolio, Web Developer, React, Software Tester"
-        structuredData={getProjectsCollectionSchema(
-          projects.map((project) => ({
-            slug: project.slug,
-            name: getContent(project, "title"),
-          })),
-        )}
-      />
-      <Breadcrumbs />
       <PageTransition>
         <div className="relative min-h-screen overflow-hidden bg-[#f9fafb] pb-24 pt-24 md:pt-28">
           <div className="pointer-events-none absolute inset-0">

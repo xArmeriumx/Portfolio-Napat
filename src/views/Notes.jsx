@@ -1,5 +1,7 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+"use client";
+
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import NoteCard from '../components/notes/NoteCard';
 import CmdKModal from '../components/notes/CmdKModal';
 import GithubSlugger from 'github-slugger';
@@ -9,12 +11,10 @@ import { FEATURES } from '../config/features';
 import AiSummaryPanel from '../components/notes/AiSummaryPanel';
 import AiSelectionTooltip from '../components/notes/AiSelectionTooltip';
 
-export default function Notes() {
-  const { slug } = useParams();
-  const navigate = useNavigate();
+export default function Notes({ initialNotes = [], slug }) {
+  const router = useRouter();
 
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [notes] = useState(initialNotes);
   const [isCmdKOpen, setIsCmdKOpen] = useState(false);
 
   // ── UX Enhancements ──────────────────────────────────────────
@@ -29,11 +29,6 @@ export default function Notes() {
     return notes.find(n => n.id === slug) || notes[0];
   }, [notes, slug]);
 
-  const formatFileName = (path) => {
-    const filename = path.split('/').pop().replace('.md', '');
-    return filename.split(/[-_]/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  };
-
   // Global Cmd+K Listener
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -44,38 +39,6 @@ export default function Notes() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  useEffect(() => {
-    const loadNotes = async () => {
-      try {
-        const markdownFiles = import.meta.glob('/src/data/notes/*.md', { query: '?raw', import: 'default' });
-        const loadedNotes = [];
-
-        for (const path in markdownFiles) {
-          const content = await markdownFiles[path]();
-          const filename = path.split('/').pop().replace('.md', '');
-          loadedNotes.push({
-            path,
-            id: filename,
-            content,
-            name: formatFileName(path),
-            rawName: path.split('/').pop()
-          });
-        }
-
-        setNotes(loadedNotes);
-        if (loadedNotes.length > 0 && !slug) {
-          navigate(`/notes/${loadedNotes[0].id}`, { replace: true });
-        }
-      } catch (error) {
-        console.error("Failed to load notes:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadNotes();
   }, []);
 
   const currentIndex = notes.findIndex(n => n.id === activeNote?.id);
@@ -96,37 +59,6 @@ export default function Notes() {
     }
   }, [activeNote]);
 
-  // Auto SEO / Meta Tags updating based on active document
-  useEffect(() => {
-    if (activeNote) {
-      // Update Page Title
-      document.title = `${activeNote.name} - Cheatsheet | Napat Portfolio`;
-
-      // Extract brief description from markdown (strip symbols, find first real sentence)
-      const plainText = activeNote.content.replace(/[#*`_\[\]()]/g, '').replace(/(\r\n|\n|\r)/gm, ' ').trim();
-      const descMatch = plainText.match(/.*?[a-zA-Zก-๙]{10,}.*?(?=\s|$)/);
-      const desc = descMatch ? plainText.substring(0, 160) + '...' : `Cheatsheet document for ${activeNote.name}`;
-
-      // Update meta description
-      let metaDesc = document.querySelector('meta[name="description"]');
-      if (!metaDesc) {
-        metaDesc = document.createElement('meta');
-        metaDesc.name = "description";
-        document.head.appendChild(metaDesc);
-      }
-      metaDesc.content = desc;
-
-      // Update og:title
-      let ogTitle = document.querySelector('meta[property="og:title"]');
-      if (!ogTitle) {
-        ogTitle = document.createElement('meta');
-        ogTitle.setAttribute('property', 'og:title');
-        document.head.appendChild(ogTitle);
-      }
-      ogTitle.content = document.title;
-    }
-  }, [activeNote]);
-
   // Extract headings for Table of Contents (TOC) - h2 and h3
   const headings = useMemo(() => {
     if (!activeNote) return [];
@@ -137,7 +69,7 @@ export default function Notes() {
     let match;
     while ((match = regex.exec(activeNote.content)) !== null) {
       const level = match[1].length; // number of #
-      const text = match[2].replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1').replace(/`([^`]+)`/g, '$1'); // Clean simple markdown
+      const text = match[2].replace(/\[([^\]]+)]\(([^)]+)\)/g, '$1').replace(/`([^`]+)`/g, '$1'); // Clean simple markdown
       const id = slugger.slug(text); // This ensures 1:1 match with rehype-slug ID output
       items.push({ level, text, id });
     }
@@ -216,14 +148,6 @@ export default function Notes() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-6 h-6 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="pt-16 min-h-screen bg-[#fdfdfd] flex flex-col md:flex-row relative z-10 w-full animate-fade-in-up md:overflow-hidden">
 
@@ -264,7 +188,7 @@ export default function Notes() {
               <li key={note.path} className="relative group">
                 <button
                   onClick={() => {
-                    navigate(`/notes/${note.id}`);
+                    router.push(`/notes/${note.id}`);
                     // Desktop: handled by the activeNote useEffect above (mainRef.scrollTo)
                     if (window.innerWidth < 768) window.scrollTo(0, 0);
                   }}
@@ -357,7 +281,7 @@ export default function Notes() {
               <div className="mt-16 pt-8 border-t border-gray-200 flex flex-col sm:flex-row gap-4 justify-between items-center text-sm">
                 {prevNote ? (
                   <button
-                    onClick={() => navigate(`/notes/${prevNote.id}`)}
+                    onClick={() => router.push(`/notes/${prevNote.id}`)}
                     className="flex flex-col items-start p-4 border border-gray-200 rounded-lg hover:border-red-400 hover:shadow-sm focus:ring-1 focus:ring-red-400 transition-all w-full sm:w-[48%] bg-white group"
                   >
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
@@ -369,7 +293,7 @@ export default function Notes() {
 
                 {nextNote ? (
                   <button
-                    onClick={() => navigate(`/notes/${nextNote.id}`)}
+                    onClick={() => router.push(`/notes/${nextNote.id}`)}
                     className="flex flex-col items-end p-4 border border-gray-200 rounded-lg hover:border-red-400 hover:shadow-sm focus:ring-1 focus:ring-red-400 transition-all w-full sm:w-[48%] bg-white group text-right"
                   >
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
@@ -430,7 +354,7 @@ export default function Notes() {
         isOpen={isCmdKOpen}
         onClose={() => setIsCmdKOpen(false)}
         onSelectNote={(note) => {
-          navigate(`/notes/${note.id}`);
+          router.push(`/notes/${note.id}`);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />

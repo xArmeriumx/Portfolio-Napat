@@ -1,13 +1,12 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import SEO from "../components/utils/SEO.jsx";
-import Breadcrumbs from "../components/utils/Breadcrumbs.jsx";
 import { useTranslation } from "../context/LanguageContext.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import AnimatedText from "../components/ui/AnimatedText.jsx";
 import { useScrollToNextPage } from "../hooks/useScrollToNextPage.js";
 import { profile } from "../data/profile.js";
-import { getAboutPageSchema, getAboutSeoMeta } from "../config/seo.js";
 import {
   MapPin,
   Mail,
@@ -115,7 +114,7 @@ export default function About() {
   const { getContent } = useTranslation();
 
   useEffect(() => {
-    import("../pages/ProjectList.jsx");
+    import("./ProjectList.jsx");
   }, []);
 
   useScrollToNextPage("/projects");
@@ -124,24 +123,8 @@ export default function About() {
   const educationLines = getContent(profile, "education");
   const roles = profile.headline.split(" | ");
 
-  const aboutSeo = getAboutSeoMeta();
-
   return (
     <>
-      <SEO
-        title={aboutSeo.title}
-        description={aboutSeo.description}
-        ogTitle={aboutSeo.title}
-        ogDescription={aboutSeo.description}
-        ogImage={aboutSeo.ogImage}
-        ogImageAlt={aboutSeo.ogImageAlt}
-        ogImageWidth={512}
-        ogImageHeight={512}
-        path={aboutSeo.path}
-        keywords={aboutSeo.keywords}
-        structuredData={getAboutPageSchema()}
-      />
-      <Breadcrumbs />
       <PageTransition>
         <div className="relative min-h-screen overflow-hidden bg-[#f9fafb] pt-28 pb-32">
           <div className="pointer-events-none absolute inset-0">
@@ -242,7 +225,7 @@ export default function About() {
               </ScrollReveal>
 
               {/* Contact */}
-              <ScrollReveal width="100%" delay={0.1}>
+              <ScrollReveal width="100%" delay={0.1} className="scroll-mt-24">
                 <BentoCard>
                   <SectionLabel number="03" title="Contact" />
                   <div className="space-y-3">

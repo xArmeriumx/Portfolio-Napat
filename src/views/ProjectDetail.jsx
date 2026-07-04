@@ -1,14 +1,12 @@
-import { useState, useEffect, useRef } from "react";
-import SEO from "../components/utils/SEO.jsx";
-import Breadcrumbs from "../components/utils/Breadcrumbs.jsx";
-import { Link, useParams } from "react-router-dom";
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useTranslation } from "../context/LanguageContext.jsx";
-import Section from "../components/ui/Section.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import AnimatedText from "../components/ui/AnimatedText.jsx";
 import { projects } from "../data/projects.js";
-import { getProjectSchema, getProjectSeoMeta } from "../config/seo.js";
 
 // Libraries
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -201,9 +199,8 @@ function ListSection({ title, items }) {
   );
 }
 
-export default function ProjectDetail() {
-  const { slug } = useParams();
-  const { getContent, language } = useTranslation();
+export default function ProjectDetail({ slug }) {
+  const { getContent } = useTranslation();
 
   // Find project
   const project = projects.find((p) => p.slug === slug);
@@ -211,11 +208,6 @@ export default function ProjectDetail() {
   if (!project) {
     return (
       <>
-        <SEO
-          title="Project Not Found"
-          description="Project details"
-          path={`/projects/${slug}`}
-        />
         <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
           {/* 404 Number (Ghost) */}
           <h1
@@ -240,7 +232,7 @@ export default function ProjectDetail() {
             </div>
 
             <Link
-              to="/projects"
+              href="/projects"
               className="inline-block px-8 py-3 bg-gray-900 text-white font-medium rounded-full hover:bg-gray-700 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg shadow-gray-200"
             >
               Return to Projects
@@ -277,32 +269,8 @@ export default function ProjectDetail() {
     back: "← Back",
   };
 
-  const projectSeo = getProjectSeoMeta(project, getContent);
-
   return (
     <>
-      <SEO
-        title={projectSeo.title}
-        description={projectSeo.description}
-        ogTitle={projectSeo.ogTitle}
-        ogDescription={projectSeo.ogDescription}
-        ogImage={projectSeo.ogImage}
-        ogImageAlt={projectSeo.ogImageAlt}
-        ogImageWidth={projectSeo.ogImageWidth}
-        ogImageHeight={projectSeo.ogImageHeight}
-        ogType="article"
-        path={projectSeo.path}
-        keywords={projectSeo.keywords}
-        structuredData={getProjectSchema({
-          slug,
-          title,
-          description,
-          image: projectImages?.[0],
-          technologies,
-          links,
-        })}
-      />
-      <Breadcrumbs />
       <PageTransition>
         <div className="relative min-h-screen bg-[#f9fafb] overflow-hidden pt-28 md:pt-36 pb-32">
           {/* Dimensional Background */}
@@ -325,7 +293,7 @@ export default function ProjectDetail() {
               {/* HEADER SECTION: Human/Editorial Vibe */}
               <div className="mb-12 md:mb-16">
                 <Link
-                  to="/projects"
+                  href="/projects"
                   className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-gray-900 uppercase tracking-widest transition-colors mb-8 group"
                 >
                   <svg

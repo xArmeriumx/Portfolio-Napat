@@ -1,5 +1,7 @@
+"use client";
+
 import { createContext, useContext, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 const TransitionContext = createContext(null);
 
@@ -10,7 +12,7 @@ const TransitionContext = createContext(null);
  */
 export function TransitionProvider({ children }) {
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const navigateTo = useCallback(
     (path) => {
@@ -18,7 +20,7 @@ export function TransitionProvider({ children }) {
 
       // รอ overlay ไหลเข้าเต็มที่ก่อน navigate
       setTimeout(() => {
-        navigate(path);
+        router.push(path);
 
         // คง overlay ไว้ระหว่างที่หน้าใหม่โหลด แล้วค่อยซ่อน
         setTimeout(() => {
@@ -26,7 +28,7 @@ export function TransitionProvider({ children }) {
         }, 500);
       }, 350);
     },
-    [navigate],
+    [router],
   );
 
   return (

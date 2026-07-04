@@ -18,8 +18,7 @@ function getFeature(name, defaultValue) {
   }
 
   // Level 2: Build-time environment variable
-  const envKey = `VITE_ENABLE_${name}`;
-  const envVal = import.meta.env?.[envKey];
+  const envVal = name === 'AI' ? process.env.NEXT_PUBLIC_ENABLE_AI : undefined;
   if (envVal !== undefined) return envVal === 'true';
 
   // Level 3: Hardcoded default (ultimate fallback)
@@ -28,7 +27,7 @@ function getFeature(name, defaultValue) {
 
 // Latched (Sheet Part 4 §1): ค่าถูก freeze ตอน app start ไม่เปลี่ยนกลาง session
 // ✅ Switch via URL: ?feature_AI=false to instantly disable AI for testing
-// ✅ Switch via env: VITE_ENABLE_AI=false in .env to disable at build time
+// ✅ Switch via env: NEXT_PUBLIC_ENABLE_AI=false in .env to disable at build time
 export const FEATURES = Object.freeze({
   ENABLE_AI_ASSISTANT: getFeature('AI', true),
 });
