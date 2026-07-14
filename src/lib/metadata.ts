@@ -21,6 +21,7 @@ type SeoInput = {
   noindex?: boolean;
   locale?: string;
   alternateLocale?: string;
+  keywords?: string[];
 };
 
 export function buildPageMetadata({
@@ -37,6 +38,7 @@ export function buildPageMetadata({
   noindex,
   locale = SEO_DEFAULTS.locale,
   alternateLocale = SEO_DEFAULTS.alternateLocale,
+  keywords = SEO_DEFAULTS.keywords,
 }: SeoInput): Metadata {
   const canonical = absoluteUrl(path);
   const pageDescription = normalizeMetaDescription(description, 160);
@@ -80,6 +82,7 @@ export function buildPageMetadata({
     creator: "Napat Pamornsut",
     publisher: SITE_NAME,
     category: "Portfolio",
+    keywords,
     alternates: {
       canonical,
     },

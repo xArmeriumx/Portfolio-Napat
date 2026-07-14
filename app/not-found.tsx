@@ -1,4 +1,14 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Page Not Found | Napatdev",
+  description: "The requested page was not found on Napatdev, the portfolio of Napat Pamornsut (ณภัทร ภมรสูตร).",
+  path: "/404",
+  noindex: true,
+  keywords: ["Napatdev 404", "Napat Pamornsut", "ณภัทร ภมรสูตร"],
+});
 
 export default function NotFound() {
   return (

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/utils/JsonLd";
 import { profile } from "@/data/profile.js";
-import { PERSON_ID, SITE_URL, WEBSITE_ID, absoluteUrl, getContactSeoMeta, getPersonSchema } from "@/config/seo.js";
+import { PERSON_ID, SITE_URL, WEBSITE_ID, absoluteUrl, getContactSeoMeta, getCoreSiteSchemas } from "@/config/seo.js";
 import { buildPageMetadata } from "@/lib/metadata";
 
 const contactSeo = getContactSeoMeta();
@@ -17,6 +17,7 @@ export const metadata: Metadata = buildPageMetadata({
   ogImageWidth: 512,
   ogImageHeight: 512,
   path: contactSeo.path,
+  keywords: contactSeo.keywords,
 });
 
 export default function ContactPage() {
@@ -29,7 +30,7 @@ export default function ContactPage() {
         data={{
           "@context": "https://schema.org",
           "@graph": [
-            getPersonSchema(),
+            ...getCoreSiteSchemas(),
             {
               "@type": "ContactPage",
               "@id": `${contactUrl}#contactpage`,

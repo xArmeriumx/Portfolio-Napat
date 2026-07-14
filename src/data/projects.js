@@ -304,7 +304,7 @@ issue reporting, and LINE LIFF authentication.
       "Deploy Frontend บน Vercel และ Backend บน Render",
     ],
 
-    links: { demo: "https://cleanwatermonitoring.com/", repo: "" },
+    links: { demo: "https://cleanwatermonitoring.napatdev.com/", repo: "" },
   },
 
   {

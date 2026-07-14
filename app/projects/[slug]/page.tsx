@@ -48,6 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ogImageHeight: projectSeo.ogImageHeight,
     ogType: "article",
     path: projectSeo.path,
+    keywords: projectSeo.keywords,
   });
 }
 
@@ -71,6 +72,8 @@ export default async function ProjectDetailPage({ params }: Props) {
           description,
           image: projectImages?.[0],
           technologies: project.technologies || [],
+          keyFeatures: project.keyFeatures || [],
+          role: project.role || [],
           stack: project.stack,
           links: project.links || {},
         })}

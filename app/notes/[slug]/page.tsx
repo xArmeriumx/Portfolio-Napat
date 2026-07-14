@@ -27,15 +27,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return buildPageMetadata({
-    title: `${note.name} - Cheatsheet | Napat Portfolio`,
-    description: `${getNoteDescription(note)} โน้ตความรู้เรื่อง ${note.name} โดย ณภัทร ภมรสูตร`,
-    ogTitle: `${note.name} - Cheatsheet | Napat Portfolio`,
+    title: `${note.name} Cheatsheet | Napatdev | Napat Pamornsut`,
+    description: `${getNoteDescription(note)} โน้ตความรู้เรื่อง ${note.name} โดย ณภัทร ภมรสูตร และ Napatdev`,
+    ogTitle: `${note.name} Cheatsheet | Napatdev`,
     ogDescription: getNoteDescription(note, 200),
     ogType: "article",
     ogImage: "/favicon.png",
     ogImageWidth: 512,
     ogImageHeight: 512,
     path: `/notes/${note.id}`,
+    keywords: [note.name, `Napatdev ${note.name}`, `Napat Pamornsut ${note.name}`, `ณภัทร ภมรสูตร ${note.name}`, "developer notes", "technical cheatsheet"],
   });
 }
 

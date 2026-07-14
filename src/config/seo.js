@@ -73,11 +73,20 @@ export const NAVIGATION_ITEMS = [
 ];
 
 export const SEO_DEFAULTS = {
-  title: `${profile.name} | Web Developer & Software Tester`,
-  description: `${SITE_DESCRIPTION_EN} ${SITE_DESCRIPTION_TH}`,
+  title: `${profile.name} (ณภัทร ภมรสูตร) | ${SITE_NAME}`,
+  description:
+    "Napatdev is the portfolio of Napat Pamornsut (ณภัทร ภมรสูตร), a Bangkok Web Developer and Software Tester focused on reliable web applications, QA, and automation testing.",
   ogImage: `${SITE_URL}/favicon.png`,
   locale: "en_US",
   alternateLocale: "th_TH",
+  keywords: [
+    "Napat Pamornsut",
+    "ณภัทร ภมรสูตร",
+    "Napatdev",
+    "Web Developer Bangkok",
+    "Software Tester Thailand",
+    "QA Automation",
+  ],
 };
 
 export function absoluteUrl(path = "") {
@@ -102,7 +111,7 @@ export function normalizeMetaDescription(text, maxLength = 160) {
 
 export function getAboutSeoMeta() {
   return {
-    title: `About ${profile.name} (ณภัทร ภมรสูตร)`,
+    title: `About ${profile.name} | ณภัทร ภมรสูตร | ${SITE_NAME}`,
     description: normalizeMetaDescription(
       `${profile.headline}. ${profile.about} ${profile.about_th} Based in ${profile.contact.location}.`,
       180,
@@ -110,6 +119,7 @@ export function getAboutSeoMeta() {
     ogImage: "/favicon.png",
     ogImageAlt: `${profile.name} — Web Developer & Software Tester`,
     path: "/about",
+    keywords: ["About Napat Pamornsut", "ณภัทร ภมรสูตร ประวัติ", "Napatdev profile", "Web Developer Bangkok"],
   };
 }
 
@@ -123,7 +133,7 @@ export function getProjectSeoMeta(project, getContent) {
   const technologies = (project.technologies || []).slice(0, 6).join(", ");
 
   return {
-    title: `${title} | Project by ${profile.name}`,
+    title: `${title} | ${profile.name} | ${SITE_NAME}`,
     description,
     ogTitle: `${title} | Napat Pamornsut`,
     ogDescription: normalizeMetaDescription(
@@ -135,12 +145,20 @@ export function getProjectSeoMeta(project, getContent) {
     ogImageWidth: 1200,
     ogImageHeight: 630,
     path: `/projects/${project.slug}`,
+    keywords: [
+      title,
+      project.title_th,
+      "Napat Pamornsut project",
+      "ณภัทร ภมรสูตร ผลงาน",
+      "Napatdev portfolio",
+      ...technologies.split(", "),
+    ].filter(Boolean),
   };
 }
 
 export function getProjectsListSeoMeta() {
   return {
-    title: `Projects | ${profile.name} Portfolio`,
+    title: `Projects by ${profile.name} | ณภัทร ภมรสูตร | ${SITE_NAME}`,
     description: normalizeMetaDescription(
       "Explore portfolio projects by Napat Pamornsut — web development, ERP/POS systems, IoT dashboards, automation testing, and UX/UI design. รวมผลงานโปรเจคเว็บ ระบบ POS/ERP IoT Dashboard และงานทดสอบซอฟต์แวร์",
       180,
@@ -148,12 +166,13 @@ export function getProjectsListSeoMeta() {
     ogImage: "/images/shop-inventory-1.png",
     ogImageAlt: "Napat Pamornsut portfolio projects",
     path: "/projects",
+    keywords: ["Napat Pamornsut projects", "Napatdev portfolio projects", "ณภัทร ภมรสูตร ผลงาน", "Web Developer portfolio"],
   };
 }
 
 export function getContactSeoMeta() {
   return {
-    title: `Contact ${profile.name} (ณภัทร ภมรสูตร)`,
+    title: `Contact ${profile.name} | ติดต่อ ณภัทร ภมรสูตร | ${SITE_NAME}`,
     description: normalizeMetaDescription(
       `Contact ${profile.name} for web development, QA, automation testing, and software project inquiries in ${profile.contact.location}. ติดต่อ ณภัทร ภมรสูตร สำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์`,
       180,
@@ -161,17 +180,19 @@ export function getContactSeoMeta() {
     ogImage: "/favicon.png",
     ogImageAlt: `${profile.name} contact information`,
     path: "/contact",
+    keywords: ["Contact Napat Pamornsut", "ติดต่อ ณภัทร ภมรสูตร", "Napatdev contact", "Web Developer contact Bangkok"],
   };
 }
 
 export function getSearchSeoMeta() {
   return {
-    title: `Search ${SITE_NAME}`,
+    title: `Search ${SITE_NAME} | Napat Pamornsut`,
     description: normalizeMetaDescription(
       "Search Napatdev portfolio pages, contact information, projects, case studies, and developer notes. ค้นหาข้อมูลพอร์ตโฟลิโอ โปรเจค และโน้ตความรู้ของ ณภัทร ภมรสูตร",
       180,
     ),
     path: "/search",
+    keywords: ["Search Napatdev", "ค้นหา Napatdev", "Napat Pamornsut site search", "ค้นหา ณภัทร ภมรสูตร"],
   };
 }
 
@@ -189,7 +210,7 @@ export function getPersonSchema(overrides = {}) {
     alternateName: ["ณภัทร ภมรสูตร", "Napat Dev", "napatdev"],
     url: `${SITE_URL}/`,
     image: SEO_DEFAULTS.ogImage,
-    jobTitle: profile.headline.split(" | "),
+    jobTitle: profile.headline.replace(" | ", " and "),
     description: `${profile.about} ${profile.about_th}`,
     email: profile.links.email,
     nationality: {
@@ -295,13 +316,15 @@ export function getWebSiteSchema(overrides = {}) {
   };
 }
 
+export function getCoreSiteSchemas() {
+  return [getPersonSchema(), getOrganizationSchema(), getWebSiteSchema()];
+}
+
 export function getHomeGraphSchema() {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      getPersonSchema(),
-      getOrganizationSchema(),
-      getWebSiteSchema(),
+      ...getCoreSiteSchemas(),
       {
         "@type": "ProfilePage",
         "@id": `${SITE_URL}/#profilepage`,
@@ -323,8 +346,7 @@ export function getAboutPageSchema() {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      getPersonSchema(),
-      getWebSiteSchema(),
+      ...getCoreSiteSchemas(),
       {
         "@type": "ProfilePage",
         "@id": `${aboutUrl}#profilepage`,
@@ -378,7 +400,7 @@ export function getProjectsCollectionSchema(projectItems) {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      getWebSiteSchema(),
+      ...getCoreSiteSchemas(),
       {
         "@type": "CollectionPage",
         "@id": `${SITE_URL}/projects#collection`,
@@ -422,6 +444,8 @@ export function getProjectSchema({
   description,
   image,
   technologies = [],
+  keyFeatures = [],
+  role = [],
   stack,
   links = {},
 }) {
@@ -441,16 +465,12 @@ export function getProjectSchema({
     url: projectUrl,
     image: imageUrl,
     applicationCategory: "WebApplication",
+    applicationSubCategory: role.join(", "),
     operatingSystem: "Web Browser",
+    featureList: keyFeatures,
     author: { "@id": PERSON_ID },
     creator: { "@id": PERSON_ID },
     isPartOf: { "@id": WEBSITE_ID },
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "THB",
-      availability: "https://schema.org/OnlineOnly",
-    },
   };
 
   if (languages.length > 0) {
@@ -458,7 +478,7 @@ export function getProjectSchema({
   }
 
   if (links.demo) {
-    softwareApp.downloadUrl = links.demo;
+    softwareApp.sameAs = [links.demo];
   }
 
   if (links.repo) {
@@ -468,6 +488,7 @@ export function getProjectSchema({
   return {
     "@context": "https://schema.org",
     "@graph": [
+      ...getCoreSiteSchemas(),
       {
         "@type": "WebPage",
         "@id": `${projectUrl}#webpage`,

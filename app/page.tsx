@@ -7,6 +7,7 @@ import { buildPageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = buildPageMetadata({
   title: SEO_DEFAULTS.title,
   description: SEO_DEFAULTS.description,
+  keywords: SEO_DEFAULTS.keywords,
   path: "/",
 });
 

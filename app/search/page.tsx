@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/utils/JsonLd";
 import { projects } from "@/data/projects.js";
-import { NAVIGATION_ITEMS, absoluteUrl, getSearchSeoMeta, SITE_URL, WEBSITE_ID } from "@/config/seo.js";
+import { NAVIGATION_ITEMS, absoluteUrl, getCoreSiteSchemas, getSearchSeoMeta, SITE_URL, WEBSITE_ID } from "@/config/seo.js";
 import { getAllNotes } from "@/lib/notes";
 import { buildPageMetadata } from "@/lib/metadata";
 
@@ -21,11 +21,18 @@ const corePages = NAVIGATION_ITEMS.map((item) => ({
 
 const searchSeo = getSearchSeoMeta();
 
-export const metadata: Metadata = buildPageMetadata({
-  title: searchSeo.title,
-  description: searchSeo.description,
-  path: searchSeo.path,
-});
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const params = await searchParams;
+  const hasQuery = Boolean(params?.q?.trim());
+
+  return buildPageMetadata({
+    title: searchSeo.title,
+    description: searchSeo.description,
+    path: searchSeo.path,
+    keywords: searchSeo.keywords,
+    noindex: hasQuery,
+  });
+}
 
 export default async function SearchPage({ searchParams }: Props) {
   const params = await searchParams;
@@ -56,30 +63,35 @@ export default async function SearchPage({ searchParams }: Props) {
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "SearchResultsPage",
-          "@id": `${SITE_URL}/search#search`,
-          url: absoluteUrl(query ? `/search?q=${encodeURIComponent(query)}` : "/search"),
-          name: "Napatdev Search",
-          alternateName: ["Search Napatdev", "ค้นหา Napatdev", "สารบัญเว็บไซต์ Napatdev"],
-          description: searchSeo.description,
-          inLanguage: ["en", "th"],
-          isPartOf: { "@id": WEBSITE_ID },
-          mainEntity: {
-            "@type": "ItemList",
-            numberOfItems: filteredItems.length,
-            itemListElement: filteredItems.map((item, index) => ({
-              "@type": "ListItem",
-              position: index + 1,
-              name: item.title,
-              alternateName: [item.titleEn, item.titleTh],
-              url: absoluteUrl(item.href),
-            })),
-          },
-          potentialAction: {
-            "@type": "SearchAction",
-            target: `${SITE_URL}/search?q={search_term_string}`,
-            "query-input": "required name=search_term_string",
-          },
+          "@graph": [
+            ...getCoreSiteSchemas(),
+            {
+              "@type": "SearchResultsPage",
+              "@id": `${SITE_URL}/search#search`,
+              url: absoluteUrl(query ? `/search?q=${encodeURIComponent(query)}` : "/search"),
+              name: "Napatdev Search",
+              alternateName: ["Search Napatdev", "ค้นหา Napatdev", "สารบัญเว็บไซต์ Napatdev"],
+              description: searchSeo.description,
+              inLanguage: ["en", "th"],
+              isPartOf: { "@id": WEBSITE_ID },
+              mainEntity: {
+                "@type": "ItemList",
+                numberOfItems: filteredItems.length,
+                itemListElement: filteredItems.map((item, index) => ({
+                  "@type": "ListItem",
+                  position: index + 1,
+                  name: item.title,
+                  alternateName: [item.titleEn, item.titleTh],
+                  url: absoluteUrl(item.href),
+                })),
+              },
+              potentialAction: {
+                "@type": "SearchAction",
+                target: `${SITE_URL}/search?q={search_term_string}`,
+                "query-input": "required name=search_term_string",
+              },
+            },
+          ],
         }}
       />
       <section className="relative min-h-screen overflow-hidden bg-[#f9fafb] px-4 pb-24 pt-28 md:px-6 md:pt-32">

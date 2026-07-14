@@ -16,6 +16,7 @@ export const metadata: Metadata = buildPageMetadata({
   ogImageWidth: 512,
   ogImageHeight: 512,
   path: aboutSeo.path,
+  keywords: aboutSeo.keywords,
 });
 
 export default function AboutPage() {

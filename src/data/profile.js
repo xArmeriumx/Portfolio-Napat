@@ -20,12 +20,10 @@ export const profile = {
   education: [
     "King Mongkut's University of Technology North Bangkok",
     "B.Sc. in Computer and Information Science — Faculty of Applied Science",
-    "GPAX: 2.91 / 4.00",
   ],
   education_th: [
     "มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ",
     "วิทยาศาสตรบัณฑิต สาขาวิทยาการคอมพิวเตอร์และสารสนเทศ คณะวิทยาศาสตร์ประยุกต์",
-    "เกรดเฉลี่ย: 2.91 / 4.00",
   ],
   // Skills แยกตามหมวด
   skillCategories: [
