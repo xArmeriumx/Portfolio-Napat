@@ -6,6 +6,32 @@ import { prisma } from "./db";
 let publicAuth;
 let bootstrapAuth;
 
+function isProductionRuntime() {
+  return process.env.NODE_ENV === "production" && process.env.NEXT_PHASE !== "phase-production-build";
+}
+
+export function resolveAuthBaseURL() {
+  const configured = process.env.BETTER_AUTH_URL?.trim();
+  if (!configured) {
+    if (isProductionRuntime()) throw new Error("BETTER_AUTH_URL must be configured in production");
+    return "http://localhost:3000";
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(configured);
+  } catch {
+    throw new Error("BETTER_AUTH_URL must be a valid absolute URL");
+  }
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    throw new Error("BETTER_AUTH_URL must use HTTP or HTTPS");
+  }
+  if (isProductionRuntime() && parsed.protocol !== "https:") {
+    throw new Error("BETTER_AUTH_URL must use HTTPS in production");
+  }
+  return configured;
+}
+
 function serverAuthConfig(allowSignUp: boolean) {
   const secret = process.env.BETTER_AUTH_SECRET;
   if (!secret || secret.length < 32) {
@@ -20,7 +46,7 @@ function serverAuthConfig(allowSignUp: boolean) {
   return {
     database: prismaAdapter(prisma, { provider: "postgresql", transaction: true }),
     secret,
-    baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+    baseURL: resolveAuthBaseURL(),
     trustedOrigins,
     emailAndPassword: {
       enabled: true,

@@ -87,6 +87,11 @@ node scripts/restore-portfolio.mjs
 3. Database: หยุด rollout, เก็บ log แบบไม่เปิดเผย secret, และแก้ด้วย forward migration/restore ที่ได้รับอนุมัติเท่านั้น; ห้าม reset shared database
 4. Storage: ห้ามลบ asset ที่มี Published/Draft reference; ตรวจ reference ก่อนลบทุกครั้ง
 
+## Auth และ preview runtime guards
+
+- Production ต้องตั้ง `BETTER_AUTH_URL` เป็น absolute HTTPS URL ของ target; ระบบไม่ใช้ `http://localhost:3000` fallback
+- Production ต้องตั้ง `PREVIEW_SIGNING_SECRET` แยกจาก `BETTER_AUTH_SECRET`; preview token เป็น HMAC อายุสั้นและ scope ตาม revision
+
 ## Current evidence boundary
 
 Local code มี target allow-list, schema-qualified migration/import, transactional content lifecycle, backup/restore scripts และ no-secret output policy แล้ว การรันกับ Supabase จริงต้องแนบ inventory, backup artifact hash, restore result, Vercel environment audit และ smoke evidence ของ environment นั้นก่อนเรียก Preview/Production ว่า ready

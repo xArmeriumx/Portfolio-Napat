@@ -76,10 +76,10 @@ Draft Revision ----> Exact Preview only (signed, short-lived token; no public in
 
 ### Admin และความปลอดภัย
 
-- Better Auth อยู่ใน `src/server/auth.ts` พร้อม secure cookie ใน production, minimum password 12 ตัว, database rate limit และ sign-up disabled เป็นค่าเริ่มต้น
+- Better Auth อยู่ใน `src/server/auth.ts` พร้อม secure cookie ใน production, minimum password 12 ตัว, database rate limit และ sign-up disabled เป็นค่าเริ่มต้น; production ต้องมี `BETTER_AUTH_URL` แบบ HTTPS และไม่ใช้ localhost fallback
 - `src/server/auth-guard.ts` ตรวจ session และ `User.role=admin`
 - mutation API ตรวจ same-origin ใน `src/server/csrf.ts`
-- Preview ใช้ HMAC token อายุ 15 นาทีใน `src/server/preview-token.ts` และอ่าน revision ที่ระบุแบบ exact เท่านั้น
+- Preview ใช้ HMAC token อายุ 15 นาทีใน `src/server/preview-token.ts` และอ่าน revision ที่ระบุแบบ exact เท่านั้น; production บังคับ `PREVIEW_SIGNING_SECRET` แยกจาก auth secret
 - Activation เป็น one-time token route; ไม่แสดง token หรือ secret ใน response/log
 - Sign out เป็น same-origin client action และพากลับ `/admin/login` หลังลบ session สำเร็จ
 - Archive และ media delete ต้องส่ง explicit confirmation ที่ server ตรวจซ้ำ ไม่พึ่งเฉพาะ `window.confirm`
