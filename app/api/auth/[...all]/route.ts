@@ -1,7 +1,9 @@
 import { toNextJsHandler } from "better-auth/next-js";
 import { getAuth } from "@/server/auth";
+import { assertPortfolioDatabaseTarget } from "@/server/db";
 
 function handlers() {
+  assertPortfolioDatabaseTarget();
   return toNextJsHandler(getAuth());
 }
 

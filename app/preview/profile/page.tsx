@@ -4,7 +4,7 @@ import Home from "@/views/Home.jsx";
 import { profileDraftSchema } from "@/content/input-schema";
 import { getPreviewRevision } from "@/content/admin-service";
 import { toPresentationProfile } from "@/content/presentation";
-import { prisma } from "@/server/db";
+import { assertPortfolioDatabaseTarget, prisma } from "@/server/db";
 import { verifyPreviewToken } from "@/server/preview-token";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +23,7 @@ export default async function ProfilePreviewPage({ searchParams }: Props) {
 
   const profile = await (async () => {
     try {
+    assertPortfolioDatabaseTarget();
     const revision = await getPreviewRevision(prisma, claims);
     const payload = profileDraftSchema.parse(revision.payload);
     return {

@@ -5,7 +5,7 @@ import { projectDraftSchema } from "@/content/input-schema";
 import { getPreviewRevision } from "@/content/admin-service";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationProfile, toPresentationProject } from "@/content/presentation";
-import { prisma } from "@/server/db";
+import { assertPortfolioDatabaseTarget, prisma } from "@/server/db";
 import { verifyPreviewToken } from "@/server/preview-token";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +21,7 @@ export default async function ProjectPreviewPage({ params, searchParams }: Props
 
   const preview = await (async () => {
     try {
+      assertPortfolioDatabaseTarget();
       const revision = await getPreviewRevision(prisma, claims);
       const payload = projectDraftSchema.parse(revision.payload);
       const repository = await getContentRepository();

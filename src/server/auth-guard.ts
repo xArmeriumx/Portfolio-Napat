@@ -1,9 +1,10 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { prisma } from "./db";
+import { assertPortfolioDatabaseTarget, prisma } from "./db";
 import { getAuth } from "./auth";
 
 export async function getAdminSession() {
+  assertPortfolioDatabaseTarget();
   const session = await getAuth().api.getSession({ headers: await headers() });
   if (!session) return null;
 

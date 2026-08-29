@@ -2,7 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuth } from "@/server/auth";
-import { prisma } from "@/server/db";
+import { assertPortfolioDatabaseTarget, prisma } from "@/server/db";
 import { isSameOrigin } from "@/server/csrf";
 
 const activationSchema = z.object({
@@ -20,6 +20,7 @@ function matchesToken(provided: string, expected: string) {
 
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return NextResponse.json({ error: { code: "CSRF", message: "Origin validation failed" } }, { status: 403 });
+  assertPortfolioDatabaseTarget();
   const expectedToken = process.env.ADMIN_ACTIVATION_TOKEN;
   const configuredEmail = process.env.ADMIN_EMAIL;
   if (!expectedToken || !configuredEmail) return NextResponse.json({ error: { code: "NOT_CONFIGURED", message: "Activation is unavailable" } }, { status: 404 });
