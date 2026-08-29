@@ -2,8 +2,8 @@
 
 วันที่ตรวจ: 29 สิงหาคม 2026 (Asia/Bangkok)  
 Branch: `feat/cms-repository`  
-Commit ล่าสุดของ implementation/hardening: `1f55568`<br>
-Commit ที่ใช้สำหรับหลักฐาน CI/Preview: `1f55568`<br>
+Commit ล่าสุดของ implementation/hardening: `04aee31`<br>
+Commit ที่ใช้สำหรับหลักฐาน CI/Preview: `04aee31`<br>
 Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## สรุปสำหรับผู้รับช่วงต่อ
@@ -44,13 +44,13 @@ Draft Revision ----> Exact Preview only (signed, short-lived token; no public in
 
 ## หลักฐานที่รันแล้ว
 
-- `npm test -- --run`: **10 files, 35 tests passed**
+- `npm test -- --run`: **10 files, 36 tests passed**
 - `npm run typecheck`: **ผ่าน** (`tsc --noEmit`)
 - `npm run lint`: **0 errors, 31 warnings**; warnings เป็น debt เดิมใน AI/notes และ unused constructor parameter ไม่ใช่ failure
 - `npm run build`: ผ่าน; Next.js สร้าง admin, API, preview, public dynamic routes และ sitemap ได้
 - `npx playwright test`: **1 public test passed, 1 mutation test skipped**; public test ครอบคลุม list/detail, metadata, JSON-LD, search และ sitemap เพราะไม่มี `CMS_E2E_ADMIN_EMAIL`, `CMS_E2E_ADMIN_PASSWORD` และ `CMS_E2E_ALLOW_MUTATIONS=true`
-- GitHub Actions Quality Gates ของ commit `1f55568`: **ผ่าน** (run `33259209274`, job `99118134691`) รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint, build และ public Playwright smoke
-- Vercel Preview deployment ของ commit `1f55568`: **ผ่าน** (`CnyQyWrT3ajj76iCcTqdQmXiqYwu`); deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
+- GitHub Actions Quality Gates ของ commit `04aee31`: **ผ่าน** (run `33259803549`, job `99119679725`) รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint, build และ public Playwright smoke
+- Vercel Preview deployment ของ commit `04aee31`: **ผ่าน** (`EBsTHDLSGJiFt2bwy2kq5QiEQ76B`); deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
 - Worktree หลัง push: clean และ branch ตรงกับ `origin/feat/cms-repository`
 
 ภาพ browser local ที่ตรวจ public Notes อยู่ใน:
@@ -72,6 +72,7 @@ Draft Revision ----> Exact Preview only (signed, short-lived token; no public in
 - Database adapter ปฏิเสธ selected revision ที่สถานะจริงไม่ใช่ `PUBLISHED` เพื่อไม่ให้ Draft/Archived payload หลุดสู่ public read
 - Public adapter ไม่คืน Draft/Archived; redirect query ตรวจว่า document ต้นทางยัง Published และเดิน chain ได้ไม่เกิน 10 ขั้น
 - Runtime database guard บังคับ `portfolio_cms_dev`, `portfolio_cms_preview` หรือ `portfolio_cms_prod` ให้ตรงกับ runtime และ `DATABASE_URL`; production runtime ไม่ fallback เป็น static โดยเงียบ
+- Production runtime ปฏิเสธ `CONTENT_STORAGE` ที่ไม่ใช่ `database` เพื่อ fail closed เมื่อมีการตั้งค่า env ผิด
 
 ### Admin และความปลอดภัย
 
