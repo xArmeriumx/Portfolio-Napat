@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formatAdminError } from "./error-message";
 
 function Field({ label, value, onChange, multiline = false, ...props }) {
   const common = {
@@ -42,7 +43,11 @@ export default function NoteEditor({ documentId = null, initialPayload, draftRev
   async function call(path, body) {
     const response = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify(body) });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error?.message || "คำขอไม่สำเร็จ");
+    if (!response.ok) {
+      const error = new Error(data.error?.message || "คำขอไม่สำเร็จ");
+      error.details = data.error?.details;
+      throw error;
+    }
     return data;
   }
 
@@ -53,7 +58,7 @@ export default function NoteEditor({ documentId = null, initialPayload, draftRev
       setDraftRevisionId(result.revisionId);
       if (!documentId) window.location.href = `/admin/notes/${result.documentId}`;
       else setMessage(`บันทึก Draft revision ${result.revisionNumber} แล้ว`);
-    } catch (saveError) { setError(saveError.message); }
+    } catch (saveError) { setError(formatAdminError(saveError)); }
     setBusy(false);
   }
 
@@ -62,7 +67,7 @@ export default function NoteEditor({ documentId = null, initialPayload, draftRev
     try {
       const result = await call(`/api/admin/notes/${documentId}/preview`, { revisionId: draftRevisionId });
       window.open(result.url, "_blank", "noopener,noreferrer");
-    } catch (previewError) { setError(previewError.message); }
+    } catch (previewError) { setError(formatAdminError(previewError)); }
     setBusy(false);
   }
 
@@ -71,7 +76,7 @@ export default function NoteEditor({ documentId = null, initialPayload, draftRev
     try {
       const result = await call(`/api/admin/notes/${documentId}/publish`, { revisionId: draftRevisionId });
       setDraftRevisionId(null); setMessage(`เผยแพร่ ${result.slug} revision ${result.revisionNumber} แล้ว`);
-    } catch (publishError) { setError(publishError.message); }
+    } catch (publishError) { setError(formatAdminError(publishError)); }
     setBusy(false);
   }
 
@@ -81,7 +86,7 @@ export default function NoteEditor({ documentId = null, initialPayload, draftRev
     try {
       await call(`/api/admin/notes/${documentId}/archive`, { confirm: true });
       window.location.href = "/admin/notes";
-    } catch (archiveError) { setError(archiveError.message); }
+    } catch (archiveError) { setError(formatAdminError(archiveError)); }
     setBusy(false);
   }
 
@@ -91,7 +96,7 @@ export default function NoteEditor({ documentId = null, initialPayload, draftRev
     try {
       const result = await call(`/api/admin/notes/${documentId}/restore`, { revisionId });
       setPayload(result.payload); setDraftRevisionId(result.revisionId); setMessage(`กู้คืนเป็น Draft revision ${result.revisionNumber} แล้ว`);
-    } catch (restoreError) { setError(restoreError.message); }
+    } catch (restoreError) { setError(formatAdminError(restoreError)); }
     setBusy(false);
   }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formatAdminError } from "./error-message";
 
 function Field({ label, value, onChange, multiline = false, ...props }) {
   const common = {
@@ -59,7 +60,11 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
       body: JSON.stringify(body),
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error?.message || "คำขอไม่สำเร็จ");
+    if (!response.ok) {
+      const error = new Error(data.error?.message || "คำขอไม่สำเร็จ");
+      error.details = data.error?.details;
+      throw error;
+    }
     return data;
   }
 
@@ -75,7 +80,7 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
       if (!documentId) window.location.href = `/admin/projects/${result.documentId}`;
       else setMessage(`บันทึก Draft revision ${result.revisionNumber} แล้ว`);
     } catch (saveError) {
-      setError(saveError.message);
+      setError(formatAdminError(saveError));
     }
     setBusy(false);
   }
@@ -87,7 +92,7 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
       const result = await call(`/api/admin/projects/${documentId}/preview`, { revisionId: draftRevisionId });
       window.open(result.url, "_blank", "noopener,noreferrer");
     } catch (previewError) {
-      setError(previewError.message);
+      setError(formatAdminError(previewError));
     }
     setBusy(false);
   }
@@ -101,7 +106,7 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
       setDraftRevisionId(null);
       setMessage(`เผยแพร่ ${result.slug} revision ${result.revisionNumber} แล้ว`);
     } catch (publishError) {
-      setError(publishError.message);
+      setError(formatAdminError(publishError));
     }
     setBusy(false);
   }
@@ -114,7 +119,7 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
       await call(`/api/admin/projects/${documentId}/archive`, { confirm: true });
       window.location.href = "/admin/projects";
     } catch (archiveError) {
-      setError(archiveError.message);
+      setError(formatAdminError(archiveError));
     }
     setBusy(false);
   }
@@ -132,7 +137,11 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
       form.set("altTh", mediaAltTh || mediaAltEn || mediaFile.name);
       const response = await fetch("/api/admin/media", { method: "POST", credentials: "include", body: form });
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error?.message || "อัปโหลด media ไม่สำเร็จ");
+      if (!response.ok) {
+        const error = new Error(data.error?.message || "อัปโหลด media ไม่สำเร็จ");
+        error.details = data.error?.details;
+        throw error;
+      }
       const currentMedia = payload.media || [];
       update(["media"], [...currentMedia, { ...data.media, order: currentMedia.length }]);
       setMediaFile(null);
@@ -140,7 +149,7 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
       setMediaAltTh("");
       setMessage("อัปโหลด media แล้ว กด Save Draft เพื่อบันทึกเข้า revision");
     } catch (uploadError) {
-      setError(uploadError.message);
+      setError(formatAdminError(uploadError));
     }
     setBusy(false);
   }
@@ -151,7 +160,7 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
     try {
       const result = await call(`/api/admin/projects/${documentId}/restore`, { revisionId });
       setPayload(result.payload); setDraftRevisionId(result.revisionId); setMessage(`กู้คืนเป็น Draft revision ${result.revisionNumber} แล้ว`);
-    } catch (restoreError) { setError(restoreError.message); }
+    } catch (restoreError) { setError(formatAdminError(restoreError)); }
     setBusy(false);
   }
 

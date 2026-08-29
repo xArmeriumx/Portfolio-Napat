@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formatAdminError } from "./error-message";
 
 function TextField({ label, value, onChange, ...props }) {
   return <label className="block text-sm font-bold text-gray-700">{label}<input {...props} value={value ?? ""} onChange={(event) => onChange(event.target.value)} className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 font-normal outline-none focus:border-[#c43c3c]" /></label>;
@@ -40,7 +41,11 @@ export default function ProfileEditor({ initialPayload, draftRevisionId: initial
   async function call(path, body = {}) {
     const response = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify(body) });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error?.message || "คำขอไม่สำเร็จ");
+    if (!response.ok) {
+      const error = new Error(data.error?.message || "คำขอไม่สำเร็จ");
+      error.details = data.error?.details;
+      throw error;
+    }
     return data;
   }
 
@@ -50,7 +55,7 @@ export default function ProfileEditor({ initialPayload, draftRevisionId: initial
       const result = await call("/api/admin/profile/draft", { payload });
       setDraftRevisionId(result.revisionId);
       setMessage(`บันทึก Draft revision ${result.revisionNumber} แล้ว`);
-    } catch (saveError) { setError(saveError.message); }
+    } catch (saveError) { setError(formatAdminError(saveError)); }
     setBusy(false);
   }
 
@@ -59,7 +64,7 @@ export default function ProfileEditor({ initialPayload, draftRevisionId: initial
     try {
       const result = await call("/api/admin/profile/preview", { revisionId: draftRevisionId });
       window.open(result.url, "_blank", "noopener,noreferrer");
-    } catch (previewError) { setError(previewError.message); }
+    } catch (previewError) { setError(formatAdminError(previewError)); }
     setBusy(false);
   }
 
@@ -69,7 +74,7 @@ export default function ProfileEditor({ initialPayload, draftRevisionId: initial
       const result = await call("/api/admin/profile/publish", { revisionId: draftRevisionId });
       setDraftRevisionId(null);
       setMessage(`เผยแพร่ revision ${result.revisionNumber} แล้ว`);
-    } catch (publishError) { setError(publishError.message); }
+    } catch (publishError) { setError(formatAdminError(publishError)); }
     setBusy(false);
   }
 
