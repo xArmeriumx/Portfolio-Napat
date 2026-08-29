@@ -183,6 +183,21 @@ export function getProjectsListSeoMeta(profile) {
   };
 }
 
+export function getNotesListSeoMeta(profile) {
+  const siteSeo = getSiteSeoDefaults(profile);
+  return {
+    title: `Developer Notes by ${profile.name} | ณภัทร ภมรสูตร | ${SITE_NAME}`,
+    description: normalizeMetaDescription(
+      `Developer notes and technical cheatsheets by ${profile.name}. โน้ตความรู้และชีทสรุปด้านเทคนิคโดย ณภัทร ภมรสูตร`,
+      180,
+    ),
+    ogImage: siteSeo.ogImage,
+    ogImageAlt: `${profile.name} developer notes`,
+    path: "/notes",
+    keywords: ["Napatdev developer notes", "ณภัทร ภมรสูตร โน้ตความรู้", "Next.js cheatsheet", "TypeScript reference", "SQL examples"],
+  };
+}
+
 export function getContactSeoMeta(profile) {
   const siteSeo = getSiteSeoDefaults(profile);
   return {

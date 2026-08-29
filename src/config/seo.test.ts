@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getProjectSeoMeta, getSiteSeoDefaults } from "./seo.js";
+import { getNotesListSeoMeta, getProjectSeoMeta, getSiteSeoDefaults } from "./seo.js";
 import { getNoteSeoMeta } from "@/lib/notes";
 
 describe("CMS SEO overrides", () => {
@@ -55,5 +55,15 @@ describe("CMS SEO overrides", () => {
     expect(noteSeo.title).toBe("Custom note title");
     expect(noteSeo.description).toBe("Custom note description");
     expect(noteSeo.schemaTitle).toBe("Custom note title");
+  });
+
+  it("derives the Notes index metadata from the published Profile", () => {
+    const seo = getNotesListSeoMeta({
+      name: "Published Profile Name",
+      seo: { title: null, description: null, image: "/published-profile.png" },
+    });
+
+    expect(seo.title).toContain("Published Profile Name");
+    expect(seo.ogImage).toBe("/published-profile.png");
   });
 });
