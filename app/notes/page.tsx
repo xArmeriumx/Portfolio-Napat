@@ -1,34 +1,45 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/utils/JsonLd";
-import { getAllNotes, getNotesCollectionSchema, getNoteDescription } from "@/lib/notes";
+import { getNotesCollectionSchema, getNoteDescription } from "@/lib/notes";
 import { buildPageMetadata } from "@/lib/metadata";
+import { getNotesListSeoMeta } from "@/config/seo.js";
+import { getContentRepository } from "@/content/repository";
+import { toPresentationNote, toPresentationProfile } from "@/content/presentation";
 
-const notesKeywords = [
-  "Napatdev developer notes",
-  "Napat Pamornsut notes",
-  "ณภัทร ภมรสูตร โน้ตความรู้",
-  "Next.js cheatsheet",
-  "TypeScript reference",
-  "SQL examples",
-];
+export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "Developer Notes by Napat Pamornsut | Napatdev",
-  description:
-    "Developer notes and technical cheatsheets by Napat Pamornsut (ณภัทร ภมรสูตร), covering Next.js, TypeScript, SQL, software development, and practical web engineering.",
-  ogTitle: "Developer Notes | Napatdev",
-  ogDescription: "Technical notes and practical cheatsheets by Napat Pamornsut / ณภัทร ภมรสูตร.",
-  path: "/notes",
-  keywords: notesKeywords,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const repository = await getContentRepository();
+  const profile = toPresentationProfile(await repository.getPublishedProfile());
+  const notesSeo = getNotesListSeoMeta(profile);
 
-export default function NotesIndexPage() {
-  const notes = getAllNotes();
+  return buildPageMetadata({
+    title: notesSeo.title,
+    description: notesSeo.description,
+    ogTitle: notesSeo.title,
+    ogDescription: notesSeo.description,
+    ogImage: notesSeo.ogImage,
+    ogImageAlt: notesSeo.ogImageAlt,
+    ogImageWidth: 512,
+    ogImageHeight: 512,
+    path: notesSeo.path,
+    keywords: notesSeo.keywords,
+  });
+}
+
+export default async function NotesIndexPage() {
+  const repository = await getContentRepository();
+  const [rawProfile, rawNotes] = await Promise.all([
+    repository.getPublishedProfile(),
+    repository.listPublishedNotes(),
+  ]);
+  const profile = toPresentationProfile(rawProfile);
+  const notes = rawNotes.map(toPresentationNote);
 
   return (
     <>
-      <JsonLd data={getNotesCollectionSchema(notes)} />
+      <JsonLd data={getNotesCollectionSchema(notes, profile)} />
       <section className="relative min-h-screen overflow-hidden bg-[#f9fafb] px-4 pb-24 pt-28 md:px-6 md:pt-32">
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(#e5e7eb_1px,transparent_1px),linear-gradient(90deg,#e5e7eb_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 [mask-image:radial-gradient(circle_at_top,black_20%,transparent_72%)]" />
         <div className="relative z-10 mx-auto max-w-5xl">

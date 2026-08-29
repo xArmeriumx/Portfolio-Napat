@@ -1,21 +1,34 @@
 import type { Metadata } from "next";
 import Home from "@/views/Home.jsx";
 import JsonLd from "@/components/utils/JsonLd";
-import { SEO_DEFAULTS, getHomeGraphSchema } from "@/config/seo.js";
+import { getHomeGraphSchema, getSiteSeoDefaults } from "@/config/seo.js";
 import { buildPageMetadata } from "@/lib/metadata";
+import { getContentRepository } from "@/content/repository";
+import { toPresentationProfile } from "@/content/presentation";
 
-export const metadata: Metadata = buildPageMetadata({
-  title: SEO_DEFAULTS.title,
-  description: SEO_DEFAULTS.description,
-  keywords: SEO_DEFAULTS.keywords,
-  path: "/",
-});
+export const dynamic = "force-dynamic";
 
-export default function HomePage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const repository = await getContentRepository();
+  const profile = toPresentationProfile(await repository.getPublishedProfile());
+  const seo = getSiteSeoDefaults(profile);
+
+  return buildPageMetadata({
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords,
+    path: "/",
+  });
+}
+
+export default async function HomePage() {
+  const repository = await getContentRepository();
+  const profile = toPresentationProfile(await repository.getPublishedProfile());
+
   return (
     <>
-      <JsonLd data={getHomeGraphSchema()} />
-      <Home />
+      <JsonLd data={getHomeGraphSchema(profile)} />
+      <Home profile={profile} />
     </>
   );
 }

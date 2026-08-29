@@ -2,7 +2,6 @@ import { useState, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
-import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import { Copy, Check, Pencil, Sparkles, X, RotateCcw, Save, Play } from 'lucide-react';
 import { reviewCode } from '../../services/aiService';
@@ -258,7 +257,7 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                     >
                       <ReactMarkdown 
                         remarkPlugins={[remarkGfm]}
-                        rehypePlugins={[rehypeRaw, rehypeHighlight]}
+                        rehypePlugins={[rehypeHighlight]}
                       >
                         {aiText}
                       </ReactMarkdown>
@@ -397,7 +396,7 @@ export default function NoteCard({ markdown }) {
       ">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw, rehypeSlug, rehypeHighlight]}
+          rehypePlugins={[rehypeSlug, rehypeHighlight]}
           components={markdownComponents}
         >
           {markdown}

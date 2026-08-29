@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/utils/JsonLd";
-import { projects } from "@/data/projects.js";
 import { NAVIGATION_ITEMS, absoluteUrl, getCoreSiteSchemas, getSearchSeoMeta, SITE_URL, WEBSITE_ID } from "@/config/seo.js";
-import { getAllNotes } from "@/lib/notes";
 import { buildPageMetadata } from "@/lib/metadata";
+import { getContentRepository } from "@/content/repository";
+import { toPresentationNote, toPresentationProfile, toPresentationProject } from "@/content/presentation";
+
+export const dynamic = "force-dynamic";
 
 type Props = {
   searchParams?: Promise<{ q?: string }>;
@@ -37,7 +39,16 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 export default async function SearchPage({ searchParams }: Props) {
   const params = await searchParams;
   const query = params?.q?.trim().toLowerCase() || "";
-  const noteLinks = getAllNotes().map((note) => ({
+  const repository = await getContentRepository();
+  const [rawProfile, rawProjects, rawNotes] = await Promise.all([
+    repository.getPublishedProfile(),
+    repository.listPublishedProjects(),
+    repository.listPublishedNotes(),
+  ]);
+  const profile = toPresentationProfile(rawProfile);
+  const notes = rawNotes.map(toPresentationNote);
+  const projects = rawProjects.map(toPresentationProject);
+  const noteLinks = notes.map((note) => ({
     title: note.name,
     titleEn: note.name,
     titleTh: `โน้ต ${note.name}`,
@@ -64,7 +75,7 @@ export default async function SearchPage({ searchParams }: Props) {
         data={{
           "@context": "https://schema.org",
           "@graph": [
-            ...getCoreSiteSchemas(),
+            ...getCoreSiteSchemas(profile),
             {
               "@type": "SearchResultsPage",
               "@id": `${SITE_URL}/search#search`,

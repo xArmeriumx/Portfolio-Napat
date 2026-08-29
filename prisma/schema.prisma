@@ -1,0 +1,198 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ContentType {
+  PROFILE
+  PROJECT
+  NOTE
+}
+
+enum DocumentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum RevisionStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model User {
+  id                String             @id @default(cuid())
+  name              String
+  email             String             @unique
+  emailVerified     Boolean            @default(false)
+  image             String?
+  role              String             @default("admin")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  sessions          Session[]
+  accounts          Account[]
+  createdRevisions  ContentRevision[]  @relation("RevisionActor")
+  publishedRevisions ContentRevision[] @relation("PublishActor")
+  auditEvents       AuditEvent[]       @relation("AuditActor")
+  mediaAssets       MediaAsset[]       @relation("MediaActor")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Account {
+  id                    String   @id @default(cuid())
+  issuer                String
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([issuer, accountId])
+  @@index([userId])
+}
+
+model RateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+model ContentDocument {
+  id                  String           @id @default(cuid())
+  contentType         ContentType
+  slug                String?
+  displayOrder        Int              @default(0)
+  featured            Boolean          @default(false)
+  status              DocumentStatus   @default(DRAFT)
+  publishedRevisionId String?          @unique
+  draftRevisionId     String?          @unique
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  revisions           ContentRevision[] @relation("DocumentRevisions")
+  publishedRevision   ContentRevision? @relation("PublishedRevision", fields: [publishedRevisionId], references: [id], onDelete: SetNull)
+  draftRevision       ContentRevision? @relation("DraftRevision", fields: [draftRevisionId], references: [id], onDelete: SetNull)
+  slugRedirects       SlugRedirect[]
+
+  @@unique([contentType, slug])
+  @@index([contentType, status, displayOrder])
+}
+
+model ContentRevision {
+  id              String           @id @default(cuid())
+  documentId      String
+  revisionNumber  Int
+  status          RevisionStatus
+  payload         Json
+  createdAt       DateTime         @default(now())
+  createdBy       String?
+  publishedAt     DateTime?
+  publishedBy     String?
+  document        ContentDocument  @relation("DocumentRevisions", fields: [documentId], references: [id], onDelete: Cascade)
+  createdByUser   User?            @relation("RevisionActor", fields: [createdBy], references: [id], onDelete: SetNull)
+  publishedByUser User?            @relation("PublishActor", fields: [publishedBy], references: [id], onDelete: SetNull)
+  mediaReferences MediaReference[]
+  auditEvents     AuditEvent[]
+  publishedFor    ContentDocument? @relation("PublishedRevision")
+  draftFor        ContentDocument? @relation("DraftRevision")
+
+  @@unique([documentId, revisionNumber])
+  @@index([documentId, status, createdAt])
+}
+
+model MediaAsset {
+  id           String           @id @default(cuid())
+  storageKey   String           @unique
+  publicUrl    String
+  mimeType     String
+  sizeBytes    Int
+  width        Int?
+  height       Int?
+  altEn        String
+  altTh        String
+  captionEn    String?
+  captionTh    String?
+  createdAt    DateTime         @default(now())
+  createdBy    String?
+  createdByUser User?           @relation("MediaActor", fields: [createdBy], references: [id], onDelete: SetNull)
+  references   MediaReference[]
+
+  @@index([createdAt])
+}
+
+model MediaReference {
+  revisionId String
+  mediaId    String
+  displayOrder Int
+  revision   ContentRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  media      MediaAsset      @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@id([revisionId, mediaId])
+  @@index([mediaId])
+}
+
+model SlugRedirect {
+  id           String          @id @default(cuid())
+  contentType  ContentType
+  fromSlug     String
+  toSlug       String
+  documentId   String
+  createdAt    DateTime        @default(now())
+  document     ContentDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([contentType, fromSlug])
+  @@index([documentId])
+}
+
+model AuditEvent {
+  id         String           @id @default(cuid())
+  action     String
+  contentType ContentType?
+  documentId String?
+  revisionId String?
+  actorId    String?
+  metadata   Json?
+  createdAt  DateTime         @default(now())
+  actor      User?            @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+  revision   ContentRevision? @relation(fields: [revisionId], references: [id], onDelete: SetNull)
+
+  @@index([documentId, createdAt])
+  @@index([actorId, createdAt])
+}
