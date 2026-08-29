@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/utils/JsonLd";
-import { getAllNotes, getNotesCollectionSchema, getNoteDescription } from "@/lib/notes";
+import { getNotesCollectionSchema, getNoteDescription } from "@/lib/notes";
 import { buildPageMetadata } from "@/lib/metadata";
+import { getContentRepository } from "@/content/repository";
+import { toPresentationNote, toPresentationProfile } from "@/content/presentation";
 
 const notesKeywords = [
   "Napatdev developer notes",
@@ -23,12 +25,18 @@ export const metadata: Metadata = buildPageMetadata({
   keywords: notesKeywords,
 });
 
-export default function NotesIndexPage() {
-  const notes = getAllNotes();
+export default async function NotesIndexPage() {
+  const repository = await getContentRepository();
+  const [rawProfile, rawNotes] = await Promise.all([
+    repository.getPublishedProfile(),
+    repository.listPublishedNotes(),
+  ]);
+  const profile = toPresentationProfile(rawProfile);
+  const notes = rawNotes.map(toPresentationNote);
 
   return (
     <>
-      <JsonLd data={getNotesCollectionSchema(notes)} />
+      <JsonLd data={getNotesCollectionSchema(notes, profile)} />
       <section className="relative min-h-screen overflow-hidden bg-[#f9fafb] px-4 pb-24 pt-28 md:px-6 md:pt-32">
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(#e5e7eb_1px,transparent_1px),linear-gradient(90deg,#e5e7eb_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 [mask-image:radial-gradient(circle_at_top,black_20%,transparent_72%)]" />
         <div className="relative z-10 mx-auto max-w-5xl">

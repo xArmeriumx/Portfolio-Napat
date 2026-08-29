@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProjectDetail from "@/views/ProjectDetail.jsx";
 import JsonLd from "@/components/utils/JsonLd";
-import { projects } from "@/data/projects.js";
 import { getProjectSchema, getProjectSeoMeta } from "@/config/seo.js";
 import { buildPageMetadata } from "@/lib/metadata";
+import { getContentRepository } from "@/content/repository";
+import { toPresentationProfile, toPresentationProject } from "@/content/presentation";
+
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -14,17 +18,14 @@ function getEnglishContent(project: Record<string, unknown>, field: string) {
   return project[field] || "";
 }
 
-function getProject(slug: string) {
-  return projects.find((project) => project.slug === slug) || null;
-}
-
-export function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.slug }));
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProject(slug);
+  const repository = await getContentRepository();
+  const [rawProfile, rawProject] = await Promise.all([
+    repository.getPublishedProfile(),
+    repository.getPublishedProjectBySlug(slug),
+  ]);
+  const project = rawProject ? toPresentationProject(rawProject) : null;
 
   if (!project) {
     return buildPageMetadata({
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     });
   }
 
-  const projectSeo = getProjectSeoMeta(project, getEnglishContent);
+  const projectSeo = getProjectSeoMeta(project, getEnglishContent, toPresentationProfile(rawProfile));
 
   return buildPageMetadata({
     title: projectSeo.title,
@@ -54,13 +55,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
-  const project = getProject(slug);
+  const repository = await getContentRepository();
+  const [rawProfile, rawProject] = await Promise.all([
+    repository.getPublishedProfile(),
+    repository.getPublishedProjectBySlug(slug),
+  ]);
 
-  if (!project) notFound();
+  if (!rawProject) notFound();
+
+  const profile = toPresentationProfile(rawProfile);
+  const project = toPresentationProject(rawProject);
 
   const title = project.title;
   const description = `${project.description} ${project.description_th || ""}`;
-  const projectImages = project.images || [project.image];
+  const projectImages = project.images;
 
   return (
     <>
@@ -74,11 +82,11 @@ export default async function ProjectDetailPage({ params }: Props) {
           technologies: project.technologies || [],
           keyFeatures: project.keyFeatures || [],
           role: project.role || [],
-          stack: project.stack,
           links: project.links || {},
+          profile,
         })}
       />
-      <ProjectDetail slug={slug} />
+      <ProjectDetail slug={slug} project={project} />
     </>
   );
 }

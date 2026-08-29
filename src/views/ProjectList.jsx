@@ -6,7 +6,6 @@ import { useTranslation } from "../context/LanguageContext.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import AnimatedText from "../components/ui/AnimatedText.jsx";
-import { projects } from "../data/projects.js";
 import { ExternalLink, ArrowRight } from "lucide-react";
 
 function GitHubIcon({ className }) {
@@ -286,7 +285,7 @@ function ProjectCard({ project, index }) {
   );
 }
 
-export default function ProjectList() {
+export default function ProjectList({ projects = [] }) {
   const [featured, ...rest] = projects;
 
   return (

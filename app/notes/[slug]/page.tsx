@@ -3,19 +3,22 @@ import { notFound } from "next/navigation";
 import Notes from "@/views/Notes.jsx";
 import JsonLd from "@/components/utils/JsonLd";
 import { buildPageMetadata } from "@/lib/metadata";
-import { getAllNotes, getNoteBySlug, getNoteDescription, getNoteSchema } from "@/lib/notes";
+import { getNoteDescription, getNoteSchema } from "@/lib/notes";
+import { getContentRepository } from "@/content/repository";
+import { toPresentationNote, toPresentationProfile } from "@/content/presentation";
+
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return getAllNotes().map((note) => ({ slug: note.id }));
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const note = getNoteBySlug(slug);
+  const repository = await getContentRepository();
+  const rawNote = await repository.getPublishedNoteBySlug(slug);
+  const note = rawNote ? toPresentationNote(rawNote) : null;
 
   if (!note) {
     return buildPageMetadata({
@@ -42,14 +45,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function NoteDetailPage({ params }: Props) {
   const { slug } = await params;
-  const note = getNoteBySlug(slug);
+  const repository = await getContentRepository();
+  const [rawProfile, rawNote, rawNotes] = await Promise.all([
+    repository.getPublishedProfile(),
+    repository.getPublishedNoteBySlug(slug),
+    repository.listPublishedNotes(),
+  ]);
 
-  if (!note) notFound();
+  if (!rawNote) notFound();
+
+  const profile = toPresentationProfile(rawProfile);
+  const note = toPresentationNote(rawNote);
+  const notes = rawNotes.map(toPresentationNote);
 
   return (
     <>
-      <JsonLd data={getNoteSchema(note)} />
-      <Notes initialNotes={getAllNotes()} slug={slug} />
+      <JsonLd data={getNoteSchema(note, profile)} />
+      <Notes initialNotes={notes} slug={slug} />
     </>
   );
 }
