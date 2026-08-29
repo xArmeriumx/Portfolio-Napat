@@ -52,7 +52,12 @@ export async function uploadPortfolioMedia(input: {
   const { baseUrl, serviceKey, bucket } = storageConfig();
   const storageKey = `projects/${input.projectId}/${randomUUID()}.${extensionByMime[detectedMime]}`;
   const headers = { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey, "Content-Type": detectedMime, "x-upsert": "false" };
-  const upload = await fetch(storageUrl(bucket, storageKey), { method: "POST", headers, body: bytes });
+  let upload: Response;
+  try {
+    upload = await fetch(storageUrl(bucket, storageKey), { method: "POST", headers, body: bytes });
+  } catch {
+    throw new Error("STORAGE_UPLOAD_FAILED");
+  }
   if (!upload.ok) throw new Error("STORAGE_UPLOAD_FAILED");
   const publicBase = (process.env.SUPABASE_STORAGE_PUBLIC_BASE_URL || `${baseUrl}/storage/v1/object/public/${bucket}`).replace(/\/$/, "");
   return {
@@ -70,9 +75,14 @@ export async function uploadPortfolioMedia(input: {
 
 export async function deletePortfolioMedia(storageKey: string) {
   const { bucket, serviceKey } = storageConfig();
-  const response = await fetch(storageUrl(bucket, storageKey), {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey },
-  });
+  let response: Response;
+  try {
+    response = await fetch(storageUrl(bucket, storageKey), {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey },
+    });
+  } catch {
+    throw new Error("STORAGE_DELETE_FAILED");
+  }
   if (!response.ok && response.status !== 404) throw new Error("STORAGE_DELETE_FAILED");
 }

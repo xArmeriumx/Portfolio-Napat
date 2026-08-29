@@ -231,6 +231,44 @@ describe("note draft lifecycle", () => {
 });
 
 describe("content conflict handling", () => {
+  it("archives a pending draft as recoverable history", async () => {
+    const document = {
+      id: "note-archive-1",
+      contentType: "NOTE",
+      slug: "archive-note",
+      status: "PUBLISHED",
+      publishedRevisionId: "published-1",
+      draftRevisionId: "draft-2",
+    };
+    const revisions = new Map([
+      ["published-1", { status: "PUBLISHED" }],
+      ["draft-2", { status: "DRAFT" }],
+    ]);
+    const db = {
+      contentDocument: {
+        findFirst: async () => document,
+        update: async ({ data }: { data: Record<string, unknown> }) => Object.assign(document, data),
+      },
+      contentRevision: {
+        update: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
+          const revision = revisions.get(where.id);
+          if (!revision) throw new Error("revision missing");
+          Object.assign(revision, data);
+          return revision;
+        },
+      },
+      auditEvent: { create: async () => ({}) },
+      $transaction: async (callback: (_transaction: unknown) => unknown) => callback(db),
+    };
+
+    await archiveContent(db as never, { contentType: "NOTE", documentId: document.id, actorId: "admin-1" });
+
+    expect(document.status).toBe("ARCHIVED");
+    expect(document.draftRevisionId).toBeNull();
+    expect(revisions.get("published-1")?.status).toBe("ARCHIVED");
+    expect(revisions.get("draft-2")?.status).toBe("ARCHIVED");
+  });
+
   it("rejects a new document when its slug is already in use", async () => {
     const source = new StaticContentRepository();
     const project = await source.listPublishedProjects();

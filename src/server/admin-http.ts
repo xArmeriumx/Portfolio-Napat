@@ -31,6 +31,9 @@ export function adminErrorResponse(error: unknown) {
   if (error instanceof Error && error.message === "STORAGE_UPLOAD_FAILED") {
     return NextResponse.json({ error: { code: "STORAGE_UNAVAILABLE", message: "พื้นที่จัดเก็บ Media ไม่พร้อมใช้งาน" } }, { status: 502 });
   }
+  if (error instanceof Error && ["STORAGE_DELETE_FAILED", "Supabase Storage is not configured"].includes(error.message)) {
+    return NextResponse.json({ error: { code: "STORAGE_UNAVAILABLE", message: "พื้นที่จัดเก็บ Media ไม่พร้อมใช้งาน" } }, { status: 502 });
+  }
   if (error instanceof Error && error.message === "INVALID_PORTFOLIO_STORAGE_KEY") {
     return NextResponse.json({ error: { code: "VALIDATION_ERROR", message: "ไม่อนุญาตให้เข้าถึง storage namespace นี้" } }, { status: 422 });
   }

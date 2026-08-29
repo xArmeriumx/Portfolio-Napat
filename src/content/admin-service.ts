@@ -314,6 +314,12 @@ export async function archiveContent(
         data: { status: "ARCHIVED" },
       });
     }
+    if (document.draftRevisionId && document.draftRevisionId !== document.publishedRevisionId) {
+      await tx.contentRevision.update({
+        where: { id: document.draftRevisionId },
+        data: { status: "ARCHIVED" },
+      });
+    }
     await tx.contentDocument.update({ where: { id: document.id }, data: { status: "ARCHIVED", draftRevisionId: null } });
     await tx.auditEvent.create({ data: { action: "ARCHIVED", contentType: input.contentType, documentId: document.id, actorId: input.actorId } });
     return { documentId: document.id, slug: document.slug };
