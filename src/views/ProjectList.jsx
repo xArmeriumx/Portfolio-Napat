@@ -286,7 +286,9 @@ function ProjectCard({ project, index }) {
 }
 
 export default function ProjectList({ projects = [] }) {
-  const [featured, ...rest] = projects;
+  const featuredIndex = projects.findIndex((project) => project.featured);
+  const featured = projects[featuredIndex >= 0 ? featuredIndex : 0];
+  const rest = projects.filter((_, index) => index !== (featuredIndex >= 0 ? featuredIndex : 0));
 
   return (
     <>
@@ -336,9 +338,11 @@ export default function ProjectList({ projects = [] }) {
             </ScrollReveal>
 
             <div className="space-y-10 md:space-y-12">
-              <ScrollReveal width="100%">
-                <FeaturedProjectCard project={featured} />
-              </ScrollReveal>
+              {featured && (
+                <ScrollReveal width="100%">
+                  <FeaturedProjectCard project={featured} />
+                </ScrollReveal>
+              )}
 
               <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 md:gap-8">
                 {rest.map((project, idx) => (

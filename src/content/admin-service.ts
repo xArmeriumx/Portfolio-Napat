@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { Prisma, PrismaClient } from "@prisma/client";
 import { contentDraftSchemas, type NoteDraft, type ProfileDraft, type ProjectDraft } from "./input-schema";
 
@@ -23,6 +24,21 @@ function payloadFor(contentType: CmsContentType, value: unknown) {
     throw error;
   }
   return jsonObject(result.data);
+}
+
+async function attachMediaReferences(tx: any, revisionId: string, payload: Record<string, unknown>) {
+  const media = Array.isArray(payload.media) ? payload.media : [];
+  const requested = media
+    .filter((item): item is Record<string, unknown> => Boolean(item && typeof item === "object"))
+    .map((item) => ({ id: String(item.id || ""), order: Number(item.order || 0) }))
+    .filter((item) => item.id);
+  if (!requested.length) return;
+  const assets = await tx.mediaAsset.findMany({ where: { id: { in: requested.map((item) => item.id) } }, select: { id: true } });
+  const assetIds = new Set(assets.map((asset: { id: string }) => asset.id));
+  const references = requested
+    .filter((item) => assetIds.has(item.id))
+    .map((item) => ({ revisionId, mediaId: item.id, displayOrder: item.order }));
+  if (references.length) await tx.mediaReference.createMany({ data: references, skipDuplicates: true });
 }
 
 export async function getAdminContent(db: PrismaClient, contentType: CmsContentType, documentId: string) {
@@ -78,12 +94,76 @@ export async function saveDraft(
     });
     await tx.contentDocument.update({
       where: { id: document.id },
-      data: { draftRevisionId: revision.id },
+      data: {
+        draftRevisionId: revision.id,
+        ...(input.contentType === "PROFILE"
+          ? {}
+          : { displayOrder: Number(payload.order), featured: Boolean(payload.featured) }),
+      },
     });
+    if (input.contentType === "PROJECT") await attachMediaReferences(tx, revision.id, payload);
     await tx.auditEvent.create({
       data: { action: "DRAFT_SAVED", contentType: input.contentType, documentId: document.id, revisionId: revision.id, actorId: input.actorId },
     });
     return { revisionId: revision.id, revisionNumber: revision.revisionNumber, payload: revision.payload };
+  });
+}
+
+export async function listAdminContent(db: PrismaClient, contentType: Exclude<CmsContentType, "PROFILE">) {
+  const documents = await db.contentDocument.findMany({
+    where: { contentType },
+    orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }],
+    include: { draftRevision: true, publishedRevision: true },
+  });
+  return documents.map((document) => ({
+    id: document.id,
+    slug: document.slug,
+    status: document.status,
+    displayOrder: document.displayOrder,
+    featured: document.featured,
+    draftRevisionId: document.draftRevisionId,
+    publishedRevisionId: document.publishedRevisionId,
+    updatedAt: document.updatedAt.toISOString(),
+  }));
+}
+
+export async function createContentDraft(
+  db: PrismaClient,
+  input: { contentType: Exclude<CmsContentType, "PROFILE">; actorId: string; payload: unknown },
+) {
+  const payload = payloadFor(input.contentType, input.payload);
+  const slug = String(payload.slug);
+  return db.$transaction(async (tx) => {
+    const conflict = await tx.contentDocument.findFirst({
+      where: { contentType: input.contentType, slug },
+      select: { id: true },
+    });
+    if (conflict) throw new ContentConflictError(`Slug "${slug}" is already in use`);
+    const document = await tx.contentDocument.create({
+      data: {
+        id: randomUUID(),
+        contentType: input.contentType,
+        slug,
+        displayOrder: Number(payload.order),
+        featured: Boolean(payload.featured),
+        status: "DRAFT",
+      },
+    });
+    const revision = await tx.contentRevision.create({
+      data: {
+        documentId: document.id,
+        revisionNumber: 1,
+        status: "DRAFT",
+        payload: payload as Prisma.InputJsonValue,
+        createdBy: input.actorId,
+      },
+    });
+    await tx.contentDocument.update({ where: { id: document.id }, data: { draftRevisionId: revision.id } });
+    await attachMediaReferences(tx, revision.id, payload);
+    await tx.auditEvent.create({
+      data: { action: "DRAFT_CREATED", contentType: input.contentType, documentId: document.id, revisionId: revision.id, actorId: input.actorId },
+    });
+    return { documentId: document.id, revisionId: revision.id, revisionNumber: revision.revisionNumber };
   });
 }
 
@@ -117,7 +197,7 @@ export async function publishDraft(
 
     if (nextSlug && nextSlug !== document.slug) {
       const conflict = await tx.contentDocument.findFirst({
-        where: { contentType: input.contentType, slug: nextSlug, id: { not: document.id }, status: { not: "ARCHIVED" } },
+        where: { contentType: input.contentType, slug: nextSlug, id: { not: document.id } },
         select: { id: true },
       });
       if (conflict) throw new ContentConflictError(`Slug "${nextSlug}" is already in use`);
@@ -142,6 +222,19 @@ export async function publishDraft(
     await tx.auditEvent.create({
       data: { action: "PUBLISHED", contentType: input.contentType, documentId: document.id, revisionId: revision.id, actorId: input.actorId },
     });
-    return { revisionId: revision.id, revisionNumber: revision.revisionNumber, publishedAt: publishedAt.toISOString(), slug: nextSlug };
+    return { revisionId: revision.id, revisionNumber: revision.revisionNumber, publishedAt: publishedAt.toISOString(), slug: nextSlug, previousSlug: document.slug };
+  });
+}
+
+export async function archiveContent(
+  db: PrismaClient,
+  input: { contentType: Exclude<CmsContentType, "PROFILE">; documentId: string; actorId: string },
+) {
+  return db.$transaction(async (tx) => {
+    const document = await tx.contentDocument.findFirst({ where: documentWhere(input.contentType, input.documentId) });
+    if (!document) throw new ContentNotFoundError("Content document not found");
+    await tx.contentDocument.update({ where: { id: document.id }, data: { status: "ARCHIVED", draftRevisionId: null } });
+    await tx.auditEvent.create({ data: { action: "ARCHIVED", contentType: input.contentType, documentId: document.id, actorId: input.actorId } });
+    return { documentId: document.id, slug: document.slug };
   });
 }
