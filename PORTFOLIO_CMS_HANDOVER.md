@@ -2,7 +2,7 @@
 
 วันที่ตรวจ: 29 สิงหาคม 2026 (Asia/Bangkok)  
 Branch: `feat/cms-repository`  
-Commit ล่าสุดของ implementation: `b3ec0f2`<br>
+Commit ล่าสุดของ implementation: `cf26064`<br>
 Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## สรุปสำหรับผู้รับช่วงต่อ
@@ -31,13 +31,13 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## หลักฐานที่รันแล้ว
 
-- `npm test -- --run`: **9 files, 22 tests passed**
+- `npm test -- --run`: **9 files, 27 tests passed**
 - `npm run typecheck`: **ผ่าน** (`tsc --noEmit`)
 - `npm run lint`: **0 errors, 31 warnings**; warnings เป็น debt เดิมใน AI/notes และ unused constructor parameter ไม่ใช่ failure
 - `npm run build`: ผ่าน; Next.js สร้าง admin, API, preview, public dynamic routes และ sitemap ได้
 - `npx playwright test`: **1 public test passed, 1 mutation test skipped** เพราะไม่มี `CMS_E2E_ADMIN_EMAIL`, `CMS_E2E_ADMIN_PASSWORD` และ `CMS_E2E_ALLOW_MUTATIONS=true`
-- GitHub Actions Quality Gates ของ commit `b3ec0f2`: **ผ่าน** รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint, build และ public Playwright smoke
-- Vercel Preview deployment ของ commit `b3ec0f2`: **ผ่าน**; deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
+- GitHub Actions Quality Gates ของ commit `cf26064`: **ผ่าน** รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint, build และ public Playwright smoke
+- Vercel Preview deployment ของ commit `cf26064`: **ผ่าน**; deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
 - Worktree หลัง push: clean และ branch ตรงกับ `origin/feat/cms-repository`
 
 ภาพ browser local ที่ตรวจ public Notes อยู่ใน [`portfolio-cms-notes-local-viewport.png`](artifacts/portfolio-cms-notes-local-viewport.png)
@@ -51,6 +51,8 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 - `src/content/admin-service.ts` ทำ transaction เดียวสำหรับ save draft, publish, restore, archive, audit และ slug conflict
 - Publish archive revision เดิมก่อนเปลี่ยน Published pointer; Archive mark revision ล่าสุดเป็น Archived แต่เก็บ history ไว้สำหรับ Restore as Draft
 - Restore สร้าง revision ใหม่เป็น Draft และไม่แก้ revision เก่า
+- Managed media reference ต้องมี asset id/storage key ที่ตรงกันและอยู่ใต้ `projects/{documentId}/`; legacy source image URL ที่ไม่มี managed asset ยังถูกรักษาไว้ได้
+- Database adapter ปฏิเสธ selected revision ที่สถานะจริงไม่ใช่ `PUBLISHED` เพื่อไม่ให้ Draft/Archived payload หลุดสู่ public read
 - Public adapter ไม่คืน Draft/Archived; redirect query ตรวจว่า document ต้นทางยัง Published และเดิน chain ได้ไม่เกิน 10 ขั้น
 - Runtime database guard บังคับ `portfolio_cms_dev`, `portfolio_cms_preview` หรือ `portfolio_cms_prod` ให้ตรงกับ runtime และ `DATABASE_URL`; production runtime ไม่ fallback เป็น static โดยเงียบ
 
@@ -69,6 +71,7 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 - Upload รับเฉพาะ PNG/JPEG/WebP ไม่เกิน 10 MB และตรวจ magic bytes ก่อนส่ง Supabase Storage
 - bucket/path ใช้ dedicated `portfolio-cms` และ `projects/{projectId}/{uuid}.{ext}`
 - `scripts/ensure-storage.mjs` ตรวจหรือสร้างเฉพาะ bucket นี้ด้วย confirmation ที่ allow-list ไว้; ไม่แตะ bucket อื่น
+- `scripts/import-content.mjs`, `scripts/backup-portfolio.mjs` และ `scripts/restore-portfolio.mjs` ตรวจ `current_database()`/`current_schema()` ก่อนทำงานที่อาจแตะข้อมูลหรือ restore
 - ลบ media ไม่ได้ถ้ามี Published/Draft reference
 - `src/content/markdown-policy.ts` ปฏิเสธ executable HTML, event handler และ `javascript:`, `vbscript:`, `data:` URL; code fence ยังเขียนตัวอย่าง HTML ได้
 - Public Note renderer ไม่ใช้ `rehypeRaw`
@@ -212,3 +215,8 @@ npm run test:e2e
 3. ให้ผู้มีสิทธิ์ cutover ตรวจ backup hash, inventory, migration/import result, Vercel env targets และ production smoke ก่อน promote
 
 จนกว่าจะมีหลักฐานข้างต้น สถานะที่ถูกต้องคือ **Implementation/CI/Preview GREEN; Supabase UAT และ Production NOT VERIFIED**
+
+## ไฟล์ส่งมอบ
+
+- Markdown ฉบับนี้: [`PORTFOLIO_CMS_HANDOVER.md`](PORTFOLIO_CMS_HANDOVER.md)
+- PDF สำหรับส่งต่อ: [`PORTFOLIO_CMS_HANDOVER.pdf`](PORTFOLIO_CMS_HANDOVER.pdf) — 7 หน้า A4, Sarabun embedded, มีเลขหน้าและภาพ browser local; ตรวจแล้วไม่รวม credential หรือ secret value
