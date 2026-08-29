@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPreviewRevision, publishDraft, saveDraft } from "./admin-service";
+import { getPreviewRevision, publishDraft, restoreRevision, saveDraft } from "./admin-service";
 import { StaticContentRepository } from "./static-adapter";
 
 function fakeDatabase(initialPayload: unknown) {
@@ -113,6 +113,11 @@ describe("profile draft lifecycle", () => {
     expect(document.publishedRevisionId).toBe(draft.revisionId);
     expect(document.draftRevisionId).toBeNull();
     expect((revisions.get(draft.revisionId)?.payload as typeof published).identity.name.en).toBe("Draft-only Name");
+
+    const restored = await restoreRevision(db as never, { contentType: "PROFILE", documentId: "profile", revisionId: "published-1", actorId: "admin-1" });
+    expect(document.draftRevisionId).toBe(restored.revisionId);
+    expect(revisions.get("published-1")?.status).toBe("PUBLISHED");
+    expect((restored.payload as typeof published).identity.name.en).toBe("Napat Pamornsut");
   });
 });
 

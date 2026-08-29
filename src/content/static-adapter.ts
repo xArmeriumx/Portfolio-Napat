@@ -187,6 +187,10 @@ export class StaticContentRepository implements ContentRepository {
     return (await this.listPublishedProjects()).find((project) => project.slug === slug) || null;
   }
 
+  async getPublishedSlugRedirect() {
+    return null;
+  }
+
   async listPublishedNotes() {
     return this.notes.filter((note) => note.revision.status === "PUBLISHED");
   }

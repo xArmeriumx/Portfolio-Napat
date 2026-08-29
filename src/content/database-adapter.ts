@@ -10,6 +10,7 @@ import {
 import type { ContentRepository } from "./repository";
 
 type PublishedDocument = {
+  id: string;
   publishedRevision: ContentRevision | null;
   displayOrder: number;
 };
@@ -34,6 +35,7 @@ function mapProfile(document: PublishedDocument): ProfileContent {
   if (!document.publishedRevision) throw new Error("Published Profile has no selected revision");
   return profileContentSchema.parse({
     ...payloadRecord(document.publishedRevision),
+    id: document.id,
     revision: publishedRevision(document.publishedRevision),
   });
 }
@@ -42,6 +44,7 @@ function mapProject(document: PublishedDocument): ProjectContent {
   if (!document.publishedRevision) throw new Error("Published Project has no selected revision");
   return projectContentSchema.parse({
     ...payloadRecord(document.publishedRevision),
+    id: document.id,
     revision: publishedRevision(document.publishedRevision),
   });
 }
@@ -50,6 +53,7 @@ function mapNote(document: PublishedDocument): NoteContent {
   if (!document.publishedRevision) throw new Error("Published Note has no selected revision");
   return noteContentSchema.parse({
     ...payloadRecord(document.publishedRevision),
+    id: document.id,
     revision: publishedRevision(document.publishedRevision),
   });
 }
@@ -83,6 +87,22 @@ export class DatabaseContentRepository implements ContentRepository {
       include: publishedRevisionInclude,
     });
     return document ? mapProject(document) : null;
+  }
+
+  async getPublishedSlugRedirect(contentType: "PROJECT" | "NOTE", slug: string) {
+    let currentSlug = slug;
+    const visited = new Set<string>();
+    for (let step = 0; step < 10; step += 1) {
+      if (visited.has(currentSlug)) return null;
+      visited.add(currentSlug);
+      const redirect = await this.db.slugRedirect.findFirst({
+        where: { contentType, fromSlug: currentSlug, document: { status: "PUBLISHED", publishedRevisionId: { not: null } } },
+        select: { toSlug: true },
+      });
+      if (!redirect) return currentSlug === slug ? null : currentSlug;
+      currentSlug = redirect.toSlug;
+    }
+    return currentSlug === slug ? null : currentSlug;
   }
 
   async listPublishedNotes() {

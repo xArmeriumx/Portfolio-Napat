@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Notes from "@/views/Notes.jsx";
 import JsonLd from "@/components/utils/JsonLd";
 import { buildPageMetadata } from "@/lib/metadata";
@@ -17,7 +17,11 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const repository = await getContentRepository();
-  const rawNote = await repository.getPublishedNoteBySlug(slug);
+  let rawNote = await repository.getPublishedNoteBySlug(slug);
+  if (!rawNote) {
+    const redirectedSlug = await repository.getPublishedSlugRedirect("NOTE", slug);
+    if (redirectedSlug) rawNote = await repository.getPublishedNoteBySlug(redirectedSlug);
+  }
   const note = rawNote ? toPresentationNote(rawNote) : null;
 
   if (!note) {
@@ -52,7 +56,11 @@ export default async function NoteDetailPage({ params }: Props) {
     repository.listPublishedNotes(),
   ]);
 
-  if (!rawNote) notFound();
+  if (!rawNote) {
+    const redirectedSlug = await repository.getPublishedSlugRedirect("NOTE", slug);
+    if (redirectedSlug) redirect(`/notes/${encodeURIComponent(redirectedSlug)}`);
+    notFound();
+  }
 
   const profile = toPresentationProfile(rawProfile);
   const note = toPresentationNote(rawNote);

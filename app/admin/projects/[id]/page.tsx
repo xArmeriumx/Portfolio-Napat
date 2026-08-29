@@ -12,5 +12,5 @@ export default async function AdminProjectPage({ params }: { params: Promise<{ i
   await requireAdminPage();
   const content = await getAdminContent(prisma, "PROJECT", (await params).id).catch(() => null);
   if (!content) notFound();
-  return <ProjectEditor documentId={content.document.id} initialPayload={content.draft?.payload || content.published?.payload} draftRevisionId={content.draft?.revisionId || null} />;
+  return <ProjectEditor documentId={content.document.id} initialPayload={content.draft?.payload || content.published?.payload} draftRevisionId={content.draft?.revisionId || null} revisions={content.revisions} />;
 }

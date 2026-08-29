@@ -3,9 +3,10 @@ import type { NoteContent, ProfileContent, ProjectContent } from "./schema";
 export interface ContentRepository {
   getPublishedProfile(): Promise<ProfileContent>;
   listPublishedProjects(): Promise<ProjectContent[]>;
-  getPublishedProjectBySlug(slug: string): Promise<ProjectContent | null>;
+  getPublishedProjectBySlug(_slug: string): Promise<ProjectContent | null>;
+  getPublishedSlugRedirect(_contentType: "PROJECT" | "NOTE", _slug: string): Promise<string | null>;
   listPublishedNotes(): Promise<NoteContent[]>;
-  getPublishedNoteBySlug(slug: string): Promise<NoteContent | null>;
+  getPublishedNoteBySlug(_slug: string): Promise<NoteContent | null>;
 }
 
 let repositoryPromise: Promise<ContentRepository> | undefined;

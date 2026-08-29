@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import ProjectDetail from "@/views/ProjectDetail.jsx";
 import JsonLd from "@/components/utils/JsonLd";
 import { getProjectSchema, getProjectSeoMeta } from "@/config/seo.js";
@@ -21,10 +21,12 @@ function getEnglishContent(project: Record<string, unknown>, field: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const repository = await getContentRepository();
-  const [rawProfile, rawProject] = await Promise.all([
-    repository.getPublishedProfile(),
-    repository.getPublishedProjectBySlug(slug),
-  ]);
+  const rawProfile = await repository.getPublishedProfile();
+  let rawProject = await repository.getPublishedProjectBySlug(slug);
+  if (!rawProject) {
+    const redirectedSlug = await repository.getPublishedSlugRedirect("PROJECT", slug);
+    if (redirectedSlug) rawProject = await repository.getPublishedProjectBySlug(redirectedSlug);
+  }
   const project = rawProject ? toPresentationProject(rawProject) : null;
 
   if (!project) {
@@ -61,7 +63,11 @@ export default async function ProjectDetailPage({ params }: Props) {
     repository.getPublishedProjectBySlug(slug),
   ]);
 
-  if (!rawProject) notFound();
+  if (!rawProject) {
+    const redirectedSlug = await repository.getPublishedSlugRedirect("PROJECT", slug);
+    if (redirectedSlug) redirect(`/projects/${encodeURIComponent(redirectedSlug)}`);
+    notFound();
+  }
 
   const profile = toPresentationProfile(rawProfile);
   const project = toPresentationProject(rawProject);

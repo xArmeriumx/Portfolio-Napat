@@ -20,7 +20,12 @@ function setLines(value) {
   return value.split("\n").map((item) => item.trim()).filter(Boolean);
 }
 
-export default function ProjectEditor({ documentId = null, initialPayload, draftRevisionId: initialDraftRevisionId = null }) {
+function RevisionHistory({ revisions, onRestore, busy }) {
+  if (!revisions?.length) return null;
+  return <fieldset className="rounded-2xl border border-gray-200 bg-white p-6"><legend className="px-2 text-lg font-black">Revision history</legend><div className="space-y-2">{revisions.map((revision) => <div key={revision.revisionId} className="flex flex-col gap-2 rounded-xl border border-gray-100 p-3 text-sm md:flex-row md:items-center md:justify-between"><div><p className="font-bold text-gray-800">Revision {revision.revisionNumber} · {revision.status}</p><p className="mt-1 text-xs text-gray-500">สร้างโดย {revision.createdBy || "system"} · {new Date(revision.createdAt).toLocaleString("th-TH")}{revision.publishedAt ? ` · published ${new Date(revision.publishedAt).toLocaleString("th-TH")}` : ""}</p></div>{revision.status !== "DRAFT" && <button type="button" disabled={busy} onClick={() => onRestore(revision.revisionId)} className="rounded-full border border-gray-300 px-3 py-2 text-xs font-black text-gray-700 disabled:opacity-50">Restore as Draft</button>}</div>)}</div></fieldset>;
+}
+
+export default function ProjectEditor({ documentId = null, initialPayload, draftRevisionId: initialDraftRevisionId = null, revisions = [] }) {
   const [payload, setPayload] = useState(initialPayload);
   const [draftRevisionId, setDraftRevisionId] = useState(initialDraftRevisionId || null);
   const [message, setMessage] = useState("");
@@ -134,6 +139,16 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
     setBusy(false);
   }
 
+  async function restore(revisionId) {
+    if (!documentId || !window.confirm("กู้คืน Revision นี้เป็น Draft ใหม่หรือไม่? ประวัติเดิมจะไม่ถูกแก้ไข")) return;
+    setBusy(true); setError(""); setMessage("");
+    try {
+      const result = await call(`/api/admin/projects/${documentId}/restore`, { revisionId });
+      setPayload(result.payload); setDraftRevisionId(result.revisionId); setMessage(`กู้คืนเป็น Draft revision ${result.revisionNumber} แล้ว`);
+    } catch (restoreError) { setError(restoreError.message); }
+    setBusy(false);
+  }
+
   if (!payload) return <p className="p-8">ไม่พบข้อมูล Project</p>;
 
   return (
@@ -205,6 +220,7 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
             </div>}
             <Field multiline rows={16} label="Media references JSON (managed upload metadata)" value={JSON.stringify(payload.media, null, 2)} onChange={(value) => { try { update(["media"], JSON.parse(value)); setError(""); } catch { setError("Media JSON ยังไม่สมบูรณ์"); } }} />
           </fieldset>
+          <RevisionHistory revisions={revisions} onRestore={restore} busy={busy} />
         </div>
       </div>
     </section>

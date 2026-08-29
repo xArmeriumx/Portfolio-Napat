@@ -12,5 +12,5 @@ export default async function AdminNotePage({ params }: { params: Promise<{ id: 
   await requireAdminPage();
   const content = await getAdminContent(prisma, "NOTE", (await params).id).catch(() => null);
   if (!content) notFound();
-  return <NoteEditor documentId={content.document.id} initialPayload={content.draft?.payload || content.published?.payload} draftRevisionId={content.draft?.revisionId || null} />;
+  return <NoteEditor documentId={content.document.id} initialPayload={content.draft?.payload || content.published?.payload} draftRevisionId={content.draft?.revisionId || null} revisions={content.revisions} />;
 }

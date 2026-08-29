@@ -47,7 +47,7 @@ export async function getAdminContent(db: PrismaClient, contentType: CmsContentT
     include: {
       draftRevision: true,
       publishedRevision: true,
-      revisions: { orderBy: { revisionNumber: "desc" }, take: 20 },
+      revisions: { orderBy: { revisionNumber: "desc" }, take: 20, include: { createdByUser: { select: { id: true, name: true, email: true } }, publishedByUser: { select: { id: true, name: true, email: true } } } },
     },
   });
   if (!document) throw new ContentNotFoundError("Content document not found");
@@ -67,9 +67,9 @@ export async function getAdminContent(db: PrismaClient, contentType: CmsContentT
       revisionNumber: revision.revisionNumber,
       status: revision.status,
       createdAt: revision.createdAt.toISOString(),
-      createdBy: revision.createdBy,
+      createdBy: revision.createdByUser?.email || revision.createdBy,
       publishedAt: revision.publishedAt?.toISOString() || null,
-      publishedBy: revision.publishedBy,
+      publishedBy: revision.publishedByUser?.email || revision.publishedBy,
     })),
   };
 }
@@ -176,6 +176,42 @@ export async function getPreviewRevision(
   });
   if (!revision) throw new ContentNotFoundError("Preview revision not found");
   return { revisionId: revision.id, revisionNumber: revision.revisionNumber, payload: revision.payload };
+}
+
+export async function restoreRevision(
+  db: PrismaClient,
+  input: { contentType: CmsContentType; documentId: string; revisionId: string; actorId: string },
+) {
+  return db.$transaction(async (tx) => {
+    const document = await tx.contentDocument.findFirst({ where: documentWhere(input.contentType, input.documentId) });
+    if (!document) throw new ContentNotFoundError("Content document not found");
+    const source = await tx.contentRevision.findFirst({ where: { id: input.revisionId, documentId: document.id } });
+    if (!source) throw new ContentNotFoundError("Revision not found");
+    if (source.status === "DRAFT") throw new ContentConflictError("Choose a published or archived revision to restore");
+    const payload = payloadFor(input.contentType, source.payload);
+    const latest = await tx.contentRevision.findFirst({ where: { documentId: document.id }, orderBy: { revisionNumber: "desc" }, select: { revisionNumber: true } });
+    const revision = await tx.contentRevision.create({
+      data: {
+        documentId: document.id,
+        revisionNumber: (latest?.revisionNumber || 0) + 1,
+        status: "DRAFT",
+        payload: payload as Prisma.InputJsonValue,
+        createdBy: input.actorId,
+      },
+    });
+    await tx.contentDocument.update({
+      where: { id: document.id },
+      data: {
+        draftRevisionId: revision.id,
+        ...(input.contentType === "PROFILE" ? {} : { displayOrder: Number(payload.order), featured: Boolean(payload.featured) }),
+      },
+    });
+    if (input.contentType === "PROJECT") await attachMediaReferences(tx, revision.id, payload);
+    await tx.auditEvent.create({
+      data: { action: "REVISION_RESTORED", contentType: input.contentType, documentId: document.id, revisionId: revision.id, actorId: input.actorId, metadata: { sourceRevisionId: source.id } },
+    });
+    return { revisionId: revision.id, revisionNumber: revision.revisionNumber, payload: revision.payload, sourceRevisionId: source.id };
+  });
 }
 
 export async function publishDraft(
