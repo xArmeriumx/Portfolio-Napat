@@ -10,12 +10,12 @@ export default defineConfig({
   expect: { timeout: 15_000 },
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
   use: {
-    baseURL: externalBaseUrl || "http://127.0.0.1:3000",
+    baseURL: externalBaseUrl || "http://localhost:3000",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
   },
   webServer: externalBaseUrl
     ? undefined
-    : { command: "npm run dev", url: "http://127.0.0.1:3000", reuseExistingServer: true },
+    : { command: "npm run dev", url: "http://localhost:3000", reuseExistingServer: true },
 });

@@ -59,14 +59,14 @@ test.describe("Portfolio CMS published lifecycle", () => {
     try {
       await page.goto("/admin/profile");
       const nameField = page.getByLabel("Name EN");
-      const githubField = page.getByLabel("GitHub");
+      const githubField = page.getByLabel("GitHub", { exact: true });
       originalName = await nameField.inputValue();
       originalGithub = await githubField.inputValue();
       publishedDraftName = `${originalName} E2E ${Date.now()}`;
 
       await githubField.fill("javascript:alert(1)");
       await page.getByRole("button", { name: "Save Draft" }).click();
-      await expect(page.getByRole("alert")).toContainText("ตรวจสอบข้อมูล");
+      await expect(page.locator('p[role="alert"]')).toContainText("ตรวจสอบข้อมูล");
 
       await githubField.fill(originalGithub);
       await nameField.fill(publishedDraftName);
@@ -101,7 +101,7 @@ test.describe("Portfolio CMS published lifecycle", () => {
       if (originalName) {
         await page.goto("/admin/profile");
         await page.getByLabel("Name EN").fill(originalName);
-        await page.getByLabel("GitHub").fill(originalGithub);
+        await page.getByLabel("GitHub", { exact: true }).fill(originalGithub);
         await page.getByRole("button", { name: "Save Draft" }).click();
         await expect(page.getByRole("status")).toContainText("บันทึก Draft");
         await page.getByRole("button", { name: "Publish" }).click();

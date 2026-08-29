@@ -15,6 +15,10 @@ const headers = { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey, "Co
 async function getBucket() {
   const response = await fetch(`${baseUrl}/storage/v1/bucket/${encodeURIComponent(bucket)}`, { headers });
   if (response.status === 404) return null;
+  if (response.status === 400) {
+    const body = await response.json().catch(() => null);
+    if (body?.statusCode === "404" || body?.code === "NoSuchBucket") return null;
+  }
   if (!response.ok) throw new Error(`Storage bucket verification failed with HTTP ${response.status}`);
   return response.json();
 }

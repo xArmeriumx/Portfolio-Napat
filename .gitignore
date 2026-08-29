@@ -34,3 +34,5 @@ test-results/
 
 # Study notes (private)
 Sheet/
+.vercel
+.env*
