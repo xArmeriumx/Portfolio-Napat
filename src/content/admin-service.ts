@@ -240,6 +240,12 @@ export async function publishDraft(
     }
 
     const publishedAt = new Date();
+    if (document.publishedRevisionId && document.publishedRevisionId !== revision.id) {
+      await tx.contentRevision.update({
+        where: { id: document.publishedRevisionId },
+        data: { status: "ARCHIVED" },
+      });
+    }
     await tx.contentRevision.update({
       where: { id: revision.id },
       data: { status: "PUBLISHED", publishedAt, publishedBy: input.actorId },
@@ -269,6 +275,12 @@ export async function archiveContent(
   return db.$transaction(async (tx) => {
     const document = await tx.contentDocument.findFirst({ where: documentWhere(input.contentType, input.documentId) });
     if (!document) throw new ContentNotFoundError("Content document not found");
+    if (document.publishedRevisionId) {
+      await tx.contentRevision.update({
+        where: { id: document.publishedRevisionId },
+        data: { status: "ARCHIVED" },
+      });
+    }
     await tx.contentDocument.update({ where: { id: document.id }, data: { status: "ARCHIVED", draftRevisionId: null } });
     await tx.auditEvent.create({ data: { action: "ARCHIVED", contentType: input.contentType, documentId: document.id, actorId: input.actorId } });
     return { documentId: document.id, slug: document.slug };

@@ -112,11 +112,12 @@ describe("profile draft lifecycle", () => {
     await publishDraft(db as never, { contentType: "PROFILE", documentId: "profile", actorId: "admin-1", revisionId: draft.revisionId });
     expect(document.publishedRevisionId).toBe(draft.revisionId);
     expect(document.draftRevisionId).toBeNull();
+    expect(revisions.get("published-1")?.status).toBe("ARCHIVED");
     expect((revisions.get(draft.revisionId)?.payload as typeof published).identity.name.en).toBe("Draft-only Name");
 
     const restored = await restoreRevision(db as never, { contentType: "PROFILE", documentId: "profile", revisionId: "published-1", actorId: "admin-1" });
     expect(document.draftRevisionId).toBe(restored.revisionId);
-    expect(revisions.get("published-1")?.status).toBe("PUBLISHED");
+    expect(revisions.get("published-1")?.status).toBe("ARCHIVED");
     expect((restored.payload as typeof published).identity.name.en).toBe("Napat Pamornsut");
   });
 });
@@ -185,6 +186,7 @@ describe("note draft lifecycle", () => {
     expect(document.status).toBe("ARCHIVED");
     expect(document.publishedRevisionId).toBe(draft.revisionId);
     expect(document.draftRevisionId).toBeNull();
+    expect(revisions.get(draft.revisionId)?.status).toBe("ARCHIVED");
   });
 });
 
