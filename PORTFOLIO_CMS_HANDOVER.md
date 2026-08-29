@@ -2,7 +2,7 @@
 
 วันที่ตรวจ: 29 สิงหาคม 2026 (Asia/Bangkok)  
 Branch: `feat/cms-repository`  
-Commit ล่าสุดของ implementation: `1cca2a0`<br>
+Commit ล่าสุดของ implementation: `c977c19`<br>
 Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## สรุปสำหรับผู้รับช่วงต่อ
@@ -36,8 +36,8 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 - `npm run lint`: **0 errors, 31 warnings**; warnings เป็น debt เดิมใน AI/notes และ unused constructor parameter ไม่ใช่ failure
 - `npm run build`: ผ่าน; Next.js สร้าง admin, API, preview, public dynamic routes และ sitemap ได้
 - `npx playwright test`: **1 public test passed, 1 mutation test skipped** เพราะไม่มี `CMS_E2E_ADMIN_EMAIL`, `CMS_E2E_ADMIN_PASSWORD` และ `CMS_E2E_ALLOW_MUTATIONS=true`
-- GitHub Actions Quality Gates ของ commit `1cca2a0`: **passed** รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint และ build
-- Vercel Preview deployment ของ commit `1cca2a0`: **passed**; deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
+- GitHub Actions Quality Gates ของ commit `c977c19`: **ผ่าน** รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint และ build
+- Vercel Preview deployment ของ commit `c977c19`: **ผ่าน**; deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
 - Worktree หลัง push: clean และ branch ตรงกับ `origin/feat/cms-repository`
 
 ภาพ browser local ที่ตรวจ public Notes อยู่ใน [`portfolio-cms-notes-local-viewport.png`](artifacts/portfolio-cms-notes-local-viewport.png)
@@ -49,6 +49,7 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 - `src/content/schema.ts` และ `src/content/input-schema.ts` เป็น typed Zod contracts สำหรับ localized EN/TH content, Profile, Project, Note, Skills, SEO และ media
 - `src/content/repository.ts` กำหนด public contract; `static-adapter.ts` รักษา static baseline; `database-adapter.ts` อ่านเฉพาะ `PUBLISHED` revision ที่เลือกไว้
 - `src/content/admin-service.ts` ทำ transaction เดียวสำหรับ save draft, publish, restore, archive, audit และ slug conflict
+- Publish archive revision เดิมก่อนเปลี่ยน Published pointer; Archive mark revision ล่าสุดเป็น Archived แต่เก็บ history ไว้สำหรับ Restore as Draft
 - Restore สร้าง revision ใหม่เป็น Draft และไม่แก้ revision เก่า
 - Public adapter ไม่คืน Draft/Archived; redirect query ตรวจว่า document ต้นทางยัง Published และเดิน chain ได้ไม่เกิน 10 ขั้น
 - Runtime database guard บังคับ `portfolio_cms_dev`, `portfolio_cms_preview` หรือ `portfolio_cms_prod` ให้ตรงกับ runtime และ `DATABASE_URL`; production runtime ไม่ fallback เป็น static โดยเงียบ
