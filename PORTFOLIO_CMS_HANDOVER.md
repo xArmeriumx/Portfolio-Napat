@@ -2,8 +2,8 @@
 
 วันที่ตรวจ: 29 สิงหาคม 2026 (Asia/Bangkok)  
 Branch: `feat/cms-repository`  
-Commit ล่าสุดของ implementation/hardening: `ed7e89f`<br>
-Commit ที่ใช้สำหรับหลักฐาน CI/Preview: `ed7e89f`<br>
+Commit ล่าสุดของ implementation/hardening: `1f55568`<br>
+Commit ที่ใช้สำหรับหลักฐาน CI/Preview: `1f55568`<br>
 Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## สรุปสำหรับผู้รับช่วงต่อ
@@ -13,6 +13,18 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 สถานะ release ที่ตรวจสอบได้ตอนนี้คือ **โค้ดพร้อมและ CI/Preview build ผ่าน แต่ยังไม่ควรประกาศ Production cutover** เพราะยังไม่มีหลักฐานจาก Supabase จริงและยังไม่สามารถเข้าสู่ Vercel protected Preview จาก session นี้ได้ จึงยังไม่ได้รัน migration/import/backup/restore หรือ mutation UAT บนระบบจริง
 
 ห้ามตีความ HTTP `200` ของ `https://napatdev.com/` เป็นหลักฐานว่า CMS Production พร้อมใช้งาน เนื่องจากยังไม่มีการตรวจ environment, schema, data import และ publish flow บน Production แบบ authenticated
+
+## ภาพรวมสถาปัตยกรรม
+
+```text
+Admin UI -> Better Auth/session -> Admin API -> atomic Content Service -> Prisma / portfolio_cms_*
+                                                   |                     |
+                                                   |                     +-> Revision / Audit / Redirects
+                                                   +-> Supabase Storage / portfolio-cms
+
+Published Revision -> ContentRepository -> Public pages -> Metadata / JSON-LD / Sitemap / Search
+Draft Revision ----> Exact Preview only (signed, short-lived token; no public indexing)
+```
 
 ## สถานะ Ticket
 
@@ -32,16 +44,18 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## หลักฐานที่รันแล้ว
 
-- `npm test -- --run`: **10 files, 34 tests passed**
+- `npm test -- --run`: **10 files, 35 tests passed**
 - `npm run typecheck`: **ผ่าน** (`tsc --noEmit`)
 - `npm run lint`: **0 errors, 31 warnings**; warnings เป็น debt เดิมใน AI/notes และ unused constructor parameter ไม่ใช่ failure
 - `npm run build`: ผ่าน; Next.js สร้าง admin, API, preview, public dynamic routes และ sitemap ได้
 - `npx playwright test`: **1 public test passed, 1 mutation test skipped**; public test ครอบคลุม list/detail, metadata, JSON-LD, search และ sitemap เพราะไม่มี `CMS_E2E_ADMIN_EMAIL`, `CMS_E2E_ADMIN_PASSWORD` และ `CMS_E2E_ALLOW_MUTATIONS=true`
-- GitHub Actions Quality Gates ของ commit `ed7e89f`: **ผ่าน** (run `33258416877`, job `99116051015`) รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint, build และ public Playwright smoke
-- Vercel Preview deployment ของ commit `ed7e89f`: **ผ่าน** (`FdGXxvT1RmsMxxQPZeJkcstj7zWB`); deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
+- GitHub Actions Quality Gates ของ commit `1f55568`: **ผ่าน** (run `33259209274`, job `99118134691`) รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint, build และ public Playwright smoke
+- Vercel Preview deployment ของ commit `1f55568`: **ผ่าน** (`CnyQyWrT3ajj76iCcTqdQmXiqYwu`); deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
 - Worktree หลัง push: clean และ branch ตรงกับ `origin/feat/cms-repository`
 
-ภาพ browser local ที่ตรวจ public Notes อยู่ใน [`portfolio-cms-notes-local-viewport.png`](artifacts/portfolio-cms-notes-local-viewport.png)
+ภาพ browser local ที่ตรวจ public Notes อยู่ใน:
+
+![ภาพ browser local public Notes](artifacts/portfolio-cms-notes-local-viewport.png)
 
 ## สิ่งที่เปลี่ยนในโค้ด
 
@@ -54,6 +68,7 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 - Restore สร้าง revision ใหม่เป็น Draft และไม่แก้ revision เก่า
 - Managed media reference ต้องมี asset id/storage key/public URL ที่ตรงกันและอยู่ใต้ `projects/{documentId}/`; legacy source image URL ที่ไม่มี managed asset ยังถูกรักษาไว้ได้
 - Public/admin URL guards ปฏิเสธ protocol-relative URL (`//host`) เพื่อไม่ให้หลุดออกนอก site origin
+- Runtime Storage config ปฏิเสธ bucket ที่ไม่ใช่ dedicated `portfolio-cms` และ map configuration error เป็น `STORAGE_UNAVAILABLE` HTTP 502
 - Database adapter ปฏิเสธ selected revision ที่สถานะจริงไม่ใช่ `PUBLISHED` เพื่อไม่ให้ Draft/Archived payload หลุดสู่ public read
 - Public adapter ไม่คืน Draft/Archived; redirect query ตรวจว่า document ต้นทางยัง Published และเดิน chain ได้ไม่เกิน 10 ขั้น
 - Runtime database guard บังคับ `portfolio_cms_dev`, `portfolio_cms_preview` หรือ `portfolio_cms_prod` ให้ตรงกับ runtime และ `DATABASE_URL`; production runtime ไม่ fallback เป็น static โดยเงียบ
@@ -73,7 +88,7 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 - Upload รับเฉพาะ PNG/JPEG/WebP ไม่เกิน 10 MB และตรวจ magic bytes ก่อนส่ง Supabase Storage
 - bucket/path ใช้ dedicated `portfolio-cms` และ `projects/{projectId}/{uuid}.{ext}`
-- `scripts/ensure-storage.mjs` ตรวจหรือสร้างเฉพาะ bucket นี้ด้วย confirmation ที่ allow-list ไว้; ไม่แตะ bucket อื่น
+- `scripts/ensure-storage.mjs` และ runtime storage layer ตรวจหรือสร้างเฉพาะ bucket นี้ด้วย confirmation/allow-list ที่กำหนด; ไม่แตะ bucket อื่น
 - `scripts/import-content.mjs`, `scripts/backup-portfolio.mjs` และ `scripts/restore-portfolio.mjs` ตรวจ `current_database()`/`current_schema()` ก่อนทำงานที่อาจแตะข้อมูลหรือ restore
 - ลบ media ไม่ได้ถ้ามี Published/Draft reference
 - Storage upload/delete configuration และ network failure ถูกแปลงเป็น `STORAGE_UNAVAILABLE` HTTP 502 แทนการรายงานเป็น server error กว้าง ๆ
