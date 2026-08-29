@@ -16,7 +16,7 @@ const safeAdminUrl = z
   .string()
   .trim()
   .refine(
-    (value) => value === "#" || value.startsWith("/") || value.startsWith("mailto:") || /^https?:\/\//i.test(value),
+    (value) => value === "#" || (value.startsWith("/") && !value.startsWith("//")) || value.startsWith("mailto:") || /^https?:\/\//i.test(value),
     "URL must use http, https, mailto, or a site-relative path",
   );
 

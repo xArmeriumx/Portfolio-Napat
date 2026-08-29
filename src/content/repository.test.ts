@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { StaticContentRepository } from "./static-adapter";
-import { resolveLocalizedText } from "./schema";
+import { projectContentSchema, resolveLocalizedText } from "./schema";
 
 describe("StaticContentRepository contract", () => {
   const repository = new StaticContentRepository();
@@ -46,5 +46,13 @@ describe("StaticContentRepository contract", () => {
 
   it("uses English as the explicit fallback when Thai content is absent", () => {
     expect(resolveLocalizedText({ en: "English", th: "" }, "th")).toBe("English");
+  });
+
+  it("rejects protocol-relative URLs at the public content boundary", async () => {
+    const source = new StaticContentRepository();
+    const project = structuredClone((await source.listPublishedProjects())[0]);
+    project.links.demo = "//attacker.example/demo";
+
+    expect(projectContentSchema.safeParse(project).success).toBe(false);
   });
 });

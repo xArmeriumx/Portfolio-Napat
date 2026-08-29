@@ -35,16 +35,17 @@ async function attachMediaReferences(tx: any, revisionId: string, documentId: st
       id: String(item.id || ""),
       order: Number(item.order || 0),
       storageKey: typeof item.storageKey === "string" ? item.storageKey : null,
+      url: typeof item.url === "string" ? item.url : null,
     }))
     .filter((item) => item.id);
   if (!requested.length) return;
 
   const assets = await tx.mediaAsset.findMany({
     where: { id: { in: requested.map((item) => item.id) } },
-    select: { id: true, storageKey: true },
+    select: { id: true, storageKey: true, publicUrl: true },
   });
-  const assetsById = new Map<string, { id: string; storageKey: string }>(
-    assets.map((asset: { id: string; storageKey: string }) => [asset.id, asset]),
+  const assetsById = new Map<string, { id: string; storageKey: string; publicUrl: string }>(
+    assets.map((asset: { id: string; storageKey: string; publicUrl: string }) => [asset.id, asset]),
   );
 
   const managed = [];
@@ -54,7 +55,7 @@ async function attachMediaReferences(tx: any, revisionId: string, documentId: st
       if (item.storageKey) throw new ContentConflictError("Media reference is not available for this Project");
       continue;
     }
-    if (!item.storageKey || asset.storageKey !== item.storageKey || !isPortfolioStorageKey(item.storageKey) || !item.storageKey.startsWith(`projects/${documentId}/`)) {
+    if (!item.storageKey || asset.storageKey !== item.storageKey || asset.publicUrl !== item.url || !isPortfolioStorageKey(item.storageKey) || !item.storageKey.startsWith(`projects/${documentId}/`)) {
       throw new ContentConflictError("Media reference is outside this Project namespace");
     }
     managed.push(item);

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { archiveContent, ContentConflictError, createContentDraft, getPreviewRevision, publishDraft, restoreRevision, saveDraft } from "./admin-service";
+import { parseContentDraft } from "./input-schema";
 import { StaticContentRepository } from "./static-adapter";
 
 function fakeDatabase(initialPayload: unknown) {
@@ -87,7 +88,7 @@ function fakeDatabase(initialPayload: unknown) {
   return { db, document, revisions };
 }
 
-function fakeProjectDatabase(mediaAssets: Array<{ id: string; storageKey: string }>) {
+function fakeProjectDatabase(mediaAssets: Array<{ id: string; storageKey: string; publicUrl?: string }>) {
   const document = {
     id: "project-1",
     contentType: "PROJECT",
@@ -115,7 +116,7 @@ function fakeProjectDatabase(mediaAssets: Array<{ id: string; storageKey: string
       }),
     },
     mediaAsset: {
-      findMany: async () => mediaAssets,
+      findMany: async () => mediaAssets.map((asset) => ({ ...asset, publicUrl: asset.publicUrl || `https://storage.example/${asset.storageKey}` })),
     },
     mediaReference: {
       createMany: async () => ({ count: mediaAssets.length }),
@@ -301,6 +302,26 @@ describe("content conflict handling", () => {
     })).rejects.toBeInstanceOf(ContentConflictError);
   });
 
+  it("rejects a managed media reference when its URL does not match the asset", async () => {
+    const source = new StaticContentRepository();
+    const project = structuredClone((await source.listPublishedProjects())[0]);
+    const storageKey = "projects/project-1/123e4567-e89b-12d3-a456-426614174000.png";
+    project.media = [{
+      ...project.media[0],
+      id: "asset-1",
+      storageKey,
+      url: "https://attacker.example/replacement.png",
+    }];
+    const db = fakeProjectDatabase([{ id: "asset-1", storageKey, publicUrl: `https://storage.example/${storageKey}` }]);
+
+    await expect(saveDraft(db as never, {
+      contentType: "PROJECT",
+      documentId: "project-1",
+      actorId: "admin-1",
+      payload: project,
+    })).rejects.toBeInstanceOf(ContentConflictError);
+  });
+
   it("requires normalized slugs when creating a new Note", async () => {
     const source = new StaticContentRepository();
     const note = structuredClone((await source.listPublishedNotes())[0]);
@@ -311,5 +332,13 @@ describe("content conflict handling", () => {
       actorId: "admin-1",
       payload: note,
     })).rejects.toMatchObject({ message: "CONTENT_VALIDATION_ERROR" });
+  });
+
+  it("rejects protocol-relative URLs in admin content", async () => {
+    const source = new StaticContentRepository();
+    const profile = structuredClone(await source.getPublishedProfile());
+    profile.contact.links.github = "//attacker.example/profile";
+
+    expect(parseContentDraft("PROFILE", profile).success).toBe(false);
   });
 });
