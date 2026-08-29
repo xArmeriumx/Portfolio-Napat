@@ -1,9 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Prompt, Space_Grotesk, Space_Mono } from "next/font/google";
 import AppShell from "@/components/layout/AppShell.jsx";
-import { getSiteSeoDefaults, SITE_NAME, SITE_URL } from "@/config/seo.js";
-import { getContentRepository } from "@/content/repository";
-import { toPresentationProfile } from "@/content/presentation";
+import { SEO_DEFAULTS, SITE_NAME, SITE_URL } from "@/config/seo.js";
 import "@/styles/globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -26,44 +24,65 @@ const spaceMono = Space_Mono({
   display: "swap",
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const repository = await getContentRepository();
-  const profile = toPresentationProfile(await repository.getPublishedProfile());
-  const seo = getSiteSeoDefaults(profile);
-
-  return {
-    metadataBase: new URL(SITE_URL),
-    applicationName: SITE_NAME,
-    title: { default: seo.title, template: `%s | ${SITE_NAME}` },
-    description: seo.description,
-    authors: [{ name: profile.name, url: SITE_URL }],
-    creator: profile.name,
-    publisher: SITE_NAME,
-    manifest: "/manifest.json",
-    icons: {
-      icon: [{ url: "/favicon.ico" }, { url: "/favicon.png", type: "image/png" }],
-      apple: "/favicon.png",
-    },
-    alternates: { canonical: "/" },
-    openGraph: {
-      type: "website",
-      url: SITE_URL,
-      siteName: SITE_NAME,
-      title: seo.title,
-      description: seo.description,
-      locale: seo.locale,
-      alternateLocale: [seo.alternateLocale],
-      images: [{ url: seo.ogImage, width: 512, height: 512, alt: `${profile.name} Portfolio` }],
-    },
-    twitter: { card: "summary_large_image", title: seo.title, description: seo.description, images: [seo.ogImage] },
-    robots: {
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
+  title: {
+    default: SEO_DEFAULTS.title,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SEO_DEFAULTS.description,
+  authors: [{ name: "Napat Pamornsut", url: SITE_URL }],
+  creator: "Napat Pamornsut",
+  publisher: SITE_NAME,
+  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    apple: "/favicon.png",
+  },
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: SEO_DEFAULTS.title,
+    description: SEO_DEFAULTS.description,
+    locale: SEO_DEFAULTS.locale,
+    alternateLocale: [SEO_DEFAULTS.alternateLocale],
+    images: [
+      {
+        url: SEO_DEFAULTS.ogImage,
+        width: 512,
+        height: 512,
+        alt: "Napat Pamornsut Portfolio",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SEO_DEFAULTS.title,
+    description: SEO_DEFAULTS.description,
+    images: [SEO_DEFAULTS.ogImage],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
       index: true,
       follow: true,
-      googleBot: { index: true, follow: true, "max-image-preview": "large" },
+      "max-image-preview": "large",
     },
-    other: { "geo.region": "TH-10", "geo.placename": "Bangkok" },
-  };
-}
+  },
+  other: {
+    "geo.region": "TH-10",
+    "geo.placename": "Bangkok",
+  },
+};
 
 export const viewport: Viewport = {
   themeColor: "#0b0b0b",

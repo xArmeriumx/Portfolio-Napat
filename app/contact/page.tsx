@@ -1,36 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/utils/JsonLd";
+import { profile } from "@/data/profile.js";
 import { PERSON_ID, SITE_URL, WEBSITE_ID, absoluteUrl, getContactSeoMeta, getCoreSiteSchemas } from "@/config/seo.js";
 import { buildPageMetadata } from "@/lib/metadata";
-import { getContentRepository } from "@/content/repository";
-import { toPresentationProfile } from "@/content/presentation";
 
-export const dynamic = "force-dynamic";
+const contactSeo = getContactSeoMeta();
 
-export async function generateMetadata(): Promise<Metadata> {
-  const repository = await getContentRepository();
-  const profile = toPresentationProfile(await repository.getPublishedProfile());
-  const contactSeo = getContactSeoMeta(profile);
+export const metadata: Metadata = buildPageMetadata({
+  title: contactSeo.title,
+  description: contactSeo.description,
+  ogTitle: contactSeo.title,
+  ogDescription: contactSeo.description,
+  ogImage: contactSeo.ogImage,
+  ogImageAlt: contactSeo.ogImageAlt,
+  ogImageWidth: 512,
+  ogImageHeight: 512,
+  path: contactSeo.path,
+  keywords: contactSeo.keywords,
+});
 
-  return buildPageMetadata({
-    title: contactSeo.title,
-    description: contactSeo.description,
-    ogTitle: contactSeo.title,
-    ogDescription: contactSeo.description,
-    ogImage: contactSeo.ogImage,
-    ogImageAlt: contactSeo.ogImageAlt,
-    ogImageWidth: 512,
-    ogImageHeight: 512,
-    path: contactSeo.path,
-    keywords: contactSeo.keywords,
-  });
-}
-
-export default async function ContactPage() {
-  const repository = await getContentRepository();
-  const profile = toPresentationProfile(await repository.getPublishedProfile());
-  const contactSeo = getContactSeoMeta(profile);
+export default function ContactPage() {
   const contactUrl = absoluteUrl("/contact");
   const emailHref = `mailto:${profile.links.email}`;
 
@@ -40,7 +30,7 @@ export default async function ContactPage() {
         data={{
           "@context": "https://schema.org",
           "@graph": [
-            ...getCoreSiteSchemas(profile),
+            ...getCoreSiteSchemas(),
             {
               "@type": "ContactPage",
               "@id": `${contactUrl}#contactpage`,

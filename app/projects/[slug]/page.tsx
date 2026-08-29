@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import ProjectDetail from "@/views/ProjectDetail.jsx";
 import JsonLd from "@/components/utils/JsonLd";
+import { projects } from "@/data/projects.js";
 import { getProjectSchema, getProjectSeoMeta } from "@/config/seo.js";
 import { buildPageMetadata } from "@/lib/metadata";
-import { getContentRepository } from "@/content/repository";
-import { toPresentationProfile, toPresentationProject } from "@/content/presentation";
-
-export const dynamic = "force-dynamic";
-export const dynamicParams = true;
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -18,16 +14,17 @@ function getEnglishContent(project: Record<string, unknown>, field: string) {
   return project[field] || "";
 }
 
+function getProject(slug: string) {
+  return projects.find((project) => project.slug === slug) || null;
+}
+
+export function generateStaticParams() {
+  return projects.map((project) => ({ slug: project.slug }));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const repository = await getContentRepository();
-  const rawProfile = await repository.getPublishedProfile();
-  let rawProject = await repository.getPublishedProjectBySlug(slug);
-  if (!rawProject) {
-    const redirectedSlug = await repository.getPublishedSlugRedirect("PROJECT", slug);
-    if (redirectedSlug) rawProject = await repository.getPublishedProjectBySlug(redirectedSlug);
-  }
-  const project = rawProject ? toPresentationProject(rawProject) : null;
+  const project = getProject(slug);
 
   if (!project) {
     return buildPageMetadata({
@@ -38,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     });
   }
 
-  const projectSeo = getProjectSeoMeta(project, getEnglishContent, toPresentationProfile(rawProfile));
+  const projectSeo = getProjectSeoMeta(project, getEnglishContent);
 
   return buildPageMetadata({
     title: projectSeo.title,
@@ -57,24 +54,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
-  const repository = await getContentRepository();
-  const [rawProfile, rawProject] = await Promise.all([
-    repository.getPublishedProfile(),
-    repository.getPublishedProjectBySlug(slug),
-  ]);
+  const project = getProject(slug);
 
-  if (!rawProject) {
-    const redirectedSlug = await repository.getPublishedSlugRedirect("PROJECT", slug);
-    if (redirectedSlug) redirect(`/projects/${encodeURIComponent(redirectedSlug)}`);
-    notFound();
-  }
-
-  const profile = toPresentationProfile(rawProfile);
-  const project = toPresentationProject(rawProject);
+  if (!project) notFound();
 
   const title = project.title;
   const description = `${project.description} ${project.description_th || ""}`;
-  const projectImages = project.images;
+  const projectImages = project.images || [project.image];
 
   return (
     <>
@@ -88,12 +74,11 @@ export default async function ProjectDetailPage({ params }: Props) {
           technologies: project.technologies || [],
           keyFeatures: project.keyFeatures || [],
           role: project.role || [],
+          stack: project.stack,
           links: project.links || {},
-          seo: project.seo,
-          profile,
         })}
       />
-      <ProjectDetail slug={slug} project={project} />
+      <ProjectDetail slug={slug} />
     </>
   );
 }

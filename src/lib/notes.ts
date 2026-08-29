@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import {
   absoluteUrl,
   getCoreSiteSchemas,
@@ -7,9 +9,51 @@ import {
   WEBSITE_ID,
   SITE_URL,
 } from "@/config/seo.js";
-import type { PresentationNote, PresentationProfile } from "@/content/presentation";
 
-export type Note = PresentationNote;
+export type Note = {
+  path: string;
+  id: string;
+  content: string;
+  name: string;
+  rawName: string;
+};
+
+const notesDirectory = path.join(process.cwd(), "src", "data", "notes");
+
+export function formatFileName(filePath: string) {
+  const filename = path.basename(filePath).replace(".md", "");
+  return filename
+    .split(/[-_]/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+export function getAllNotes(): Note[] {
+  return fs
+    .readdirSync(notesDirectory)
+    .filter((file) => file.endsWith(".md"))
+    .sort((a, b) => a.localeCompare(b))
+    .map((file) => {
+      const fullPath = path.join(notesDirectory, file);
+      const id = file.replace(".md", "");
+
+      return {
+        path: `/src/data/notes/${file}`,
+        id,
+        content: fs.readFileSync(fullPath, "utf8"),
+        name: formatFileName(file),
+        rawName: file,
+      };
+    });
+}
+
+export function getFirstNoteSlug() {
+  return getAllNotes()[0]?.id;
+}
+
+export function getNoteBySlug(slug: string) {
+  return getAllNotes().find((note) => note.id === slug) || null;
+}
 
 export function getNoteDescription(note: Note, maxLength = 160) {
   const plainText = note.content
@@ -25,26 +69,11 @@ export function getNoteDescription(note: Note, maxLength = 160) {
   );
 }
 
-export function getNoteSeoMeta(note: Note) {
-  const titleOverride = note.seo?.title?.en?.trim() || note.seo?.title?.th?.trim() || "";
-  const descriptionOverride = note.seo?.description?.en?.trim() || note.seo?.description?.th?.trim() || "";
-  const generatedDescription = `${getNoteDescription(note)} โน้ตความรู้เรื่อง ${note.name} โดย ณภัทร ภมรสูตร และ Napatdev`;
-
-  return {
-    title: titleOverride || `${note.name} Cheatsheet | Napatdev | Napat Pamornsut`,
-    description: descriptionOverride || generatedDescription,
-    ogTitle: titleOverride || `${note.name} Cheatsheet | Napatdev`,
-    ogDescription: descriptionOverride || getNoteDescription(note, 200),
-    schemaTitle: titleOverride || note.name,
-    schemaDescription: descriptionOverride || `${getNoteDescription(note, 220)} โน้ตความรู้และชีทสรุปเรื่อง ${note.name} โดย ณภัทร ภมรสูตร`,
-  };
-}
-
-export function getNotesCollectionSchema(notes: Note[], profile: PresentationProfile) {
+export function getNotesCollectionSchema(notes: Note[]) {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      ...getCoreSiteSchemas(profile),
+      ...getCoreSiteSchemas(),
       {
         "@type": "CollectionPage",
         "@id": `${SITE_URL}/notes#collection`,
@@ -80,22 +109,21 @@ export function getNotesCollectionSchema(notes: Note[], profile: PresentationPro
   };
 }
 
-export function getNoteSchema(note: Note, profile: PresentationProfile) {
+export function getNoteSchema(note: Note) {
   const noteUrl = absoluteUrl(`/notes/${note.id}`);
-  const seo = getNoteSeoMeta(note);
 
   return {
     "@context": "https://schema.org",
     "@graph": [
-      ...getCoreSiteSchemas(profile),
+      ...getCoreSiteSchemas(),
       {
         "@type": "TechArticle",
         "@id": `${noteUrl}#article`,
         url: noteUrl,
-        headline: seo.schemaTitle,
-        name: seo.schemaTitle,
-        alternateName: [seo.schemaTitle, `โน้ต ${note.name}`, `Cheatsheet ${note.name}`],
-        description: seo.schemaDescription,
+        headline: note.name,
+        name: note.name,
+        alternateName: [note.name, `โน้ต ${note.name}`, `Cheatsheet ${note.name}`],
+        description: `${getNoteDescription(note, 220)} โน้ตความรู้และชีทสรุปเรื่อง ${note.name} โดย ณภัทร ภมรสูตร`,
         inLanguage: ["en", "th"],
         author: { "@id": PERSON_ID },
         publisher: { "@id": ORGANIZATION_ID },

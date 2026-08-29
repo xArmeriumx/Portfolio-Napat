@@ -6,6 +6,7 @@ import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import AnimatedText from "../components/ui/AnimatedText.jsx";
 import { useScrollToNextPage } from "../hooks/useScrollToNextPage.js";
+import { profile } from "../data/profile.js";
 import {
   MapPin,
   Mail,
@@ -109,7 +110,7 @@ function SkillGroup({ category, skills }) {
   );
 }
 
-export default function About({ profile }) {
+export default function About() {
   const { getContent } = useTranslation();
 
   useEffect(() => {

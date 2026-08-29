@@ -13,7 +13,6 @@ out
 dist
 dist-ssr
 *.local
-*.tsbuildinfo
 
 # Editor directories and files
 .vscode/*
@@ -27,10 +26,6 @@ dist-ssr
 *.sw?
 
 google-credentials.json
-
-# Local CMS inventory, backups, and rendered evidence
-artifacts/
-test-results/
 
 # Study notes (private)
 Sheet/

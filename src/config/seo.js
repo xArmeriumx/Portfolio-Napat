@@ -1,3 +1,5 @@
+import { profile } from "../data/profile.js";
+
 export const SITE_URL = "https://napatdev.com";
 export const SITE_NAME = "Napatdev";
 export const SITE_DESCRIPTION_EN =
@@ -8,6 +10,10 @@ export const SITE_DESCRIPTION_TH =
 export const PERSON_ID = `${SITE_URL}/#person`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
+
+const skillNames = profile.skillCategories.flatMap((cat) =>
+  cat.skills.map((s) => s.name),
+);
 
 export const NAVIGATION_ITEMS = [
   {
@@ -67,8 +73,9 @@ export const NAVIGATION_ITEMS = [
 ];
 
 export const SEO_DEFAULTS = {
-  title: `${SITE_NAME} | Portfolio`,
-  description: `${SITE_DESCRIPTION_EN} ${SITE_DESCRIPTION_TH}`,
+  title: `${profile.name} (ณภัทร ภมรสูตร) | ${SITE_NAME}`,
+  description:
+    "Napatdev is the portfolio of Napat Pamornsut (ณภัทร ภมรสูตร), a Bangkok Web Developer and Software Tester focused on reliable web applications, QA, and automation testing.",
   ogImage: `${SITE_URL}/favicon.png`,
   locale: "en_US",
   alternateLocale: "th_TH",
@@ -81,25 +88,6 @@ export const SEO_DEFAULTS = {
     "QA Automation",
   ],
 };
-
-export function getSiteSeoDefaults(profile) {
-  const defaultTitle = `${profile.name} (ณภัทร ภมรสูตร) | ${SITE_NAME}`;
-  const defaultDescription =
-    `Napatdev is the portfolio of ${profile.name} (ณภัทร ภมรสูตร), a Bangkok Web Developer and Software Tester focused on reliable web applications, QA, and automation testing.`;
-  const profileTitle = getLocalizedSeoValue(profile.seo?.title);
-  const profileDescription = getLocalizedSeoValue(profile.seo?.description);
-
-  return {
-    ...SEO_DEFAULTS,
-    title: profileTitle || defaultTitle,
-    description: profileDescription || defaultDescription,
-    ogImage: profile.seo?.image || SEO_DEFAULTS.ogImage,
-  };
-}
-
-function getLocalizedSeoValue(value) {
-  return value?.en?.trim() || value?.th?.trim() || "";
-}
 
 export function absoluteUrl(path = "") {
   if (!path) return `${SITE_URL}/`;
@@ -121,28 +109,27 @@ export function normalizeMetaDescription(text, maxLength = 160) {
   return `${cleaned.slice(0, maxLength - 3).trimEnd()}...`;
 }
 
-export function getAboutSeoMeta(profile) {
-  const siteSeo = getSiteSeoDefaults(profile);
+export function getAboutSeoMeta() {
   return {
-    title: getLocalizedSeoValue(profile.seo?.title) || `About ${profile.name} | ณภัทร ภมรสูตร | ${SITE_NAME}`,
+    title: `About ${profile.name} | ณภัทร ภมรสูตร | ${SITE_NAME}`,
     description: normalizeMetaDescription(
-      getLocalizedSeoValue(profile.seo?.description) || `${profile.headline}. ${profile.about} ${profile.about_th} Based in ${profile.contact.location}.`,
+      `${profile.headline}. ${profile.about} ${profile.about_th} Based in ${profile.contact.location}.`,
       180,
     ),
-    ogImage: siteSeo.ogImage,
+    ogImage: "/favicon.png",
     ogImageAlt: `${profile.name} — Web Developer & Software Tester`,
     path: "/about",
     keywords: ["About Napat Pamornsut", "ณภัทร ภมรสูตร ประวัติ", "Napatdev profile", "Web Developer Bangkok"],
   };
 }
 
-export function getProjectSeoMeta(project, getContent, profile) {
-  const title = getLocalizedSeoValue(project.seo?.title) || getContent(project, "title");
+export function getProjectSeoMeta(project, getContent) {
+  const title = getContent(project, "title");
   const description = normalizeMetaDescription(
-    getLocalizedSeoValue(project.seo?.description) || `${getContent(project, "description")} ${project.description_th || ""}`,
+    `${getContent(project, "description")} ${project.description_th || ""}`,
     180,
   );
-  const image = project.seo?.image || project.images?.[0] || project.image || SEO_DEFAULTS.ogImage;
+  const image = project.images?.[0] || project.image || SEO_DEFAULTS.ogImage;
   const technologies = (project.technologies || []).slice(0, 6).join(", ");
 
   return {
@@ -169,7 +156,7 @@ export function getProjectSeoMeta(project, getContent, profile) {
   };
 }
 
-export function getProjectsListSeoMeta(profile) {
+export function getProjectsListSeoMeta() {
   return {
     title: `Projects by ${profile.name} | ณภัทร ภมรสูตร | ${SITE_NAME}`,
     description: normalizeMetaDescription(
@@ -183,30 +170,14 @@ export function getProjectsListSeoMeta(profile) {
   };
 }
 
-export function getNotesListSeoMeta(profile) {
-  const siteSeo = getSiteSeoDefaults(profile);
-  return {
-    title: `Developer Notes by ${profile.name} | ณภัทร ภมรสูตร | ${SITE_NAME}`,
-    description: normalizeMetaDescription(
-      `Developer notes and technical cheatsheets by ${profile.name}. โน้ตความรู้และชีทสรุปด้านเทคนิคโดย ณภัทร ภมรสูตร`,
-      180,
-    ),
-    ogImage: siteSeo.ogImage,
-    ogImageAlt: `${profile.name} developer notes`,
-    path: "/notes",
-    keywords: ["Napatdev developer notes", "ณภัทร ภมรสูตร โน้ตความรู้", "Next.js cheatsheet", "TypeScript reference", "SQL examples"],
-  };
-}
-
-export function getContactSeoMeta(profile) {
-  const siteSeo = getSiteSeoDefaults(profile);
+export function getContactSeoMeta() {
   return {
     title: `Contact ${profile.name} | ติดต่อ ณภัทร ภมรสูตร | ${SITE_NAME}`,
     description: normalizeMetaDescription(
       `Contact ${profile.name} for web development, QA, automation testing, and software project inquiries in ${profile.contact.location}. ติดต่อ ณภัทร ภมรสูตร สำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์`,
       180,
     ),
-    ogImage: siteSeo.ogImage,
+    ogImage: "/favicon.png",
     ogImageAlt: `${profile.name} contact information`,
     path: "/contact",
     keywords: ["Contact Napat Pamornsut", "ติดต่อ ณภัทร ภมรสูตร", "Napatdev contact", "Web Developer contact Bangkok"],
@@ -225,24 +196,20 @@ export function getSearchSeoMeta() {
   };
 }
 
-export function getSameAsLinks(profile) {
+export function getSameAsLinks() {
   return [profile.links.github, profile.links.linkedin].filter(
     (url) => url && url !== "#",
   );
 }
 
-export function getPersonSchema(profile, overrides = {}) {
-  const skillNames = profile.skillCategories.flatMap((cat) =>
-    cat.skills.map((s) => s.name),
-  );
-  const seoDefaults = getSiteSeoDefaults(profile);
+export function getPersonSchema(overrides = {}) {
   return {
     "@type": "Person",
     "@id": PERSON_ID,
     name: profile.name,
     alternateName: ["ณภัทร ภมรสูตร", "Napat Dev", "napatdev"],
     url: `${SITE_URL}/`,
-    image: seoDefaults.ogImage,
+    image: SEO_DEFAULTS.ogImage,
     jobTitle: profile.headline.replace(" | ", " and "),
     description: `${profile.about} ${profile.about_th}`,
     email: profile.links.email,
@@ -292,13 +259,12 @@ export function getPersonSchema(profile, overrides = {}) {
       areaServed: "TH",
       availableLanguage: ["English", "Thai"],
     },
-    sameAs: getSameAsLinks(profile),
+    sameAs: getSameAsLinks(),
     ...overrides,
   };
 }
 
-export function getOrganizationSchema(profile, overrides = {}) {
-  const seoDefaults = getSiteSeoDefaults(profile);
+export function getOrganizationSchema(overrides = {}) {
   return {
     "@type": "Organization",
     "@id": ORGANIZATION_ID,
@@ -307,17 +273,17 @@ export function getOrganizationSchema(profile, overrides = {}) {
     url: `${SITE_URL}/`,
     logo: {
       "@type": "ImageObject",
-      url: seoDefaults.ogImage,
+      url: SEO_DEFAULTS.ogImage,
       width: 512,
       height: 512,
     },
     founder: { "@id": PERSON_ID },
-    sameAs: getSameAsLinks(profile),
+    sameAs: getSameAsLinks(),
     ...overrides,
   };
 }
 
-export function getWebSiteSchema(profile, overrides = {}) {
+export function getWebSiteSchema(overrides = {}) {
   return {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
@@ -350,23 +316,22 @@ export function getWebSiteSchema(profile, overrides = {}) {
   };
 }
 
-export function getCoreSiteSchemas(profile) {
-  return [getPersonSchema(profile), getOrganizationSchema(profile), getWebSiteSchema(profile)];
+export function getCoreSiteSchemas() {
+  return [getPersonSchema(), getOrganizationSchema(), getWebSiteSchema()];
 }
 
-export function getHomeGraphSchema(profile) {
-  const seoDefaults = getSiteSeoDefaults(profile);
+export function getHomeGraphSchema() {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      ...getCoreSiteSchemas(profile),
+      ...getCoreSiteSchemas(),
       {
         "@type": "ProfilePage",
         "@id": `${SITE_URL}/#profilepage`,
         url: `${SITE_URL}/`,
         name: `${profile.name} — Portfolio / พอร์ตโฟลิโอ`,
         alternateName: [`${profile.name} Portfolio`, `พอร์ตโฟลิโอ ${profile.name}`, "พอร์ตโฟลิโอ ณภัทร ภมรสูตร"],
-        description: seoDefaults.description,
+        description: SEO_DEFAULTS.description,
         inLanguage: ["en", "th"],
         isPartOf: { "@id": WEBSITE_ID },
         mainEntity: { "@id": PERSON_ID },
@@ -376,12 +341,12 @@ export function getHomeGraphSchema(profile) {
   };
 }
 
-export function getAboutPageSchema(profile) {
+export function getAboutPageSchema() {
   const aboutUrl = absoluteUrl("/about");
   return {
     "@context": "https://schema.org",
     "@graph": [
-      ...getCoreSiteSchemas(profile),
+      ...getCoreSiteSchemas(),
       {
         "@type": "ProfilePage",
         "@id": `${aboutUrl}#profilepage`,
@@ -395,7 +360,7 @@ export function getAboutPageSchema(profile) {
         about: { "@id": PERSON_ID },
         primaryImageOfPage: {
           "@type": "ImageObject",
-          url: getSiteSeoDefaults(profile).ogImage,
+          url: SEO_DEFAULTS.ogImage,
           caption: profile.name,
         },
       },
@@ -431,11 +396,11 @@ export function getAboutPageSchema(profile) {
   };
 }
 
-export function getProjectsCollectionSchema(projectItems, profile) {
+export function getProjectsCollectionSchema(projectItems) {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      ...getCoreSiteSchemas(profile),
+      ...getCoreSiteSchemas(),
       {
         "@type": "CollectionPage",
         "@id": `${SITE_URL}/projects#collection`,
@@ -481,16 +446,12 @@ export function getProjectSchema({
   technologies = [],
   keyFeatures = [],
   role = [],
-  stack = undefined,
+  stack,
   links = {},
-  seo = null,
-  profile,
 }) {
   const projectUrl = absoluteUrl(`/projects/${slug}`);
-  const schemaTitle = getLocalizedSeoValue(seo?.title) || title;
-  const schemaDescription = getLocalizedSeoValue(seo?.description) || description;
-  const imageUrl = toAbsoluteImageUrl(seo?.image || image);
-  const metaDescription = normalizeMetaDescription(schemaDescription, 300);
+  const imageUrl = toAbsoluteImageUrl(image);
+  const metaDescription = normalizeMetaDescription(description, 300);
   const languages = stack
     ? stack.split(",").map((s) => s.trim())
     : technologies;
@@ -498,8 +459,8 @@ export function getProjectSchema({
   const softwareApp = {
     "@type": "SoftwareApplication",
     "@id": `${projectUrl}#software`,
-    name: schemaTitle,
-    alternateName: titleTh ? [schemaTitle, titleTh] : undefined,
+    name: title,
+    alternateName: titleTh ? [title, titleTh] : undefined,
     description: metaDescription,
     url: projectUrl,
     image: imageUrl,
@@ -527,13 +488,13 @@ export function getProjectSchema({
   return {
     "@context": "https://schema.org",
     "@graph": [
-      ...getCoreSiteSchemas(profile),
+      ...getCoreSiteSchemas(),
       {
         "@type": "WebPage",
         "@id": `${projectUrl}#webpage`,
         url: projectUrl,
-        name: schemaTitle,
-        alternateName: titleTh ? [schemaTitle, titleTh] : undefined,
+        name: title,
+        alternateName: titleTh ? [title, titleTh] : undefined,
         description: metaDescription,
         inLanguage: ["en", "th"],
         isPartOf: { "@id": WEBSITE_ID },
@@ -568,7 +529,7 @@ export function getProjectSchema({
           {
             "@type": "ListItem",
             position: 3,
-            name: titleTh ? `${schemaTitle} / ${titleTh}` : schemaTitle,
+            name: titleTh ? `${title} / ${titleTh}` : title,
             item: projectUrl,
           },
         ],

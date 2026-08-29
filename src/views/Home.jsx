@@ -5,8 +5,9 @@ import { ArrowUpRight } from "lucide-react";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import { useScrollToNextPage } from "../hooks/useScrollToNextPage.js";
+import { profile } from "../data/profile.js";
 
-function ProfileIde({ profile }) {
+function ProfileIde() {
   const lines = [
     <><span className="text-[#a23b3b]">const</span> <span className="text-[#73508f]">profile</span> <span className="text-gray-500">= &#123;</span></>,
     <><span className="text-[#73508f]">  name</span><span className="text-gray-500">: </span><span className="text-[#477b55]">&quot;{profile.name}&quot;</span><span className="text-gray-500">,</span></>,
@@ -59,7 +60,7 @@ function ProfileIde({ profile }) {
   );
 }
 
-export default function Home({ profile }) {
+export default function Home() {
   // Scroll ถึงก้นหน้า → navigate ไป About (ผ่าน overlay)
   useScrollToNextPage("/about");
 
@@ -122,7 +123,7 @@ export default function Home({ profile }) {
                   <span>About me</span>
                   <span className="font-mono text-gray-300">01 / 01</span>
                 </div>
-                <ProfileIde profile={profile} />
+                <ProfileIde />
               </div>
             </div>
           </ScrollReveal>
