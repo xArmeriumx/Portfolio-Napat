@@ -57,6 +57,18 @@ Draft Revision ----> Exact Preview only (signed, short-lived token; no public in
 
 ![ภาพ browser local public Notes](artifacts/portfolio-cms-notes-local-viewport.png)
 
+## Environment matrix
+
+| Target | `VERCEL_ENV` | Schema | Content source | หลักฐานปัจจุบัน | Gate ก่อน promote |
+| --- | --- | --- | --- | --- | --- |
+| Development | local/development | `portfolio_cms_dev` | static baseline หรือ database เมื่อกำหนดค่า | local tests/typecheck/lint/build/public smoke ผ่าน | ไม่ promote จาก local อย่างเดียว |
+| Preview | `preview` | `portfolio_cms_preview` | database | Vercel deployment ผ่าน แต่ protected SSO | inventory, backup, migration, import, restore และ authenticated UAT |
+| Production | `production` | `portfolio_cms_prod` | database | public root HTTP 200 แต่ `/admin/login` และ auth endpoint ยัง HTTP 404 | backup ใหม่, migration/import, rollback check และ Production browser smoke |
+
+ภาพ public Production ปัจจุบันเป็นหลักฐานก่อน CMS cutover เท่านั้น ไม่มี session หรือข้อมูล admin:
+
+![ภาพ browser current Production ก่อน CMS cutover](artifacts/portfolio-cms-production-current-viewport.png)
+
 ## สิ่งที่เปลี่ยนในโค้ด
 
 ### Content และ lifecycle
@@ -239,4 +251,4 @@ npm run test:e2e
 ## ไฟล์ส่งมอบ
 
 - Markdown ฉบับนี้: [`PORTFOLIO_CMS_HANDOVER.md`](PORTFOLIO_CMS_HANDOVER.md)
-- PDF สำหรับส่งต่อ: [`PORTFOLIO_CMS_HANDOVER.pdf`](PORTFOLIO_CMS_HANDOVER.pdf) — 7 หน้า A4, Sarabun embedded, มีเลขหน้าและภาพ browser local; ตรวจแล้วไม่รวม credential หรือ secret value
+- PDF สำหรับส่งต่อ: [`PORTFOLIO_CMS_HANDOVER.pdf`](PORTFOLIO_CMS_HANDOVER.pdf) — 8 หน้า A4, Sarabun embedded, มีเลขหน้าและภาพ browser local/Production ก่อน cutover; ตรวจแล้วไม่รวม credential หรือ secret value
