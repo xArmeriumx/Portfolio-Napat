@@ -2,7 +2,7 @@
 
 วันที่ตรวจ: 29 สิงหาคม 2026 (Asia/Bangkok)  
 Branch: `feat/cms-repository`  
-Commit ล่าสุดของ implementation: `c977c19`<br>
+Commit ล่าสุดของ implementation: `66c82a9`<br>
 Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## สรุปสำหรับผู้รับช่วงต่อ
@@ -31,13 +31,13 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## หลักฐานที่รันแล้ว
 
-- `npm test -- --run`: **9 files, 21 tests passed**
+- `npm test -- --run`: **9 files, 22 tests passed**
 - `npm run typecheck`: **ผ่าน** (`tsc --noEmit`)
 - `npm run lint`: **0 errors, 31 warnings**; warnings เป็น debt เดิมใน AI/notes และ unused constructor parameter ไม่ใช่ failure
 - `npm run build`: ผ่าน; Next.js สร้าง admin, API, preview, public dynamic routes และ sitemap ได้
 - `npx playwright test`: **1 public test passed, 1 mutation test skipped** เพราะไม่มี `CMS_E2E_ADMIN_EMAIL`, `CMS_E2E_ADMIN_PASSWORD` และ `CMS_E2E_ALLOW_MUTATIONS=true`
-- GitHub Actions Quality Gates ของ commit `c977c19`: **ผ่าน** รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint และ build
-- Vercel Preview deployment ของ commit `c977c19`: **ผ่าน**; deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
+- GitHub Actions Quality Gates ของ commit `66c82a9`: **ผ่าน** รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint และ build
+- Vercel Preview deployment ของ commit `66c82a9`: **ผ่าน**; deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
 - Worktree หลัง push: clean และ branch ตรงกับ `origin/feat/cms-repository`
 
 ภาพ browser local ที่ตรวจ public Notes อยู่ใน [`portfolio-cms-notes-local-viewport.png`](artifacts/portfolio-cms-notes-local-viewport.png)
@@ -77,10 +77,12 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 การ Publish revalidate หน้า public, JSON-LD, sitemap และ search index ที่เกี่ยวข้อง รวมถึง project/note slug เดิมและใหม่เมื่อมีการ rename
 SEO override จาก Published Profile/Project/Note ถูกส่งต่อไปยัง metadata และ JSON-LD เดียวกับ content revision นั้น
+Metadata ของ Notes index อ่าน Published Profile ผ่าน ContentRepository เช่นเดียวกับ public route อื่น
 
 ## URL ที่ตรวจสอบได้
 
 - Production public: <https://napatdev.com/> ตอบ HTTP 200 แต่ยังเป็น runtime เดิมและ **ไม่ใช่หลักฐาน CMS cutover**
+- Production Admin target: <https://napatdev.com/admin/login> ปัจจุบันตอบ HTTP 404 เพราะยังไม่ใช่ CMS runtime; ต้องตรวจซ้ำหลัง cutover
 - Preview: <https://napata-git-feat-cms-r-8e1a7a-napat-pamornsuts-projects-14be8929.vercel.app/> deployment ผ่าน แต่ต้องผ่าน Vercel SSO
 - Preview Admin: <https://napata-git-feat-cms-r-8e1a7a-napat-pamornsuts-projects-14be8929.vercel.app/admin/login> หลัง authenticated UAT
 
