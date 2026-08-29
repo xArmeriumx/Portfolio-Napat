@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { Prisma, PrismaClient } from "@prisma/client";
-import { contentDraftSchemas, type NoteDraft, type ProfileDraft, type ProjectDraft } from "./input-schema";
+import { adminSlugSchema, contentDraftSchemas, type NoteDraft, type ProfileDraft, type ProjectDraft } from "./input-schema";
+import { isPortfolioStorageKey } from "@/server/storage";
 
 export type CmsContentType = "PROFILE" | "PROJECT" | "NOTE";
 export type DraftPayload = ProfileDraft | ProjectDraft | NoteDraft;
@@ -26,18 +27,41 @@ function payloadFor(contentType: CmsContentType, value: unknown) {
   return jsonObject(result.data);
 }
 
-async function attachMediaReferences(tx: any, revisionId: string, payload: Record<string, unknown>) {
+async function attachMediaReferences(tx: any, revisionId: string, documentId: string, payload: Record<string, unknown>) {
   const media = Array.isArray(payload.media) ? payload.media : [];
   const requested = media
     .filter((item): item is Record<string, unknown> => Boolean(item && typeof item === "object"))
-    .map((item) => ({ id: String(item.id || ""), order: Number(item.order || 0) }))
+    .map((item) => ({
+      id: String(item.id || ""),
+      order: Number(item.order || 0),
+      storageKey: typeof item.storageKey === "string" ? item.storageKey : null,
+    }))
     .filter((item) => item.id);
   if (!requested.length) return;
-  const assets = await tx.mediaAsset.findMany({ where: { id: { in: requested.map((item) => item.id) } }, select: { id: true } });
-  const assetIds = new Set(assets.map((asset: { id: string }) => asset.id));
-  const references = requested
-    .filter((item) => assetIds.has(item.id))
-    .map((item) => ({ revisionId, mediaId: item.id, displayOrder: item.order }));
+
+  const assets = await tx.mediaAsset.findMany({
+    where: { id: { in: requested.map((item) => item.id) } },
+    select: { id: true, storageKey: true },
+  });
+  const assetsById = new Map<string, { id: string; storageKey: string }>(
+    assets.map((asset: { id: string; storageKey: string }) => [asset.id, asset]),
+  );
+
+  const managed = [];
+  for (const item of requested) {
+    const asset = assetsById.get(item.id);
+    if (!asset) {
+      if (item.storageKey) throw new ContentConflictError("Media reference is not available for this Project");
+      continue;
+    }
+    if (!item.storageKey || asset.storageKey !== item.storageKey || !isPortfolioStorageKey(item.storageKey) || !item.storageKey.startsWith(`projects/${documentId}/`)) {
+      throw new ContentConflictError("Media reference is outside this Project namespace");
+    }
+    managed.push(item);
+  }
+  if (!managed.length) return;
+
+  const references = managed.map((item) => ({ revisionId, mediaId: item.id, displayOrder: item.order }));
   if (references.length) await tx.mediaReference.createMany({ data: references, skipDuplicates: true });
 }
 
@@ -101,7 +125,7 @@ export async function saveDraft(
           : { displayOrder: Number(payload.order), featured: Boolean(payload.featured) }),
       },
     });
-    if (input.contentType === "PROJECT") await attachMediaReferences(tx, revision.id, payload);
+    if (input.contentType === "PROJECT") await attachMediaReferences(tx, revision.id, document.id, payload);
     await tx.auditEvent.create({
       data: { action: "DRAFT_SAVED", contentType: input.contentType, documentId: document.id, revisionId: revision.id, actorId: input.actorId },
     });
@@ -132,6 +156,14 @@ export async function createContentDraft(
   input: { contentType: Exclude<CmsContentType, "PROFILE">; actorId: string; payload: unknown },
 ) {
   const payload = payloadFor(input.contentType, input.payload);
+  if (input.contentType === "NOTE") {
+    const slugResult = adminSlugSchema.safeParse(payload.slug);
+    if (!slugResult.success) {
+      const error = new Error("CONTENT_VALIDATION_ERROR");
+      Object.assign(error, { details: slugResult.error.flatten().fieldErrors });
+      throw error;
+    }
+  }
   const slug = String(payload.slug);
   return db.$transaction(async (tx) => {
     const conflict = await tx.contentDocument.findFirst({
@@ -159,7 +191,7 @@ export async function createContentDraft(
       },
     });
     await tx.contentDocument.update({ where: { id: document.id }, data: { draftRevisionId: revision.id } });
-    await attachMediaReferences(tx, revision.id, payload);
+    if (input.contentType === "PROJECT") await attachMediaReferences(tx, revision.id, document.id, payload);
     await tx.auditEvent.create({
       data: { action: "DRAFT_CREATED", contentType: input.contentType, documentId: document.id, revisionId: revision.id, actorId: input.actorId },
     });
@@ -206,7 +238,7 @@ export async function restoreRevision(
         ...(input.contentType === "PROFILE" ? {} : { displayOrder: Number(payload.order), featured: Boolean(payload.featured) }),
       },
     });
-    if (input.contentType === "PROJECT") await attachMediaReferences(tx, revision.id, payload);
+    if (input.contentType === "PROJECT") await attachMediaReferences(tx, revision.id, document.id, payload);
     await tx.auditEvent.create({
       data: { action: "REVISION_RESTORED", contentType: input.contentType, documentId: document.id, revisionId: revision.id, actorId: input.actorId, metadata: { sourceRevisionId: source.id } },
     });

@@ -71,4 +71,18 @@ describe("DatabaseContentRepository contract", () => {
     expect(await repository.getPublishedSlugRedirect("PROJECT", "old")).toBe("latest");
     expect(await repository.getPublishedSlugRedirect("PROJECT", "missing")).toBeNull();
   });
+
+  it("does not reinterpret a selected draft revision as published content", async () => {
+    const source = new StaticContentRepository();
+    const profile = await source.getPublishedProfile();
+    const draftRevision = { ...(revision(profile, "profile-draft") as Record<string, unknown>), status: "DRAFT" as const };
+    const db = {
+      contentDocument: {
+        findFirst: async () => ({ id: profile.id, displayOrder: 0, publishedRevision: draftRevision }),
+      },
+    };
+    const repository = new DatabaseContentRepository(db as never);
+
+    await expect(repository.getPublishedProfile()).rejects.toThrow("Selected revision is not published");
+  });
 });

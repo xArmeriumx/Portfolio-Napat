@@ -3,6 +3,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
+import { PrismaClient } from "@prisma/client";
 
 const allowedSchemas = new Set(["portfolio_cms_dev", "portfolio_cms_preview", "portfolio_cms_prod"]);
 const schema = process.env.PORTFOLIO_CMS_SCHEMA;
@@ -13,6 +14,18 @@ if (schema === "portfolio_cms_prod" && process.env.PORTFOLIO_BACKUP_CONFIRM !== 
 
 const databaseUrl = new URL(databaseUrlValue);
 if (databaseUrl.searchParams.get("schema") !== schema) throw new Error("DATABASE_URL schema does not match PORTFOLIO_CMS_SCHEMA");
+
+const prisma = new PrismaClient();
+
+async function verifyTarget() {
+  const expectedDatabase = decodeURIComponent(databaseUrl.pathname.replace(/^\//, ""));
+  const target = await prisma.$queryRawUnsafe("SELECT current_database() AS database, current_schema() AS schema");
+  const searchPath = await prisma.$queryRawUnsafe("SHOW search_path");
+  if (expectedDatabase && target[0]?.database !== expectedDatabase) throw new Error("Connected database verification failed");
+  const connectedSchema = String(target[0]?.schema || "");
+  const connectedSearchPath = String(searchPath[0]?.search_path || "");
+  if (connectedSchema !== schema && !connectedSearchPath.includes(schema)) throw new Error("Connected schema verification failed");
+}
 
 function connectionArgs() {
   const database = decodeURIComponent(databaseUrl.pathname.replace(/^\//, ""));
@@ -34,6 +47,7 @@ function runPgDump(args, env) {
 }
 
 async function main() {
+  await verifyTarget();
   const backupDirectory = path.resolve(process.env.PORTFOLIO_BACKUP_DIR || "artifacts/backups");
   await fs.mkdir(backupDirectory, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -46,4 +60,4 @@ async function main() {
 main().catch(() => {
   console.error("Portfolio backup failed; connection values were not printed");
   process.exitCode = 1;
-});
+}).finally(() => prisma.$disconnect());

@@ -87,6 +87,45 @@ function fakeDatabase(initialPayload: unknown) {
   return { db, document, revisions };
 }
 
+function fakeProjectDatabase(mediaAssets: Array<{ id: string; storageKey: string }>) {
+  const document = {
+    id: "project-1",
+    contentType: "PROJECT",
+    slug: "project-1",
+    displayOrder: 0,
+    featured: false,
+    status: "PUBLISHED",
+    publishedRevisionId: null,
+    draftRevisionId: null,
+  };
+  const db = {
+    contentDocument: {
+      findFirst: async () => ({ ...document }),
+      update: async ({ data }: { data: Record<string, unknown> }) => {
+        Object.assign(document, data);
+        return { ...document };
+      },
+    },
+    contentRevision: {
+      findFirst: async ({ orderBy }: { orderBy?: unknown }) => (orderBy ? null : null),
+      create: async ({ data }: { data: Record<string, unknown> }) => ({
+        id: "draft-project-1",
+        ...data,
+        createdAt: new Date(),
+      }),
+    },
+    mediaAsset: {
+      findMany: async () => mediaAssets,
+    },
+    mediaReference: {
+      createMany: async () => ({ count: mediaAssets.length }),
+    },
+    auditEvent: { create: async () => ({}) },
+    $transaction: async (callback: (_transaction: unknown) => unknown) => callback(db),
+  };
+  return db;
+}
+
 describe("profile draft lifecycle", () => {
   it("keeps public content isolated until the exact draft revision is published", async () => {
     const source = new StaticContentRepository();
@@ -206,5 +245,71 @@ describe("content conflict handling", () => {
       actorId: "admin-1",
       payload: project[0],
     })).rejects.toBeInstanceOf(ContentConflictError);
+  });
+
+  it("rejects a managed media reference outside the current Project namespace", async () => {
+    const source = new StaticContentRepository();
+    const project = structuredClone((await source.listPublishedProjects())[0]);
+    project.media = [{
+      ...project.media[0],
+      id: "asset-1",
+      storageKey: "projects/other-project/123e4567-e89b-12d3-a456-426614174000.png",
+    }];
+    const db = fakeProjectDatabase([{ id: "asset-1", storageKey: "projects/other-project/123e4567-e89b-12d3-a456-426614174000.png" }]);
+
+    await expect(saveDraft(db as never, {
+      contentType: "PROJECT",
+      documentId: "project-1",
+      actorId: "admin-1",
+      payload: project,
+    })).rejects.toBeInstanceOf(ContentConflictError);
+  });
+
+  it("rejects a managed media reference whose asset is missing", async () => {
+    const source = new StaticContentRepository();
+    const project = structuredClone((await source.listPublishedProjects())[0]);
+    project.media = [{
+      ...project.media[0],
+      id: "missing-asset",
+      storageKey: "projects/project-1/123e4567-e89b-12d3-a456-426614174000.png",
+    }];
+    const db = fakeProjectDatabase([]);
+
+    await expect(saveDraft(db as never, {
+      contentType: "PROJECT",
+      documentId: "project-1",
+      actorId: "admin-1",
+      payload: project,
+    })).rejects.toBeInstanceOf(ContentConflictError);
+  });
+
+  it("rejects a managed media reference when its storage key is omitted", async () => {
+    const source = new StaticContentRepository();
+    const project = structuredClone((await source.listPublishedProjects())[0]);
+    project.media = [{
+      ...project.media[0],
+      id: "asset-1",
+      storageKey: null,
+    }];
+    const db = fakeProjectDatabase([{ id: "asset-1", storageKey: "projects/project-1/123e4567-e89b-12d3-a456-426614174000.png" }]);
+
+    await expect(saveDraft(db as never, {
+      contentType: "PROJECT",
+      documentId: "project-1",
+      actorId: "admin-1",
+      payload: project,
+    })).rejects.toBeInstanceOf(ContentConflictError);
+  });
+
+  it("requires normalized slugs when creating a new Note", async () => {
+    const source = new StaticContentRepository();
+    const note = structuredClone((await source.listPublishedNotes())[0]);
+    note.slug = "Unsafe_Note";
+
+    await expect(createContentDraft({} as never, {
+      contentType: "NOTE",
+      actorId: "admin-1",
+      payload: note,
+    })).rejects.toMatchObject({ message: "CONTENT_VALIDATION_ERROR" });
   });
 });

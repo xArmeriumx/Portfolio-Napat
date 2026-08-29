@@ -41,6 +41,10 @@ export const revisionSchema = z.object({
 });
 
 const localizedStringArraySchema = z.array(localizedTextSchema);
+const portfolioStorageKeySchema = z
+  .string()
+  .regex(/^projects\/[^/]+\/[0-9a-f-]{36}\.(?:jpg|png|webp)$/i)
+  .nullable();
 
 export const skillSchema = z.object({
   id: z.string().min(1),
@@ -85,7 +89,7 @@ export const profileContentSchema = z.object({
 
 export const mediaReferenceSchema = z.object({
   id: z.string().min(1),
-  storageKey: z.string().nullable(),
+  storageKey: portfolioStorageKeySchema,
   url: safeUrlSchema,
   mimeType: z.string().min(1),
   width: z.number().int().positive().nullable(),

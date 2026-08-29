@@ -164,9 +164,10 @@ async function importDocument(tx, { id, contentType, slug, displayOrder, feature
 }
 
 async function main() {
-  const target = await prisma.$queryRawUnsafe("SELECT current_schema() AS schema, current_database() AS database");
-  const targetSchema = target[0]?.schema;
-  if (targetSchema !== schema) throw new Error(`Connected schema verification failed for ${schema}`);
+  const target = await prisma.$queryRawUnsafe("SELECT current_database() AS database, current_schema() AS schema");
+  const expectedDatabase = decodeURIComponent(databaseUrl.pathname.replace(/^\//, ""));
+  if (expectedDatabase && target[0]?.database !== expectedDatabase) throw new Error("Connected database verification failed");
+  if (target[0]?.schema !== schema) throw new Error(`Connected schema verification failed for ${schema}`);
 
   const notesDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../src/data/notes");
   const noteFiles = fs.readdirSync(notesDirectory).filter((file) => file.endsWith(".md")).sort((a, b) => a.localeCompare(b));

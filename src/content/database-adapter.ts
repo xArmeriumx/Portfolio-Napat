@@ -23,6 +23,7 @@ function payloadRecord(revision: ContentRevision) {
 }
 
 function publishedRevision(revision: ContentRevision) {
+  if (revision.status !== "PUBLISHED") throw new Error("Selected revision is not published");
   return {
     revisionId: revision.id,
     revisionNumber: revision.revisionNumber,
