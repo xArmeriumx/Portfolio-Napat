@@ -6,7 +6,6 @@ import { useTranslation } from "../context/LanguageContext.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import AnimatedText from "../components/ui/AnimatedText.jsx";
-import { projects } from "../data/projects.js";
 import { ExternalLink, ArrowRight } from "lucide-react";
 
 function GitHubIcon({ className }) {
@@ -286,8 +285,10 @@ function ProjectCard({ project, index }) {
   );
 }
 
-export default function ProjectList() {
-  const [featured, ...rest] = projects;
+export default function ProjectList({ projects = [] }) {
+  const featuredIndex = projects.findIndex((project) => project.featured);
+  const featured = projects[featuredIndex >= 0 ? featuredIndex : 0];
+  const rest = projects.filter((_, index) => index !== (featuredIndex >= 0 ? featuredIndex : 0));
 
   return (
     <>
@@ -337,9 +338,11 @@ export default function ProjectList() {
             </ScrollReveal>
 
             <div className="space-y-10 md:space-y-12">
-              <ScrollReveal width="100%">
-                <FeaturedProjectCard project={featured} />
-              </ScrollReveal>
+              {featured && (
+                <ScrollReveal width="100%">
+                  <FeaturedProjectCard project={featured} />
+                </ScrollReveal>
+              )}
 
               <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 md:gap-8">
                 {rest.map((project, idx) => (

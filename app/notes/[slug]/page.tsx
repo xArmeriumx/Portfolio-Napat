@@ -1,21 +1,28 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Notes from "@/views/Notes.jsx";
 import JsonLd from "@/components/utils/JsonLd";
 import { buildPageMetadata } from "@/lib/metadata";
-import { getAllNotes, getNoteBySlug, getNoteDescription, getNoteSchema } from "@/lib/notes";
+import { getNoteSchema, getNoteSeoMeta } from "@/lib/notes";
+import { getContentRepository } from "@/content/repository";
+import { toPresentationNote, toPresentationProfile } from "@/content/presentation";
+
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return getAllNotes().map((note) => ({ slug: note.id }));
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const note = getNoteBySlug(slug);
+  const repository = await getContentRepository();
+  let rawNote = await repository.getPublishedNoteBySlug(slug);
+  if (!rawNote) {
+    const redirectedSlug = await repository.getPublishedSlugRedirect("NOTE", slug);
+    if (redirectedSlug) rawNote = await repository.getPublishedNoteBySlug(redirectedSlug);
+  }
+  const note = rawNote ? toPresentationNote(rawNote) : null;
 
   if (!note) {
     return buildPageMetadata({
@@ -26,11 +33,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     });
   }
 
+  const noteSeo = getNoteSeoMeta(note);
   return buildPageMetadata({
-    title: `${note.name} Cheatsheet | Napatdev | Napat Pamornsut`,
-    description: `${getNoteDescription(note)} โน้ตความรู้เรื่อง ${note.name} โดย ณภัทร ภมรสูตร และ Napatdev`,
-    ogTitle: `${note.name} Cheatsheet | Napatdev`,
-    ogDescription: getNoteDescription(note, 200),
+    title: noteSeo.title,
+    description: noteSeo.description,
+    ogTitle: noteSeo.ogTitle,
+    ogDescription: noteSeo.ogDescription,
     ogType: "article",
     ogImage: "/favicon.png",
     ogImageWidth: 512,
@@ -42,14 +50,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function NoteDetailPage({ params }: Props) {
   const { slug } = await params;
-  const note = getNoteBySlug(slug);
+  const repository = await getContentRepository();
+  const [rawProfile, rawNote, rawNotes] = await Promise.all([
+    repository.getPublishedProfile(),
+    repository.getPublishedNoteBySlug(slug),
+    repository.listPublishedNotes(),
+  ]);
 
-  if (!note) notFound();
+  if (!rawNote) {
+    const redirectedSlug = await repository.getPublishedSlugRedirect("NOTE", slug);
+    if (redirectedSlug) redirect(`/notes/${encodeURIComponent(redirectedSlug)}`);
+    notFound();
+  }
+
+  const profile = toPresentationProfile(rawProfile);
+  const note = toPresentationNote(rawNote);
+  const notes = rawNotes.map(toPresentationNote);
 
   return (
     <>
-      <JsonLd data={getNoteSchema(note)} />
-      <Notes initialNotes={getAllNotes()} slug={slug} />
+      <JsonLd data={getNoteSchema(note, profile)} />
+      <Notes initialNotes={notes} slug={slug} />
     </>
   );
 }
