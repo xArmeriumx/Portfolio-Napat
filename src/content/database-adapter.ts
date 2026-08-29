@@ -1,0 +1,104 @@
+import type { ContentRevision, PrismaClient } from "@prisma/client";
+import {
+  noteContentSchema,
+  profileContentSchema,
+  projectContentSchema,
+  type NoteContent,
+  type ProfileContent,
+  type ProjectContent,
+} from "./schema";
+import type { ContentRepository } from "./repository";
+
+type PublishedDocument = {
+  publishedRevision: ContentRevision | null;
+  displayOrder: number;
+};
+
+function payloadRecord(revision: ContentRevision) {
+  if (!revision.payload || typeof revision.payload !== "object" || Array.isArray(revision.payload)) {
+    throw new Error(`Published revision ${revision.id} has an invalid payload`);
+  }
+  return revision.payload as Record<string, unknown>;
+}
+
+function publishedRevision(revision: ContentRevision) {
+  return {
+    revisionId: revision.id,
+    revisionNumber: revision.revisionNumber,
+    status: "PUBLISHED" as const,
+    publishedAt: revision.publishedAt?.toISOString() || null,
+  };
+}
+
+function mapProfile(document: PublishedDocument): ProfileContent {
+  if (!document.publishedRevision) throw new Error("Published Profile has no selected revision");
+  return profileContentSchema.parse({
+    ...payloadRecord(document.publishedRevision),
+    revision: publishedRevision(document.publishedRevision),
+  });
+}
+
+function mapProject(document: PublishedDocument): ProjectContent {
+  if (!document.publishedRevision) throw new Error("Published Project has no selected revision");
+  return projectContentSchema.parse({
+    ...payloadRecord(document.publishedRevision),
+    revision: publishedRevision(document.publishedRevision),
+  });
+}
+
+function mapNote(document: PublishedDocument): NoteContent {
+  if (!document.publishedRevision) throw new Error("Published Note has no selected revision");
+  return noteContentSchema.parse({
+    ...payloadRecord(document.publishedRevision),
+    revision: publishedRevision(document.publishedRevision),
+  });
+}
+
+const publishedRevisionInclude = { publishedRevision: true } as const;
+
+export class DatabaseContentRepository implements ContentRepository {
+  constructor(private readonly db: PrismaClient) {}
+
+  async getPublishedProfile() {
+    const document = await this.db.contentDocument.findFirst({
+      where: { contentType: "PROFILE", status: "PUBLISHED", publishedRevisionId: { not: null } },
+      include: publishedRevisionInclude,
+    });
+    if (!document) throw new Error("Published Profile is unavailable");
+    return mapProfile(document);
+  }
+
+  async listPublishedProjects() {
+    const documents = await this.db.contentDocument.findMany({
+      where: { contentType: "PROJECT", status: "PUBLISHED", publishedRevisionId: { not: null } },
+      orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }],
+      include: publishedRevisionInclude,
+    });
+    return documents.map(mapProject);
+  }
+
+  async getPublishedProjectBySlug(slug: string) {
+    const document = await this.db.contentDocument.findFirst({
+      where: { contentType: "PROJECT", slug, status: "PUBLISHED", publishedRevisionId: { not: null } },
+      include: publishedRevisionInclude,
+    });
+    return document ? mapProject(document) : null;
+  }
+
+  async listPublishedNotes() {
+    const documents = await this.db.contentDocument.findMany({
+      where: { contentType: "NOTE", status: "PUBLISHED", publishedRevisionId: { not: null } },
+      orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }],
+      include: publishedRevisionInclude,
+    });
+    return documents.map(mapNote);
+  }
+
+  async getPublishedNoteBySlug(slug: string) {
+    const document = await this.db.contentDocument.findFirst({
+      where: { contentType: "NOTE", slug, status: "PUBLISHED", publishedRevisionId: { not: null } },
+      include: publishedRevisionInclude,
+    });
+    return document ? mapNote(document) : null;
+  }
+}
