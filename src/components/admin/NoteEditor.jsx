@@ -79,7 +79,7 @@ export default function NoteEditor({ documentId = null, initialPayload, draftRev
     if (!window.confirm("ยืนยัน Archive Note นี้? ประวัติ revision จะยังคงอยู่")) return;
     setBusy(true); setError("");
     try {
-      await call(`/api/admin/notes/${documentId}/archive`, {});
+      await call(`/api/admin/notes/${documentId}/archive`, { confirm: true });
       window.location.href = "/admin/notes";
     } catch (archiveError) { setError(archiveError.message); }
     setBusy(false);

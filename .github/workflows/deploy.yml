@@ -41,6 +41,9 @@ jobs:
       - name: Run Focused Tests
         run: npm test -- --reporter=dot
 
+      - name: Typecheck
+        run: npm run typecheck
+
       - name: Lint Code
         run: npm run lint
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectImageMime, imageDimensions, MAX_MEDIA_BYTES } from "./storage";
+import { detectImageMime, imageDimensions, isPortfolioStorageKey, MAX_MEDIA_BYTES } from "./storage";
 
 describe("portfolio media validation", () => {
   it("recognizes the supported image signatures", () => {
@@ -16,5 +16,11 @@ describe("portfolio media validation", () => {
     new DataView(png.buffer).setUint32(20, 1080);
     expect(imageDimensions(png, "image/png")).toEqual({ width: 1920, height: 1080 });
     expect(MAX_MEDIA_BYTES).toBe(10 * 1024 * 1024);
+  });
+
+  it("keeps storage operations inside the managed Portfolio namespace", () => {
+    expect(isPortfolioStorageKey("projects/project-1/123e4567-e89b-12d3-a456-426614174000.png")).toBe(true);
+    expect(isPortfolioStorageKey("avatars/123e4567-e89b-12d3-a456-426614174000.png")).toBe(false);
+    expect(isPortfolioStorageKey("projects/project-1/../../other.png")).toBe(false);
   });
 });

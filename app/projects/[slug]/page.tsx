@@ -89,6 +89,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           keyFeatures: project.keyFeatures || [],
           role: project.role || [],
           links: project.links || {},
+          seo: project.seo,
           profile,
         })}
       />

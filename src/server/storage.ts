@@ -4,6 +4,10 @@ const allowedMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const extensionByMime = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 export const MAX_MEDIA_BYTES = 10 * 1024 * 1024;
 
+export function isPortfolioStorageKey(storageKey: string) {
+  return /^projects\/[^/]+\/[0-9a-f-]{36}\.(?:jpg|png|webp)$/i.test(storageKey);
+}
+
 function storageConfig() {
   const baseUrl = process.env.SUPABASE_URL?.replace(/\/$/, "");
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -13,6 +17,7 @@ function storageConfig() {
 }
 
 function storageUrl(bucket: string, storageKey: string) {
+  if (!isPortfolioStorageKey(storageKey)) throw new Error("INVALID_PORTFOLIO_STORAGE_KEY");
   return `${storageConfig().baseUrl}/storage/v1/object/${encodeURIComponent(bucket)}/${storageKey.split("/").map(encodeURIComponent).join("/")}`;
 }
 

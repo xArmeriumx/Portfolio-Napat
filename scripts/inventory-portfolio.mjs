@@ -49,7 +49,20 @@ async function storageInventory() {
     const buckets = await response.json();
     const names = Array.isArray(buckets) ? buckets.map((bucket) => String(bucket.name || bucket.id || "")).filter(Boolean).sort() : [];
     const expected = process.env.PORTFOLIO_STORAGE_BUCKET || "portfolio-cms";
-    return { status: "ok", buckets: names, portfolioBucket: names.includes(expected) };
+    const portfolio = Array.isArray(buckets) ? buckets.find((bucket) => String(bucket.name || bucket.id || "") === expected) : null;
+    return {
+      status: "ok",
+      buckets: names,
+      portfolioBucket: Boolean(portfolio),
+      portfolioBucketConfig: portfolio
+        ? {
+            name: String(portfolio.name || portfolio.id || expected),
+            public: Boolean(portfolio.public),
+            fileSizeLimit: portfolio.file_size_limit || null,
+            allowedMimeTypes: Array.isArray(portfolio.allowed_mime_types) ? portfolio.allowed_mime_types : null,
+          }
+        : null,
+    };
   } catch {
     return { status: "unavailable", buckets: [], portfolioBucket: false };
   }

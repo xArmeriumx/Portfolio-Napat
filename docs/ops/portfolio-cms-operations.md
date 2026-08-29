@@ -31,6 +31,29 @@ PORTFOLIO_INVENTORY_OUTPUT=artifacts/portfolio-supabase-inventory.json \
 node scripts/inventory-portfolio.mjs
 ```
 
+## Portfolio Storage namespace
+
+ตรวจ inventory ก่อนเสมอ แล้วตรวจหรือสร้างเฉพาะ bucket `portfolio-cms` ด้วย
+service role ที่เก็บใน secret manager เท่านั้น คำสั่งจะไม่แตะ bucket อื่น และจะ
+สร้าง bucket ก็ต่อเมื่อมี confirmation ที่ระบุชัดเจน:
+
+```bash
+SUPABASE_URL='https://PROJECT_REF.supabase.co' \
+SUPABASE_SERVICE_ROLE_KEY='ใช้ค่าจาก secret manager เท่านั้น' \
+PORTFOLIO_STORAGE_BUCKET=portfolio-cms \
+node scripts/ensure-storage.mjs
+
+SUPABASE_URL='https://PROJECT_REF.supabase.co' \
+SUPABASE_SERVICE_ROLE_KEY='ใช้ค่าจาก secret manager เท่านั้น' \
+PORTFOLIO_STORAGE_BUCKET=portfolio-cms \
+PORTFOLIO_STORAGE_CONFIRM=CREATE_PORTFOLIO_CMS_BUCKET \
+node scripts/ensure-storage.mjs
+```
+
+bucket ต้องเป็น public-read เพราะแอปใช้ public media URL แต่การเขียน/ลบทำผ่าน
+server-only service role และทุก object อยู่ใต้ `projects/{projectId}/...`
+จึงไม่ให้ Portfolio route แตะ namespace ของแอปอื่น
+
 ## Backup ก่อน migration/cutover
 
 ใช้ custom-format dump ที่จำกัดด้วย `--schema` และไม่ใช้ `prisma migrate reset`:

@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import Notes from "@/views/Notes.jsx";
 import JsonLd from "@/components/utils/JsonLd";
 import { buildPageMetadata } from "@/lib/metadata";
-import { getNoteDescription, getNoteSchema } from "@/lib/notes";
+import { getNoteSchema, getNoteSeoMeta } from "@/lib/notes";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationNote, toPresentationProfile } from "@/content/presentation";
 
@@ -33,11 +33,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     });
   }
 
+  const noteSeo = getNoteSeoMeta(note);
   return buildPageMetadata({
-    title: `${note.name} Cheatsheet | Napatdev | Napat Pamornsut`,
-    description: `${getNoteDescription(note)} โน้ตความรู้เรื่อง ${note.name} โดย ณภัทร ภมรสูตร และ Napatdev`,
-    ogTitle: `${note.name} Cheatsheet | Napatdev`,
-    ogDescription: getNoteDescription(note, 200),
+    title: noteSeo.title,
+    description: noteSeo.description,
+    ogTitle: noteSeo.ogTitle,
+    ogDescription: noteSeo.ogDescription,
     ogType: "article",
     ogImage: "/favicon.png",
     ogImageWidth: 512,

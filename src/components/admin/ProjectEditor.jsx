@@ -45,6 +45,12 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
     });
   }
 
+  function updateSeo(field, locale, value) {
+    const current = payload.seo?.[field] || { en: "", th: "" };
+    const next = { ...current, [locale]: value };
+    update(["seo", field], next.en.trim() || next.th.trim() ? next : null);
+  }
+
   async function call(path, body) {
     const response = await fetch(path, {
       method: "POST",
@@ -105,7 +111,7 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
     setBusy(true);
     setError("");
     try {
-      await call(`/api/admin/projects/${documentId}/archive`, {});
+      await call(`/api/admin/projects/${documentId}/archive`, { confirm: true });
       window.location.href = "/admin/projects";
     } catch (archiveError) {
       setError(archiveError.message);
@@ -220,6 +226,7 @@ export default function ProjectEditor({ documentId = null, initialPayload, draft
             </div>}
             <Field multiline rows={16} label="Media references JSON (managed upload metadata)" value={JSON.stringify(payload.media, null, 2)} onChange={(value) => { try { update(["media"], JSON.parse(value)); setError(""); } catch { setError("Media JSON ยังไม่สมบูรณ์"); } }} />
           </fieldset>
+          <fieldset className="rounded-2xl border border-gray-200 bg-white p-6"><legend className="px-2 text-lg font-black">SEO overrides</legend><p className="mb-4 text-sm text-gray-500">เว้นว่างเพื่อให้ metadata และ JSON-LD สร้างจากข้อมูล Project ที่ Published</p><div className="grid gap-4 md:grid-cols-2"><Field label="SEO title EN" value={payload.seo?.title?.en} onChange={(value) => updateSeo("title", "en", value)} /><Field label="SEO title TH" value={payload.seo?.title?.th} onChange={(value) => updateSeo("title", "th", value)} /><Field multiline label="SEO description EN" value={payload.seo?.description?.en} onChange={(value) => updateSeo("description", "en", value)} /><Field multiline label="SEO description TH" value={payload.seo?.description?.th} onChange={(value) => updateSeo("description", "th", value)} /><Field label="SEO image path/URL" value={payload.seo?.image} onChange={(value) => update(["seo", "image"], value || null)} /></div></fieldset>
           <RevisionHistory revisions={revisions} onRestore={restore} busy={busy} />
         </div>
       </div>

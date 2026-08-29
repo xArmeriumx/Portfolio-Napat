@@ -25,6 +25,21 @@ export function getNoteDescription(note: Note, maxLength = 160) {
   );
 }
 
+export function getNoteSeoMeta(note: Note) {
+  const titleOverride = note.seo?.title?.en?.trim() || note.seo?.title?.th?.trim() || "";
+  const descriptionOverride = note.seo?.description?.en?.trim() || note.seo?.description?.th?.trim() || "";
+  const generatedDescription = `${getNoteDescription(note)} โน้ตความรู้เรื่อง ${note.name} โดย ณภัทร ภมรสูตร และ Napatdev`;
+
+  return {
+    title: titleOverride || `${note.name} Cheatsheet | Napatdev | Napat Pamornsut`,
+    description: descriptionOverride || generatedDescription,
+    ogTitle: titleOverride || `${note.name} Cheatsheet | Napatdev`,
+    ogDescription: descriptionOverride || getNoteDescription(note, 200),
+    schemaTitle: titleOverride || note.name,
+    schemaDescription: descriptionOverride || `${getNoteDescription(note, 220)} โน้ตความรู้และชีทสรุปเรื่อง ${note.name} โดย ณภัทร ภมรสูตร`,
+  };
+}
+
 export function getNotesCollectionSchema(notes: Note[], profile: PresentationProfile) {
   return {
     "@context": "https://schema.org",
@@ -67,6 +82,7 @@ export function getNotesCollectionSchema(notes: Note[], profile: PresentationPro
 
 export function getNoteSchema(note: Note, profile: PresentationProfile) {
   const noteUrl = absoluteUrl(`/notes/${note.id}`);
+  const seo = getNoteSeoMeta(note);
 
   return {
     "@context": "https://schema.org",
@@ -76,10 +92,10 @@ export function getNoteSchema(note: Note, profile: PresentationProfile) {
         "@type": "TechArticle",
         "@id": `${noteUrl}#article`,
         url: noteUrl,
-        headline: note.name,
-        name: note.name,
-        alternateName: [note.name, `โน้ต ${note.name}`, `Cheatsheet ${note.name}`],
-        description: `${getNoteDescription(note, 220)} โน้ตความรู้และชีทสรุปเรื่อง ${note.name} โดย ณภัทร ภมรสูตร`,
+        headline: seo.schemaTitle,
+        name: seo.schemaTitle,
+        alternateName: [seo.schemaTitle, `โน้ต ${note.name}`, `Cheatsheet ${note.name}`],
+        description: seo.schemaDescription,
         inLanguage: ["en", "th"],
         author: { "@id": PERSON_ID },
         publisher: { "@id": ORGANIZATION_ID },

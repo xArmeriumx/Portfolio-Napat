@@ -83,12 +83,22 @@ export const SEO_DEFAULTS = {
 };
 
 export function getSiteSeoDefaults(profile) {
+  const defaultTitle = `${profile.name} (ณภัทร ภมรสูตร) | ${SITE_NAME}`;
+  const defaultDescription =
+    `Napatdev is the portfolio of ${profile.name} (ณภัทร ภมรสูตร), a Bangkok Web Developer and Software Tester focused on reliable web applications, QA, and automation testing.`;
+  const profileTitle = getLocalizedSeoValue(profile.seo?.title);
+  const profileDescription = getLocalizedSeoValue(profile.seo?.description);
+
   return {
     ...SEO_DEFAULTS,
-    title: `${profile.name} (ณภัทร ภมรสูตร) | ${SITE_NAME}`,
-    description:
-      `Napatdev is the portfolio of ${profile.name} (ณภัทร ภมรสูตร), a Bangkok Web Developer and Software Tester focused on reliable web applications, QA, and automation testing.`,
+    title: profileTitle || defaultTitle,
+    description: profileDescription || defaultDescription,
+    ogImage: profile.seo?.image || SEO_DEFAULTS.ogImage,
   };
+}
+
+function getLocalizedSeoValue(value) {
+  return value?.en?.trim() || value?.th?.trim() || "";
 }
 
 export function absoluteUrl(path = "") {
@@ -112,13 +122,14 @@ export function normalizeMetaDescription(text, maxLength = 160) {
 }
 
 export function getAboutSeoMeta(profile) {
+  const siteSeo = getSiteSeoDefaults(profile);
   return {
-    title: `About ${profile.name} | ณภัทร ภมรสูตร | ${SITE_NAME}`,
+    title: getLocalizedSeoValue(profile.seo?.title) || `About ${profile.name} | ณภัทร ภมรสูตร | ${SITE_NAME}`,
     description: normalizeMetaDescription(
-      `${profile.headline}. ${profile.about} ${profile.about_th} Based in ${profile.contact.location}.`,
+      getLocalizedSeoValue(profile.seo?.description) || `${profile.headline}. ${profile.about} ${profile.about_th} Based in ${profile.contact.location}.`,
       180,
     ),
-    ogImage: "/favicon.png",
+    ogImage: siteSeo.ogImage,
     ogImageAlt: `${profile.name} — Web Developer & Software Tester`,
     path: "/about",
     keywords: ["About Napat Pamornsut", "ณภัทร ภมรสูตร ประวัติ", "Napatdev profile", "Web Developer Bangkok"],
@@ -126,12 +137,12 @@ export function getAboutSeoMeta(profile) {
 }
 
 export function getProjectSeoMeta(project, getContent, profile) {
-  const title = getContent(project, "title");
+  const title = getLocalizedSeoValue(project.seo?.title) || getContent(project, "title");
   const description = normalizeMetaDescription(
-    `${getContent(project, "description")} ${project.description_th || ""}`,
+    getLocalizedSeoValue(project.seo?.description) || `${getContent(project, "description")} ${project.description_th || ""}`,
     180,
   );
-  const image = project.images?.[0] || project.image || SEO_DEFAULTS.ogImage;
+  const image = project.seo?.image || project.images?.[0] || project.image || SEO_DEFAULTS.ogImage;
   const technologies = (project.technologies || []).slice(0, 6).join(", ");
 
   return {
@@ -173,13 +184,14 @@ export function getProjectsListSeoMeta(profile) {
 }
 
 export function getContactSeoMeta(profile) {
+  const siteSeo = getSiteSeoDefaults(profile);
   return {
     title: `Contact ${profile.name} | ติดต่อ ณภัทร ภมรสูตร | ${SITE_NAME}`,
     description: normalizeMetaDescription(
       `Contact ${profile.name} for web development, QA, automation testing, and software project inquiries in ${profile.contact.location}. ติดต่อ ณภัทร ภมรสูตร สำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์`,
       180,
     ),
-    ogImage: "/favicon.png",
+    ogImage: siteSeo.ogImage,
     ogImageAlt: `${profile.name} contact information`,
     path: "/contact",
     keywords: ["Contact Napat Pamornsut", "ติดต่อ ณภัทร ภมรสูตร", "Napatdev contact", "Web Developer contact Bangkok"],
@@ -456,11 +468,14 @@ export function getProjectSchema({
   role = [],
   stack = undefined,
   links = {},
+  seo = null,
   profile,
 }) {
   const projectUrl = absoluteUrl(`/projects/${slug}`);
-  const imageUrl = toAbsoluteImageUrl(image);
-  const metaDescription = normalizeMetaDescription(description, 300);
+  const schemaTitle = getLocalizedSeoValue(seo?.title) || title;
+  const schemaDescription = getLocalizedSeoValue(seo?.description) || description;
+  const imageUrl = toAbsoluteImageUrl(seo?.image || image);
+  const metaDescription = normalizeMetaDescription(schemaDescription, 300);
   const languages = stack
     ? stack.split(",").map((s) => s.trim())
     : technologies;
@@ -468,8 +483,8 @@ export function getProjectSchema({
   const softwareApp = {
     "@type": "SoftwareApplication",
     "@id": `${projectUrl}#software`,
-    name: title,
-    alternateName: titleTh ? [title, titleTh] : undefined,
+    name: schemaTitle,
+    alternateName: titleTh ? [schemaTitle, titleTh] : undefined,
     description: metaDescription,
     url: projectUrl,
     image: imageUrl,
@@ -502,8 +517,8 @@ export function getProjectSchema({
         "@type": "WebPage",
         "@id": `${projectUrl}#webpage`,
         url: projectUrl,
-        name: title,
-        alternateName: titleTh ? [title, titleTh] : undefined,
+        name: schemaTitle,
+        alternateName: titleTh ? [schemaTitle, titleTh] : undefined,
         description: metaDescription,
         inLanguage: ["en", "th"],
         isPartOf: { "@id": WEBSITE_ID },
@@ -538,7 +553,7 @@ export function getProjectSchema({
           {
             "@type": "ListItem",
             position: 3,
-            name: titleTh ? `${title} / ${titleTh}` : title,
+            name: titleTh ? `${schemaTitle} / ${titleTh}` : schemaTitle,
             item: projectUrl,
           },
         ],

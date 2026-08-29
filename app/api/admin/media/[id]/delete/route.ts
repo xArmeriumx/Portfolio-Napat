@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/server/auth-guard";
 import { prisma } from "@/server/db";
 import { isSameOrigin } from "@/server/csrf";
-import { adminErrorResponse, unauthorizedResponse } from "@/server/admin-http";
+import { adminErrorResponse, confirmationRequiredResponse, hasExplicitConfirmation, unauthorizedResponse } from "@/server/admin-http";
 import { deletePortfolioMedia } from "@/server/storage";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!isSameOrigin(request)) return NextResponse.json({ error: { code: "CSRF", message: "Origin validation failed" } }, { status: 403 });
   if (!(await requireAdminApi())) return unauthorizedResponse();
+  if (!(await hasExplicitConfirmation(request))) return confirmationRequiredResponse();
   const id = (await params).id;
   try {
     const asset = await prisma.mediaAsset.findUnique({ where: { id }, include: { references: { include: { revision: { include: { publishedFor: true } } } } } });

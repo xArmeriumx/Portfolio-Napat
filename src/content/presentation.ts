@@ -19,6 +19,7 @@ export type PresentationProfile = {
     skills: Array<{ name: string; name_th: string; logo: string }>;
   }>;
   skills: Array<{ name: string; logo: string }>;
+  seo: ProfileContent["seo"];
 };
 
 export type PresentationProject = {
@@ -39,6 +40,7 @@ export type PresentationProject = {
   links: { demo: string | null; repo: string | null };
   featured: boolean;
   metrics: string[];
+  seo: ProjectContent["seo"];
 };
 
 export type PresentationNote = {
@@ -47,6 +49,7 @@ export type PresentationNote = {
   content: string;
   name: string;
   rawName: string;
+  seo: NoteContent["seo"];
 };
 
 export function toPresentationProfile(profile: ProfileContent): PresentationProfile {
@@ -84,6 +87,7 @@ export function toPresentationProfile(profile: ProfileContent): PresentationProf
     skills: profile.skillCategories.flatMap((category) =>
       category.skills.map((skill) => ({ name: skill.name.en, logo: skill.logo })),
     ),
+    seo: profile.seo,
   };
 }
 
@@ -109,6 +113,7 @@ export function toPresentationProject(project: ProjectContent): PresentationProj
     },
     featured: project.featured,
     metrics: project.metrics,
+    seo: project.seo,
   };
 }
 
@@ -119,5 +124,6 @@ export function toPresentationNote(note: NoteContent): PresentationNote {
     content: note.bodyMarkdown,
     name: note.title.en,
     rawName: note.rawName,
+    seo: note.seo,
   };
 }
