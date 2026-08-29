@@ -32,22 +32,43 @@ export function resolveAuthBaseURL() {
   return configured;
 }
 
+export function resolveAuthTrustedOrigins() {
+  const configured = process.env.BETTER_AUTH_TRUSTED_ORIGINS?.trim();
+  if (!configured) {
+    if (isProductionRuntime()) throw new Error("BETTER_AUTH_TRUSTED_ORIGINS must be configured in production");
+    return ["http://localhost:3000", "https://napatdev.com"];
+  }
+
+  const origins = configured
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  for (const origin of origins) {
+    let parsed: URL;
+    try {
+      parsed = new URL(origin);
+    } catch {
+      throw new Error("BETTER_AUTH_TRUSTED_ORIGINS must contain absolute origins");
+    }
+    if (parsed.origin !== origin) throw new Error("BETTER_AUTH_TRUSTED_ORIGINS must contain origins without paths");
+    if (isProductionRuntime() && parsed.protocol !== "https:") {
+      throw new Error("BETTER_AUTH_TRUSTED_ORIGINS must use HTTPS in production");
+    }
+  }
+  return origins;
+}
+
 function serverAuthConfig(allowSignUp: boolean) {
   const secret = process.env.BETTER_AUTH_SECRET;
   if (!secret || secret.length < 32) {
     throw new Error("BETTER_AUTH_SECRET must be configured with at least 32 characters");
   }
 
-  const trustedOrigins = (process.env.BETTER_AUTH_TRUSTED_ORIGINS || "http://localhost:3000,https://napatdev.com")
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-
   return {
     database: prismaAdapter(prisma, { provider: "postgresql", transaction: true }),
     secret,
     baseURL: resolveAuthBaseURL(),
-    trustedOrigins,
+    trustedOrigins: resolveAuthTrustedOrigins(),
     emailAndPassword: {
       enabled: true,
       disableSignUp: !allowSignUp,

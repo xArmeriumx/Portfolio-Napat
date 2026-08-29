@@ -89,7 +89,7 @@ node scripts/restore-portfolio.mjs
 
 ## Auth และ preview runtime guards
 
-- Production ต้องตั้ง `BETTER_AUTH_URL` เป็น absolute HTTPS URL ของ target; ระบบไม่ใช้ `http://localhost:3000` fallback
+- Production ต้องตั้ง `BETTER_AUTH_URL` เป็น absolute HTTPS URL ของ target และ `BETTER_AUTH_TRUSTED_ORIGINS` เป็น HTTPS origins ของ target; ระบบไม่ใช้ localhost fallback
 - Production ต้องตั้ง `PREVIEW_SIGNING_SECRET` แยกจาก `BETTER_AUTH_SECRET`; preview token เป็น HMAC อายุสั้นและ scope ตาม revision
 
 ## Current evidence boundary
