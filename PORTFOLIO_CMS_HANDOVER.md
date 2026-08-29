@@ -2,8 +2,8 @@
 
 วันที่ตรวจ: 29 สิงหาคม 2026 (Asia/Bangkok)  
 Branch: `feat/cms-repository`  
-Commit ล่าสุดของ implementation/hardening: `38e53dc`<br>
-Commit ที่ใช้สำหรับหลักฐาน CI/Preview: `38e53dc`<br>
+Commit ล่าสุดของ implementation/hardening: `dfd8d5e`<br>
+Commit ที่ใช้สำหรับหลักฐาน CI/Preview: `dfd8d5e`<br>
 Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## สรุปสำหรับผู้รับช่วงต่อ
@@ -44,13 +44,13 @@ Draft Revision ----> Exact Preview only (signed, short-lived token; no public in
 
 ## หลักฐานที่รันแล้ว
 
-- `npm test -- --run`: **11 files, 39 tests passed**
+- `npm test -- --run`: **11 files, 41 tests passed**
 - `npm run typecheck`: **ผ่าน** (`tsc --noEmit`)
 - `npm run lint`: **0 errors, 31 warnings**; warnings เป็น debt เดิมใน AI/notes และ unused constructor parameter ไม่ใช่ failure
 - `npm run build`: ผ่าน; Next.js สร้าง admin, API, preview, public dynamic routes และ sitemap ได้
 - `npx playwright test`: **1 public test passed, 1 mutation test skipped**; public test ครอบคลุม list/detail, metadata, JSON-LD, search และ sitemap เพราะไม่มี `CMS_E2E_ADMIN_EMAIL`, `CMS_E2E_ADMIN_PASSWORD` และ `CMS_E2E_ALLOW_MUTATIONS=true`
-- GitHub Actions Quality Gates ของ commit `38e53dc`: **ผ่าน** (run `33260292349`, job `99120951676`) รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint, build และ public Playwright smoke
-- Vercel Preview deployment ของ commit `38e53dc`: **ผ่าน** (`5eTBc3cehL1t9tbNsYHk2x4gH8hm`); deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
+- GitHub Actions Quality Gates ของ commit `dfd8d5e`: **ผ่าน** (run `33260802455`, job `99122289890`) รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint, build และ public Playwright smoke
+- Vercel Preview deployment ของ commit `dfd8d5e`: **ผ่าน** (`8sYBg1Qi6EotVe6ZFpX8VnnJfbTY`); deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
 - Worktree หลัง push: clean และ branch ตรงกับ `origin/feat/cms-repository`
 
 ภาพ browser local ที่ตรวจ public Notes อยู่ใน:
@@ -186,7 +186,7 @@ Restore ใช้ `pg_restore --schema --clean --if-exists --single-transaction`
 - `CONTENT_STORAGE=database`
 - `DATABASE_URL` ชี้ schema ที่ตรงกับ target
 - `BETTER_AUTH_SECRET` ยาวอย่างน้อย 32 ตัวอักษร
-- `BETTER_AUTH_URL` เป็น absolute HTTPS URL ของ target และ `BETTER_AUTH_TRUSTED_ORIGINS` เป็น hostname ของ target
+- `BETTER_AUTH_URL` เป็น absolute HTTPS URL ของ target และ `BETTER_AUTH_TRUSTED_ORIGINS` เป็น comma-separated HTTPS origins ของ target; production ไม่มี fallback
 - `PREVIEW_SIGNING_SECRET` แยกจาก auth secret
 - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `PORTFOLIO_STORAGE_BUCKET`
 - `ADMIN_ACTIVATION_TOKEN` ใช้ครั้งเดียวแล้วลบ
