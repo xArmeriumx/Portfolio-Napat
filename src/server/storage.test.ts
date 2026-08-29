@@ -1,5 +1,9 @@
-import { describe, expect, it } from "vitest";
-import { detectImageMime, imageDimensions, isPortfolioStorageKey, MAX_MEDIA_BYTES } from "./storage";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { detectImageMime, imageDimensions, isPortfolioStorageKey, MAX_MEDIA_BYTES, uploadPortfolioMedia } from "./storage";
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
 
 describe("portfolio media validation", () => {
   it("recognizes the supported image signatures", () => {
@@ -22,5 +26,14 @@ describe("portfolio media validation", () => {
     expect(isPortfolioStorageKey("projects/project-1/123e4567-e89b-12d3-a456-426614174000.png")).toBe(true);
     expect(isPortfolioStorageKey("avatars/123e4567-e89b-12d3-a456-426614174000.png")).toBe(false);
     expect(isPortfolioStorageKey("projects/project-1/../../other.png")).toBe(false);
+  });
+
+  it("rejects a storage bucket outside the dedicated Portfolio bucket", async () => {
+    vi.stubEnv("SUPABASE_URL", "https://example.supabase.co");
+    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "test-service-key");
+    vi.stubEnv("PORTFOLIO_STORAGE_BUCKET", "another-app");
+    const file = new File([new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])], "image.png", { type: "image/png" });
+
+    await expect(uploadPortfolioMedia({ projectId: "project-1", file, altEn: "Image", altTh: "ภาพ" })).rejects.toThrow("PORTFOLIO_STORAGE_BUCKET");
   });
 });

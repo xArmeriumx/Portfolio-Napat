@@ -9,9 +9,14 @@ describe("admin destructive-action confirmation", () => {
   });
 
   it("maps Storage configuration failures to an unavailable response", async () => {
-    const response = adminErrorResponse(new Error("Supabase Storage is not configured"));
+    const responses = [
+      adminErrorResponse(new Error("Supabase Storage is not configured")),
+      adminErrorResponse(new Error("INVALID_PORTFOLIO_STORAGE_BUCKET")),
+    ];
 
-    expect(response.status).toBe(502);
-    expect(await response.json()).toMatchObject({ error: { code: "STORAGE_UNAVAILABLE" } });
+    for (const response of responses) {
+      expect(response.status).toBe(502);
+      expect(await response.json()).toMatchObject({ error: { code: "STORAGE_UNAVAILABLE" } });
+    }
   });
 });

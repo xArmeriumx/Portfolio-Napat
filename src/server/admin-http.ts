@@ -31,7 +31,7 @@ export function adminErrorResponse(error: unknown) {
   if (error instanceof Error && error.message === "STORAGE_UPLOAD_FAILED") {
     return NextResponse.json({ error: { code: "STORAGE_UNAVAILABLE", message: "พื้นที่จัดเก็บ Media ไม่พร้อมใช้งาน" } }, { status: 502 });
   }
-  if (error instanceof Error && ["STORAGE_DELETE_FAILED", "Supabase Storage is not configured"].includes(error.message)) {
+  if (error instanceof Error && ["STORAGE_DELETE_FAILED", "Supabase Storage is not configured", "INVALID_PORTFOLIO_STORAGE_BUCKET"].includes(error.message)) {
     return NextResponse.json({ error: { code: "STORAGE_UNAVAILABLE", message: "พื้นที่จัดเก็บ Media ไม่พร้อมใช้งาน" } }, { status: 502 });
   }
   if (error instanceof Error && error.message === "INVALID_PORTFOLIO_STORAGE_KEY") {

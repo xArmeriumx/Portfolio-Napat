@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 
 const allowedMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const extensionByMime = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+const PORTFOLIO_STORAGE_BUCKET = "portfolio-cms";
 export const MAX_MEDIA_BYTES = 10 * 1024 * 1024;
 
 export function isPortfolioStorageKey(storageKey: string) {
@@ -11,8 +12,9 @@ export function isPortfolioStorageKey(storageKey: string) {
 function storageConfig() {
   const baseUrl = process.env.SUPABASE_URL?.replace(/\/$/, "");
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const bucket = process.env.PORTFOLIO_STORAGE_BUCKET || "portfolio-cms";
+  const bucket = process.env.PORTFOLIO_STORAGE_BUCKET || PORTFOLIO_STORAGE_BUCKET;
   if (!baseUrl || !serviceKey) throw new Error("Supabase Storage is not configured");
+  if (bucket !== PORTFOLIO_STORAGE_BUCKET) throw new Error("INVALID_PORTFOLIO_STORAGE_BUCKET");
   return { baseUrl, serviceKey, bucket };
 }
 
