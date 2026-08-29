@@ -30,6 +30,7 @@ google-credentials.json
 
 # Local CMS inventory, backups, and rendered evidence
 artifacts/
+test-results/
 
 # Study notes (private)
 Sheet/
