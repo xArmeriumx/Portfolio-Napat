@@ -3,7 +3,7 @@
 วันที่ตรวจ: 29 สิงหาคม 2026 (Asia/Bangkok)  
 Branch: `feat/cms-repository`  
 Commit ล่าสุดของ implementation/hardening: `abcd49f`<br>
-Commit ล่าสุดของ branch/evidence: `6dd0657`<br>
+Commit ล่าสุดของ branch/evidence: `4d0b4f5`<br>
 Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## สรุปสำหรับผู้รับช่วงต่อ
@@ -36,9 +36,9 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 - `npm run typecheck`: **ผ่าน** (`tsc --noEmit`)
 - `npm run lint`: **0 errors, 31 warnings**; warnings เป็น debt เดิมใน AI/notes และ unused constructor parameter ไม่ใช่ failure
 - `npm run build`: ผ่าน; Next.js สร้าง admin, API, preview, public dynamic routes และ sitemap ได้
-- `npx playwright test`: **1 public test passed, 1 mutation test skipped** เพราะไม่มี `CMS_E2E_ADMIN_EMAIL`, `CMS_E2E_ADMIN_PASSWORD` และ `CMS_E2E_ALLOW_MUTATIONS=true`
-- GitHub Actions Quality Gates ของ commit `6dd0657`: **ผ่าน** (run `33257382330`, job `99113366351`) รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint, build และ public Playwright smoke
-- Vercel Preview deployment ของ commit `6dd0657`: **ผ่าน** (`BUyiM8hVYiUdm9r4MXEWt2vycRdh`); deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
+- `npx playwright test`: **1 public test passed, 1 mutation test skipped**; public test ครอบคลุม list/detail, metadata, JSON-LD, search และ sitemap เพราะไม่มี `CMS_E2E_ADMIN_EMAIL`, `CMS_E2E_ADMIN_PASSWORD` และ `CMS_E2E_ALLOW_MUTATIONS=true`
+- GitHub Actions Quality Gates ของ commit `4d0b4f5`: **ผ่าน** (run `33258008438`, job `99114976122`) รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint, build และ public Playwright smoke
+- Vercel Preview deployment ของ commit `4d0b4f5`: **ผ่าน** (`DqFFs73meXG6CSRZkKW6w1i2DvZ3`); deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
 - Worktree หลัง push: clean และ branch ตรงกับ `origin/feat/cms-repository`
 
 ภาพ browser local ที่ตรวจ public Notes อยู่ใน [`portfolio-cms-notes-local-viewport.png`](artifacts/portfolio-cms-notes-local-viewport.png)
