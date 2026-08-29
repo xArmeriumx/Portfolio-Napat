@@ -15,7 +15,11 @@ export function getContentRepository(): Promise<ContentRepository> {
   if (!repositoryPromise) {
     repositoryPromise = (async () => {
       const isNextBuild = process.env.NEXT_PHASE === "phase-production-build";
-      const storage = process.env.CONTENT_STORAGE || (process.env.NODE_ENV === "production" && !isNextBuild ? "database" : "static");
+      const isProductionRuntime = process.env.NODE_ENV === "production" && !isNextBuild;
+      const storage = process.env.CONTENT_STORAGE || (isProductionRuntime ? "database" : "static");
+      if (isProductionRuntime && storage !== "database") {
+        throw new Error("Production runtime must use database content storage");
+      }
       if (storage === "database") {
         const [{ DatabaseContentRepository }, { prisma, assertPortfolioDatabaseTarget }] = await Promise.all([
           import("./database-adapter"),

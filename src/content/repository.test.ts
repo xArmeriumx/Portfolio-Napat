@@ -1,6 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { StaticContentRepository } from "./static-adapter";
+import { getContentRepository, resetContentRepositoryForTests } from "./repository";
 import { projectContentSchema, resolveLocalizedText } from "./schema";
+
+afterEach(() => {
+  resetContentRepositoryForTests();
+  vi.unstubAllEnvs();
+});
 
 describe("StaticContentRepository contract", () => {
   const repository = new StaticContentRepository();
@@ -54,5 +60,12 @@ describe("StaticContentRepository contract", () => {
     project.links.demo = "//attacker.example/demo";
 
     expect(projectContentSchema.safeParse(project).success).toBe(false);
+  });
+
+  it("fails closed when production is explicitly configured for static content", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("CONTENT_STORAGE", "static");
+
+    await expect(getContentRepository()).rejects.toThrow("Production runtime must use database content storage");
   });
 });
