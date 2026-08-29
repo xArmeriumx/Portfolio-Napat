@@ -13,6 +13,36 @@ async function signIn(page) {
 }
 
 test.describe("Portfolio CMS published lifecycle", () => {
+  test("public routes expose published content and derived consumers", async ({ page, request }) => {
+    await page.goto("/");
+    await expect(page).toHaveTitle(/Napatdev/i);
+    await expect(page.locator('script[type="application/ld+json"]')).not.toHaveCount(0);
+
+    await page.goto("/projects");
+    await expect(page.getByRole("heading", { name: "Projects", exact: true })).toBeVisible();
+    const projectLink = page.getByRole("link", { name: /View .*case study/i }).first();
+    await expect(projectLink).toBeVisible();
+    const projectHref = await projectLink.getAttribute("href");
+    expect(projectHref).toMatch(/^\/projects\//);
+
+    await page.goto("/notes");
+    await expect(page.getByRole("heading", { name: "Developer Notes", exact: true })).toBeVisible();
+    const noteLink = page.getByRole("link", { name: /Read note/i }).first();
+    await expect(noteLink).toBeVisible();
+    const noteHref = await noteLink.getAttribute("href");
+    expect(noteHref).toMatch(/^\/notes\//);
+
+    await page.goto("/search?q=TypeScript");
+    await expect(page.getByRole("heading", { name: /Search Napatdev/i })).toBeVisible();
+    await expect(page.locator("body")).toContainText("TypeScript");
+
+    const sitemap = await request.get("/sitemap.xml");
+    expect(sitemap.ok()).toBeTruthy();
+    const sitemapText = await sitemap.text();
+    expect(sitemapText).toContain("https://napatdev.com/projects/");
+    expect(sitemapText).toContain("https://napatdev.com/notes/");
+  });
+
   test("admin validation, draft isolation, exact preview, publish, and derived consumers", async ({ page, request }) => {
     test.skip(!adminEmail || !adminPassword || !allowMutations, "Set CMS_E2E_ADMIN_EMAIL, CMS_E2E_ADMIN_PASSWORD, and CMS_E2E_ALLOW_MUTATIONS=true");
     await signIn(page);
