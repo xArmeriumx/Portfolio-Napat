@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { PrismaClient } from "@prisma/client";
+import { searchPathHasSchema } from "./portfolio-target.mjs";
 
 const allowedSchemas = new Set(["portfolio_cms_dev", "portfolio_cms_preview", "portfolio_cms_prod"]);
 const schema = process.env.PORTFOLIO_CMS_SCHEMA;
@@ -48,7 +49,7 @@ async function verifyTarget() {
   }
   // A first install legitimately has no schema yet. For an existing schema,
   // require the connection's search path/current schema to resolve it too.
-  if (namespace.length > 0 && !connectedSearchPath.includes(schema) && target[0]?.schema !== schema) {
+  if (namespace.length > 0 && !searchPathHasSchema(connectedSearchPath, schema) && target[0]?.schema !== schema) {
     throw new Error("Connected schema verification failed");
   }
 }

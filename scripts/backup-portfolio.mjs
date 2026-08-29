@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { PrismaClient } from "@prisma/client";
+import { searchPathHasSchema } from "./portfolio-target.mjs";
 
 const allowedSchemas = new Set(["portfolio_cms_dev", "portfolio_cms_preview", "portfolio_cms_prod"]);
 const schema = process.env.PORTFOLIO_CMS_SCHEMA;
@@ -24,7 +25,7 @@ async function verifyTarget() {
   if (expectedDatabase && target[0]?.database !== expectedDatabase) throw new Error("Connected database verification failed");
   const connectedSchema = String(target[0]?.schema || "");
   const connectedSearchPath = String(searchPath[0]?.search_path || "");
-  if (connectedSchema !== schema && !connectedSearchPath.includes(schema)) throw new Error("Connected schema verification failed");
+  if (connectedSchema !== schema && !searchPathHasSchema(connectedSearchPath, schema)) throw new Error("Connected schema verification failed");
 }
 
 function connectionArgs() {
