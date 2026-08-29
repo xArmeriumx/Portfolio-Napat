@@ -6,6 +6,7 @@ import { useTranslation } from "../context/LanguageContext.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import AnimatedText from "../components/ui/AnimatedText.jsx";
+import { projects } from "../data/projects.js";
 
 // Libraries
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -198,8 +199,11 @@ function ListSection({ title, items }) {
   );
 }
 
-export default function ProjectDetail({ slug, project }) {
+export default function ProjectDetail({ slug }) {
   const { getContent } = useTranslation();
+
+  // Find project
+  const project = projects.find((p) => p.slug === slug);
 
   if (!project) {
     return (
