@@ -2,7 +2,7 @@
 
 วันที่ตรวจ: 29 สิงหาคม 2026 (Asia/Bangkok)  
 Branch: `feat/cms-repository`  
-Commit ล่าสุดของ implementation: `01459b6`<br>
+Commit ล่าสุดของ implementation: `a7727e8`<br>
 Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## สรุปสำหรับผู้รับช่วงต่อ
@@ -25,18 +25,19 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 | #9 | Note Markdown, sanitize policy, SEO fields | policy tests ผ่าน; mutation UAT ยังรอ |
 | #10 | immutable revisions, restore-as-new-draft, archive, redirect chain | service tests ผ่าน |
 | #11 | verification scripts และ Playwright smoke | public local smoke ผ่าน; credential flow ยัง skipped |
-| #12 | schema allowlist, inventory, backup/restore guards | scripts พร้อม; target evidence ยังรอ |
+| #12 | schema allowlist, inventory, backup/restore และ guarded Storage setup | scripts พร้อม; target evidence ยังรอ |
 | #13 | Vercel Preview config และ CI gate | Preview deployment ผ่าน แต่ protected SSO |
 | #14 | Production/rollback runbook | ยังไม่ cutover; ต้องทำตาม checklist ด้านล่าง |
 
 ## หลักฐานที่รันแล้ว
 
-- `npm test -- --run`: **6 files, 15 tests passed**
+- `npm test -- --run`: **8 files, 19 tests passed**
+- `npm run typecheck`: **ผ่าน** (`tsc --noEmit`)
 - `npm run lint`: **0 errors, 31 warnings**; warnings เป็น debt เดิมใน AI/notes และ unused constructor parameter ไม่ใช่ failure
 - `npm run build`: ผ่าน; Next.js สร้าง admin, API, preview, public dynamic routes และ sitemap ได้
 - `npx playwright test`: **1 public test passed, 1 mutation test skipped** เพราะไม่มี `CMS_E2E_ADMIN_EMAIL`, `CMS_E2E_ADMIN_PASSWORD` และ `CMS_E2E_ALLOW_MUTATIONS=true`
-- GitHub Actions Quality Gates ของ commit `01459b6`: **passed** รวม `npm ci`, Prisma generate/validate, tests, lint และ build
-- Vercel Preview deployment ของ commit `01459b6`: **passed**; deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
+- GitHub Actions Quality Gates ของ commit `a7727e8`: **passed** รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint และ build
+- Vercel Preview deployment ของ commit `a7727e8`: **passed**; deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
 - Worktree หลัง push: clean และ branch ตรงกับ `origin/feat/cms-repository`
 
 ภาพ browser local ที่ตรวจ public Notes อยู่ใน [`portfolio-cms-notes-local-viewport.png`](artifacts/portfolio-cms-notes-local-viewport.png)
@@ -59,11 +60,13 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 - Preview ใช้ HMAC token อายุ 15 นาทีใน `src/server/preview-token.ts` และอ่าน revision ที่ระบุแบบ exact เท่านั้น
 - Activation เป็น one-time token route; ไม่แสดง token หรือ secret ใน response/log
 - Sign out เป็น same-origin client action และพากลับ `/admin/login` หลังลบ session สำเร็จ
+- Archive และ media delete ต้องส่ง explicit confirmation ที่ server ตรวจซ้ำ ไม่พึ่งเฉพาะ `window.confirm`
 
 ### Media และ Markdown
 
 - Upload รับเฉพาะ PNG/JPEG/WebP ไม่เกิน 10 MB และตรวจ magic bytes ก่อนส่ง Supabase Storage
 - bucket/path ใช้ dedicated `portfolio-cms` และ `projects/{projectId}/{uuid}.{ext}`
+- `scripts/ensure-storage.mjs` ตรวจหรือสร้างเฉพาะ bucket นี้ด้วย confirmation ที่ allow-list ไว้; ไม่แตะ bucket อื่น
 - ลบ media ไม่ได้ถ้ามี Published/Draft reference
 - `src/content/markdown-policy.ts` ปฏิเสธ executable HTML, event handler และ `javascript:`, `vbscript:`, `data:` URL; code fence ยังเขียนตัวอย่าง HTML ได้
 - Public Note renderer ไม่ใช้ `rehypeRaw`
@@ -71,6 +74,13 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 ### SEO และ derived consumers
 
 การ Publish revalidate หน้า public, JSON-LD, sitemap และ search index ที่เกี่ยวข้อง รวมถึง project/note slug เดิมและใหม่เมื่อมีการ rename
+SEO override จาก Published Profile/Project/Note ถูกส่งต่อไปยัง metadata และ JSON-LD เดียวกับ content revision นั้น
+
+## URL ที่ตรวจสอบได้
+
+- Production public: <https://napatdev.com/> ตอบ HTTP 200 แต่ยังเป็น runtime เดิมและ **ไม่ใช่หลักฐาน CMS cutover**
+- Preview: <https://napata-git-feat-cms-r-8e1a7a-napat-pamornsuts-projects-14be8929.vercel.app/> deployment ผ่าน แต่ต้องผ่าน Vercel SSO
+- Preview Admin: <https://napata-git-feat-cms-r-8e1a7a-napat-pamornsuts-projects-14be8929.vercel.app/admin/login> หลัง authenticated UAT
 
 ## Runbook สำหรับ Preview/Production
 
@@ -86,6 +96,17 @@ npm run cms:inventory
 ```
 
 Inventory เป็น read-only และควรตรวจ database, current schema, search path, non-system schemas, object names, migration history, auth counts, storage bucket และ policies ก่อนแก้ไขใด ๆ
+
+ตรวจหรือสร้าง dedicated Storage bucket หลัง inventory โดยใช้คำสั่ง guarded นี้:
+
+```bash
+SUPABASE_URL='https://PROJECT_REF.supabase.co' \
+SUPABASE_SERVICE_ROLE_KEY='<secret-manager-injected-value>' \
+PORTFOLIO_STORAGE_BUCKET=portfolio-cms \
+node scripts/ensure-storage.mjs
+```
+
+ถ้า bucket ยังไม่มี ให้เพิ่ม `PORTFOLIO_STORAGE_CONFIRM=CREATE_PORTFOLIO_CMS_BUCKET` ใน secret-managed session เท่านั้น
 
 ### 2. Backup ก่อน migration หรือ cutover
 
@@ -168,6 +189,8 @@ npm run test:e2e
 7. Archive เอา item ออกจาก public list/detail โดยไม่ลบ history
 8. Restore สร้าง Draft ใหม่และ Preview/Publish ได้
 9. media upload/delete obeys reference protection
+
+การยืนยัน destructive action ต้องส่ง JSON `{ "confirm": true }`; request ที่ไม่มีค่านี้ถูกปฏิเสธที่ API
 
 ## Rollback
 
