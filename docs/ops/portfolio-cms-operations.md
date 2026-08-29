@@ -94,4 +94,4 @@ node scripts/restore-portfolio.mjs
 
 ## Current evidence boundary
 
-Local code มี target allow-list, schema-qualified migration/import, transactional content lifecycle, backup/restore scripts และ no-secret output policy แล้ว การรันกับ Supabase จริงต้องแนบ inventory, backup artifact hash, restore result, Vercel environment audit และ smoke evidence ของ environment นั้นก่อนเรียก Preview/Production ว่า ready
+Local code มี target allow-list, exact schema-qualified migration/import/backup/restore checks, transactional content lifecycle และ no-secret output policy แล้ว การรันกับ Supabase จริงต้องแนบ inventory, backup artifact hash, restore result, Vercel environment audit และ smoke evidence ของ environment นั้นก่อนเรียก Preview/Production ว่า ready

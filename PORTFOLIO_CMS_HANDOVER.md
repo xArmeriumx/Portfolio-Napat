@@ -2,8 +2,8 @@
 
 วันที่ตรวจ: 29 สิงหาคม 2026 (Asia/Bangkok)  
 Branch: `feat/cms-repository`  
-Commit ล่าสุดของ implementation/hardening: `dfd8d5e`<br>
-Commit ที่ใช้สำหรับหลักฐาน CI/Preview: `dfd8d5e`<br>
+Commit ล่าสุดของ implementation/hardening: `bccbe43`<br>
+Commit ที่ใช้สำหรับหลักฐาน CI/Preview: `bccbe43`<br>
 Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## สรุปสำหรับผู้รับช่วงต่อ
@@ -44,13 +44,13 @@ Draft Revision ----> Exact Preview only (signed, short-lived token; no public in
 
 ## หลักฐานที่รันแล้ว
 
-- `npm test -- --run`: **11 files, 41 tests passed**
+- `npm test -- --run`: **12 files, 41 tests passed**
 - `npm run typecheck`: **ผ่าน** (`tsc --noEmit`)
 - `npm run lint`: **0 errors, 31 warnings**; warnings เป็น debt เดิมใน AI/notes และ unused constructor parameter ไม่ใช่ failure
 - `npm run build`: ผ่าน; Next.js สร้าง admin, API, preview, public dynamic routes และ sitemap ได้
 - `npx playwright test`: **1 public test passed, 1 mutation test skipped**; public test ครอบคลุม list/detail, metadata, JSON-LD, search และ sitemap เพราะไม่มี `CMS_E2E_ADMIN_EMAIL`, `CMS_E2E_ADMIN_PASSWORD` และ `CMS_E2E_ALLOW_MUTATIONS=true`
-- GitHub Actions Quality Gates ของ commit `dfd8d5e`: **ผ่าน** (run `33260802455`, job `99122289890`) รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint, build และ public Playwright smoke
-- Vercel Preview deployment ของ commit `dfd8d5e`: **ผ่าน** (`8sYBg1Qi6EotVe6ZFpX8VnnJfbTY`); deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
+- GitHub Actions Quality Gates ของ commit `bccbe43`: **ผ่าน** (run `33263349417`, job `99128945554`) รวม `npm ci`, Prisma generate/validate, tests, typecheck, lint, build และ public Playwright smoke
+- Vercel Preview deployment ของ commit `bccbe43`: **ผ่าน** (`5LNJZTcduKLUbLgQSkdhVs8yMMLz`); deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
 - Worktree หลัง push: clean และ branch ตรงกับ `origin/feat/cms-repository`
 
 ภาพ browser local ที่ตรวจ public Notes อยู่ใน:
@@ -103,6 +103,7 @@ Draft Revision ----> Exact Preview only (signed, short-lived token; no public in
 - bucket/path ใช้ dedicated `portfolio-cms` และ `projects/{projectId}/{uuid}.{ext}`
 - `scripts/ensure-storage.mjs` และ runtime storage layer ตรวจหรือสร้างเฉพาะ bucket นี้ด้วย confirmation/allow-list ที่กำหนด; ไม่แตะ bucket อื่น
 - `scripts/import-content.mjs`, `scripts/backup-portfolio.mjs` และ `scripts/restore-portfolio.mjs` ตรวจ `current_database()`/`current_schema()` ก่อนทำงานที่อาจแตะข้อมูลหรือ restore
+- migration/backup/restore ใช้ exact schema token matching ใน `search_path` ไม่ยอมรับชื่อ schema ที่เป็นเพียง substring
 - ลบ media ไม่ได้ถ้ามี Published/Draft reference
 - Storage upload/delete configuration และ network failure ถูกแปลงเป็น `STORAGE_UNAVAILABLE` HTTP 502 แทนการรายงานเป็น server error กว้าง ๆ
 - `src/content/markdown-policy.ts` ปฏิเสธ executable HTML, event handler และ `javascript:`, `vbscript:`, `data:` URL; code fence ยังเขียนตัวอย่าง HTML ได้
