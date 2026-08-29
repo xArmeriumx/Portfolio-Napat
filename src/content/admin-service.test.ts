@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPreviewRevision, publishDraft, restoreRevision, saveDraft } from "./admin-service";
+import { archiveContent, ContentConflictError, createContentDraft, getPreviewRevision, publishDraft, restoreRevision, saveDraft } from "./admin-service";
 import { StaticContentRepository } from "./static-adapter";
 
 function fakeDatabase(initialPayload: unknown) {
@@ -82,7 +82,7 @@ function fakeDatabase(initialPayload: unknown) {
       },
     },
     auditEvent: { create: async () => ({}) },
-    $transaction: async (callback: (transaction: unknown) => unknown) => callback(db),
+    $transaction: async (callback: (_transaction: unknown) => unknown) => callback(db),
   };
   return { db, document, revisions };
 }
@@ -168,7 +168,7 @@ describe("note draft lifecycle", () => {
         },
       },
       auditEvent: { create: async () => ({}) },
-      $transaction: async (callback: (transaction: unknown) => unknown) => callback(db),
+      $transaction: async (callback: (_transaction: unknown) => unknown) => callback(db),
     };
     const draftPayload = structuredClone(published);
     draftPayload.title.en = "Draft note title";
@@ -180,5 +180,29 @@ describe("note draft lifecycle", () => {
     await publishDraft(db as never, { contentType: "NOTE", documentId: document.id, actorId: "admin-1", revisionId: draft.revisionId });
     expect(document.publishedRevisionId).toBe(draft.revisionId);
     expect(document.draftRevisionId).toBeNull();
+
+    await archiveContent(db as never, { contentType: "NOTE", documentId: document.id, actorId: "admin-1" });
+    expect(document.status).toBe("ARCHIVED");
+    expect(document.publishedRevisionId).toBe(draft.revisionId);
+    expect(document.draftRevisionId).toBeNull();
+  });
+});
+
+describe("content conflict handling", () => {
+  it("rejects a new document when its slug is already in use", async () => {
+    const source = new StaticContentRepository();
+    const project = await source.listPublishedProjects();
+    const db = {
+      contentDocument: {
+        findFirst: async () => ({ id: "existing-project" }),
+      },
+      $transaction: async (callback: (_transaction: unknown) => unknown) => callback(db),
+    };
+
+    await expect(createContentDraft(db as never, {
+      contentType: "PROJECT",
+      actorId: "admin-1",
+      payload: project[0],
+    })).rejects.toBeInstanceOf(ContentConflictError);
   });
 });
