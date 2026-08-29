@@ -20,16 +20,27 @@ if (databaseUrl.searchParams.get("schema") !== schema) {
   throw new Error("DATABASE_URL schema does not match PORTFOLIO_CMS_SCHEMA");
 }
 
-const migrationPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../prisma/migrations/20260829000000_portfolio_cms_initial/migration.sql");
-const migrationSql = await fs.readFile(migrationPath, "utf8");
-if (!migrationSql.includes('"__PORTFOLIO_SCHEMA__"')) throw new Error("Migration template is missing its schema placeholder");
+const migrationsDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../prisma/migrations");
+const migrationIds = (await fs.readdir(migrationsDirectory, { withFileTypes: true }))
+  .filter((entry) => entry.isDirectory() && /^\d+_/.test(entry.name))
+  .map((entry) => entry.name)
+  .sort();
+if (migrationIds.length === 0) throw new Error("No Portfolio migration templates found");
 
-const migrationId = "20260829000000_portfolio_cms_initial";
-const sqlStatements = migrationSql
-  .replaceAll('"__PORTFOLIO_SCHEMA__"', `"${schema}"`)
-  .split(";")
-  .map((statement) => statement.trim())
-  .filter(Boolean);
+const migrations = [];
+for (const migrationId of migrationIds) {
+  const migrationPath = path.join(migrationsDirectory, migrationId, "migration.sql");
+  const migrationSql = await fs.readFile(migrationPath, "utf8");
+  if (!migrationSql.includes('"__PORTFOLIO_SCHEMA__"')) throw new Error(`Migration template ${migrationId} is missing its schema placeholder`);
+  migrations.push({
+    id: migrationId,
+    statements: migrationSql
+      .replaceAll('"__PORTFOLIO_SCHEMA__"', `"${schema}"`)
+      .split(";")
+      .map((statement) => statement.trim())
+      .filter(Boolean),
+  });
+}
 const prisma = new PrismaClient();
 
 function quoteIdentifier(identifier) {
@@ -60,17 +71,21 @@ async function main() {
   await prisma.$executeRawUnsafe(`CREATE SCHEMA IF NOT EXISTS ${quoteIdentifier(schema)}`);
   await prisma.$executeRawUnsafe(`CREATE TABLE IF NOT EXISTS ${historyTable} ("id" TEXT PRIMARY KEY, "appliedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP)`);
 
-  const existing = await prisma.$queryRawUnsafe(`SELECT "id" FROM ${historyTable} WHERE "id" = $1`, migrationId);
-  if (existing.length > 0) {
-    console.log(JSON.stringify({ schema, migration: migrationId, status: "already_applied" }));
-    return;
-  }
+  const applied = [];
+  for (const migration of migrations) {
+    const existing = await prisma.$queryRawUnsafe(`SELECT "id" FROM ${historyTable} WHERE "id" = $1`, migration.id);
+    if (existing.length > 0) {
+      applied.push({ migration: migration.id, status: "already_applied" });
+      continue;
+    }
 
-  await prisma.$transaction(async (tx) => {
-    for (const statement of sqlStatements) await tx.$executeRawUnsafe(statement);
-    await tx.$executeRawUnsafe(`INSERT INTO ${historyTable} ("id") VALUES ($1)`, migrationId);
-  });
-  console.log(JSON.stringify({ schema, migration: migrationId, status: "applied" }));
+    await prisma.$transaction(async (tx) => {
+      for (const statement of migration.statements) await tx.$executeRawUnsafe(statement);
+      await tx.$executeRawUnsafe(`INSERT INTO ${historyTable} ("id") VALUES ($1)`, migration.id);
+    });
+    applied.push({ migration: migration.id, status: "applied" });
+  }
+  console.log(JSON.stringify({ schema, migrations: applied }));
 }
 
 main().catch((error) => {

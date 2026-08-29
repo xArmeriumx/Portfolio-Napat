@@ -41,6 +41,7 @@ CREATE TABLE "__PORTFOLIO_SCHEMA__"."Session" (
 -- CreateTable
 CREATE TABLE "__PORTFOLIO_SCHEMA__"."Account" (
     "id" TEXT NOT NULL,
+    "issuer" TEXT NOT NULL,
     "accountId" TEXT NOT NULL,
     "providerId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -55,6 +56,16 @@ CREATE TABLE "__PORTFOLIO_SCHEMA__"."Account" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "__PORTFOLIO_SCHEMA__"."RateLimit" (
+    "id" TEXT NOT NULL,
+    "key" TEXT NOT NULL,
+    "count" INTEGER NOT NULL,
+    "lastRequest" BIGINT NOT NULL,
+
+    CONSTRAINT "RateLimit_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -167,7 +178,10 @@ CREATE INDEX "Session_userId_idx" ON "__PORTFOLIO_SCHEMA__"."Session"("userId");
 CREATE INDEX "Account_userId_idx" ON "__PORTFOLIO_SCHEMA__"."Account"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Account_providerId_accountId_key" ON "__PORTFOLIO_SCHEMA__"."Account"("providerId", "accountId");
+CREATE UNIQUE INDEX "Account_issuer_accountId_key" ON "__PORTFOLIO_SCHEMA__"."Account"("issuer", "accountId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RateLimit_key_key" ON "__PORTFOLIO_SCHEMA__"."RateLimit"("key");
 
 -- CreateIndex
 CREATE INDEX "Verification_identifier_idx" ON "__PORTFOLIO_SCHEMA__"."Verification"("identifier");
