@@ -6,11 +6,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "cms:inventory": "node scripts/inventory-portfolio.mjs",
+    "cms:backup": "node scripts/backup-portfolio.mjs",
     "cms:import": "node scripts/import-content.mjs",
     "lint": "eslint .",
     "cms:migrate": "node scripts/migrate-content.mjs",
+    "cms:restore": "node scripts/restore-portfolio.mjs",
     "prisma:generate": "prisma generate",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "start": "next start",
     "preview": "next start"
   },
@@ -41,6 +45,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^26.1.0",
     "@types/react": "^19.2.5",

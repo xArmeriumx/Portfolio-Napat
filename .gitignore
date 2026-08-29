@@ -27,5 +27,8 @@ dist-ssr
 
 google-credentials.json
 
+# Local CMS inventory, backups, and rendered evidence
+artifacts/
+
 # Study notes (private)
 Sheet/
