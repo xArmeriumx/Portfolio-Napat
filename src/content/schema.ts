@@ -35,7 +35,7 @@ const safeUrlSchema = z
 export const revisionSchema = z.object({
   revisionId: z.string().min(1),
   revisionNumber: z.number().int().positive(),
-  status: z.literal("PUBLISHED"),
+  status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
   publishedAt: z.string().datetime().nullable(),
 });
 

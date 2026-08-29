@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/config/seo.js";
 import { getContentRepository } from "@/content/repository";
 
+export const dynamic = "force-dynamic";
+
 function route(url: string, priority: number, changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]) {
   const absoluteUrl = `${SITE_URL}${url}`;
 

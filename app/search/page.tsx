@@ -6,6 +6,8 @@ import { buildPageMetadata } from "@/lib/metadata";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationNote, toPresentationProfile, toPresentationProject } from "@/content/presentation";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   searchParams?: Promise<{ q?: string }>;
 };

@@ -6,6 +6,8 @@ import { buildPageMetadata } from "@/lib/metadata";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationNote, toPresentationProfile } from "@/content/presentation";
 
+export const dynamic = "force-dynamic";
+
 const notesKeywords = [
   "Napatdev developer notes",
   "Napat Pamornsut notes",

@@ -1,6 +1,16 @@
 export { getContentRepository } from "./repository";
 export type { ContentRepository } from "./repository";
 export {
+  adminSlugSchema,
+  noteDraftSchema,
+  parseContentDraft,
+  profileDraftSchema,
+  projectDraftSchema,
+  type NoteDraft,
+  type ProfileDraft,
+  type ProjectDraft,
+} from "./input-schema";
+export {
   resolveLocalizedText,
   toLocalizedText,
   type Locale,

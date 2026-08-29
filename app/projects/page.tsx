@@ -6,6 +6,8 @@ import { buildPageMetadata } from "@/lib/metadata";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationProfile, toPresentationProject } from "@/content/presentation";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata(): Promise<Metadata> {
   const repository = await getContentRepository();
   const profile = toPresentationProfile(await repository.getPublishedProfile());
