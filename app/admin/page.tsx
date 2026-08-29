@@ -24,11 +24,11 @@ export default async function AdminPage() {
             <h2 className="mt-4 text-xl font-black text-gray-900">Projects</h2>
             <p className="mt-2 text-sm text-gray-500">Draft, Preview, Publish, order และ archive</p>
           </Link>
-          <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-6">
+          <Link href="/admin/notes" className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-[#c43c3c]/40">
             <span className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">03</span>
-            <h2 className="mt-4 text-xl font-black text-gray-500">Notes & Media</h2>
-            <p className="mt-2 text-sm text-gray-400">กำลังเชื่อมต่อ lifecycle ใน ticket #8–#9</p>
-          </div>
+            <h2 className="mt-4 text-xl font-black text-gray-900">Notes</h2>
+            <p className="mt-2 text-sm text-gray-500">Markdown, Draft, Preview, Publish และ archive</p>
+          </Link>
         </div>
         <form action="/api/auth/sign-out" method="post" className="mt-8">
           <button type="submit" className="rounded-full border border-gray-300 bg-white px-5 py-2 text-sm font-bold text-gray-700 hover:border-gray-900">Sign out</button>

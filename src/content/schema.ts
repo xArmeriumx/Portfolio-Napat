@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isSafeMarkdown, MARKDOWN_SAFETY_MESSAGE } from "./markdown-policy";
 
 export const localeSchema = z.enum(["en", "th"]);
 
@@ -127,7 +128,7 @@ export const noteContentSchema = z.object({
   // inputs use the stricter normalized slug schema in the database layer.
   slug: z.string().regex(/^[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)*$/),
   title: localizedTextSchema,
-  bodyMarkdown: z.string(),
+  bodyMarkdown: z.string().refine(isSafeMarkdown, MARKDOWN_SAFETY_MESSAGE),
   excerpt: localizedTextSchema,
   order: z.number().int().nonnegative(),
   rawName: z.string().min(1),

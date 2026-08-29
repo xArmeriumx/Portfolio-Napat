@@ -37,7 +37,9 @@ export const projectDraftSchema = projectContentSchema.omit({ id: true, revision
 });
 
 export const noteDraftSchema = noteContentSchema.omit({ id: true, revision: true }).extend({
-  slug: adminSlugSchema,
+  // Preserve the existing filesystem slugs (including uppercase/underscore names).
+  // Newly created notes should still use lowercase hyphenated slugs in the editor.
+  slug: noteContentSchema.shape.slug,
 });
 
 export const contentDraftSchemas = {

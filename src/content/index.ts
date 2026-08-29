@@ -27,3 +27,4 @@ export {
   type PresentationProfile,
   type PresentationProject,
 } from "./presentation";
+export { isSafeMarkdown, MARKDOWN_SAFETY_MESSAGE } from "./markdown-policy";
