@@ -24,6 +24,9 @@ test.describe("Portfolio CMS published lifecycle", () => {
     await expect(projectLink).toBeVisible();
     const projectHref = await projectLink.getAttribute("href");
     expect(projectHref).toMatch(/^\/projects\//);
+    await page.goto(projectHref || "/projects");
+    await expect(page.locator('script[type="application/ld+json"]')).not.toHaveCount(0);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /.+/);
 
     await page.goto("/notes");
     await expect(page.getByRole("heading", { name: "Developer Notes", exact: true })).toBeVisible();
@@ -31,6 +34,9 @@ test.describe("Portfolio CMS published lifecycle", () => {
     await expect(noteLink).toBeVisible();
     const noteHref = await noteLink.getAttribute("href");
     expect(noteHref).toMatch(/^\/notes\//);
+    await page.goto(noteHref || "/notes");
+    await expect(page.locator('script[type="application/ld+json"]')).not.toHaveCount(0);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /.+/);
 
     await page.goto("/search?q=TypeScript");
     await expect(page.getByRole("heading", { name: /Search Napatdev/i })).toBeVisible();
