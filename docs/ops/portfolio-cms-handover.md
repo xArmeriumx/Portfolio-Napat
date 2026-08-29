@@ -2,7 +2,7 @@
 
 วันที่ตรวจ: 29 สิงหาคม 2026 (Asia/Bangkok)  
 Branch: `feat/cms-repository`  
-Commit ล่าสุด: `ab9dc9c`  
+Commit ล่าสุดของ implementation: `01459b6`<br>
 Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 
 ## สรุปสำหรับผู้รับช่วงต่อ
@@ -35,8 +35,8 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 - `npm run lint`: **0 errors, 31 warnings**; warnings เป็น debt เดิมใน AI/notes และ unused constructor parameter ไม่ใช่ failure
 - `npm run build`: ผ่าน; Next.js สร้าง admin, API, preview, public dynamic routes และ sitemap ได้
 - `npx playwright test`: **1 public test passed, 1 mutation test skipped** เพราะไม่มี `CMS_E2E_ADMIN_EMAIL`, `CMS_E2E_ADMIN_PASSWORD` และ `CMS_E2E_ALLOW_MUTATIONS=true`
-- GitHub Actions Quality Gates ของ commit `ab9dc9c`: **passed** รวม `npm ci`, Prisma generate/validate, tests, lint และ build
-- Vercel Preview deployment ของ commit `ab9dc9c`: **passed**; deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
+- GitHub Actions Quality Gates ของ commit `01459b6`: **passed** รวม `npm ci`, Prisma generate/validate, tests, lint และ build
+- Vercel Preview deployment ของ commit `01459b6`: **passed**; deployment protection แสดงหน้า Vercel SSO ก่อนถึงแอป
 - Worktree หลัง push: clean และ branch ตรงกับ `origin/feat/cms-repository`
 
 ภาพ browser local ที่ตรวจ public Notes อยู่ใน [`portfolio-cms-notes-local-viewport.png`](../../artifacts/portfolio-cms-notes-local-viewport.png)
@@ -58,6 +58,7 @@ Pull Request: [#15](https://github.com/xArmeriumx/Portfolio-Napat/pull/15)
 - mutation API ตรวจ same-origin ใน `src/server/csrf.ts`
 - Preview ใช้ HMAC token อายุ 15 นาทีใน `src/server/preview-token.ts` และอ่าน revision ที่ระบุแบบ exact เท่านั้น
 - Activation เป็น one-time token route; ไม่แสดง token หรือ secret ใน response/log
+- Sign out เป็น same-origin client action และพากลับ `/admin/login` หลังลบ session สำเร็จ
 
 ### Media และ Markdown
 
