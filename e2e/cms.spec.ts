@@ -101,6 +101,9 @@ test.describe("Portfolio CMS published lifecycle", () => {
         await page.getByRole("button", { name: "Publish" }).click();
         await expect(page.getByRole("status")).toContainText("เผยแพร่ revision");
       }
+      await page.goto("/admin");
+      await page.getByRole("button", { name: "Sign out" }).click();
+      await expect(page).toHaveURL(/\/admin\/login/);
     }
   });
 });

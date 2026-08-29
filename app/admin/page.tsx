@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import SignOutButton from "@/components/admin/SignOutButton";
 import { requireAdminPage } from "@/server/auth-guard";
 
 export const dynamic = "force-dynamic";
@@ -30,9 +31,7 @@ export default async function AdminPage() {
             <p className="mt-2 text-sm text-gray-500">Markdown, Draft, Preview, Publish และ archive</p>
           </Link>
         </div>
-        <form action="/api/auth/sign-out" method="post" className="mt-8">
-          <button type="submit" className="rounded-full border border-gray-300 bg-white px-5 py-2 text-sm font-bold text-gray-700 hover:border-gray-900">Sign out</button>
-        </form>
+        <SignOutButton />
       </div>
     </section>
   );
