@@ -15,8 +15,24 @@ async function signIn(page) {
 test.describe("Portfolio CMS published lifecycle", () => {
   test("public routes expose published content and derived consumers", async ({ page, request }) => {
     await page.goto("/");
-    await expect(page).toHaveTitle(/Napatdev/i);
+    await expect(page).toHaveTitle(/Napat Pamornsut|Napatdev/i);
     await expect(page.locator('script[type="application/ld+json"]')).not.toHaveCount(0);
+
+    const ogImage = page.locator('meta[property="og:image"]');
+    await expect(ogImage).toHaveAttribute("content", /\/api\/og\?/);
+    await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1200");
+    await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /https:\/\/napatdev\.com\/?$/);
+
+    const ogResponse = await request.get("/api/og?kind=site");
+    expect(ogResponse.ok()).toBeTruthy();
+    expect(ogResponse.headers()["content-type"]).toContain("image/png");
+
+    const robots = await request.get("/robots.txt");
+    const robotsText = await robots.text();
+    expect(robotsText).toContain("Disallow: /admin");
+    expect(robotsText).toContain("Disallow: /preview");
+    expect(robotsText).toContain("Sitemap: https://napatdev.com/sitemap.xml");
 
     await page.goto("/projects");
     await expect(page.getByRole("heading", { name: "Projects", exact: true })).toBeVisible();
