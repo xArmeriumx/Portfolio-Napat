@@ -4,13 +4,26 @@ import { getContentRepository } from "@/content/repository";
 
 export const dynamic = "force-dynamic";
 
-function route(url: string, priority: number, changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]) {
+type SitemapEntry = {
+  url: string;
+  changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
+  priority: number;
+  lastModified?: Date;
+};
+
+function route(
+  url: string,
+  priority: number,
+  changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"],
+  lastModified?: string | null,
+): SitemapEntry {
   const absoluteUrl = `${SITE_URL}${url}`;
 
   return {
     url: absoluteUrl,
     changeFrequency,
     priority,
+    ...(lastModified ? { lastModified: new Date(lastModified) } : {}),
   };
 }
 
@@ -28,7 +41,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     route("/projects", 0.95, "weekly"),
     route("/notes", 0.8, "weekly"),
     route("/search", 0.7, "weekly"),
-    ...projects.map((project) => route(`/projects/${project.slug}`, 0.8, "monthly")),
-    ...notes.map((note) => route(`/notes/${note.slug}`, 0.65, "monthly")),
+    ...projects.map((project) =>
+      route(`/projects/${project.slug}`, 0.8, "monthly", project.revision.publishedAt),
+    ),
+    ...notes.map((note) => route(`/notes/${note.slug}`, 0.65, "monthly", note.revision.publishedAt)),
   ];
 }

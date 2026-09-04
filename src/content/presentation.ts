@@ -45,10 +45,11 @@ export type PresentationProject = {
 
 export type PresentationNote = {
   path: string;
-  id: string;
+  slug: string;
   content: string;
   name: string;
   rawName: string;
+  publishedAt: string | null;
   seo: NoteContent["seo"];
 };
 
@@ -120,10 +121,11 @@ export function toPresentationProject(project: ProjectContent): PresentationProj
 export function toPresentationNote(note: NoteContent): PresentationNote {
   return {
     path: `/src/data/notes/${note.rawName}`,
-    id: note.slug,
+    slug: note.slug,
     content: note.bodyMarkdown,
     name: note.title.en,
     rawName: note.rawName,
+    publishedAt: note.revision.publishedAt,
     seo: note.seo,
   };
 }

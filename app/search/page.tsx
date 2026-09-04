@@ -52,7 +52,7 @@ export default async function SearchPage({ searchParams }: Props) {
     title: note.name,
     titleEn: note.name,
     titleTh: `โน้ต ${note.name}`,
-    href: `/notes/${note.id}`,
+    href: `/notes/${note.slug}`,
     description: `Developer note and cheatsheet: ${note.name}. โน้ตความรู้และชีทสรุปเรื่อง ${note.name}`,
     searchText: `${note.name} Developer Notes Cheatsheet โน้ต คู่มือ ชีทสรุป`,
   }));

@@ -21,8 +21,6 @@ export async function generateMetadata(): Promise<Metadata> {
     ogDescription: notesSeo.description,
     ogImage: notesSeo.ogImage,
     ogImageAlt: notesSeo.ogImageAlt,
-    ogImageWidth: 512,
-    ogImageHeight: 512,
     path: notesSeo.path,
     keywords: notesSeo.keywords,
   });
@@ -51,7 +49,7 @@ export default async function NotesIndexPage() {
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {notes.map((note, index) => (
-              <Link key={note.id} href={`/notes/${note.id}`} className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-1 hover:border-[#c43c3c]/30 hover:shadow-[0_16px_35px_rgba(0,0,0,0.08)]">
+              <Link key={note.slug} href={`/notes/${note.slug}`} className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-1 hover:border-[#c43c3c]/30 hover:shadow-[0_16px_35px_rgba(0,0,0,0.08)]">
                 <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">
                   <span>{String(index + 1).padStart(2, "0")}</span>
                   <span className="text-[#c43c3c]">Read note</span>

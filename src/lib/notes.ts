@@ -7,6 +7,7 @@ import {
   WEBSITE_ID,
   SITE_URL,
 } from "@/config/seo.js";
+import { buildOgImageUrl } from "@/lib/metadata";
 import type { PresentationNote, PresentationProfile } from "@/content/presentation";
 
 export type Note = PresentationNote;
@@ -31,9 +32,9 @@ export function getNoteSeoMeta(note: Note) {
   const generatedDescription = `${getNoteDescription(note)} โน้ตความรู้เรื่อง ${note.name} โดย ณภัทร ภมรสูตร และ Napatdev`;
 
   return {
-    title: titleOverride || `${note.name} Cheatsheet | Napatdev | Napat Pamornsut`,
+    title: titleOverride || note.name,
     description: descriptionOverride || generatedDescription,
-    ogTitle: titleOverride || `${note.name} Cheatsheet | Napatdev`,
+    ogTitle: titleOverride || note.name,
     ogDescription: descriptionOverride || getNoteDescription(note, 200),
     schemaTitle: titleOverride || note.name,
     schemaDescription: descriptionOverride || `${getNoteDescription(note, 220)} โน้ตความรู้และชีทสรุปเรื่อง ${note.name} โดย ณภัทร ภมรสูตร`,
@@ -64,7 +65,7 @@ export function getNotesCollectionSchema(notes: Note[], profile: PresentationPro
             position: index + 1,
             name: note.name,
             alternateName: [note.name, `โน้ต ${note.name}`],
-            url: absoluteUrl(`/notes/${note.id}`),
+            url: absoluteUrl(`/notes/${note.slug}`),
           })),
         },
       },
@@ -81,7 +82,7 @@ export function getNotesCollectionSchema(notes: Note[], profile: PresentationPro
 }
 
 export function getNoteSchema(note: Note, profile: PresentationProfile) {
-  const noteUrl = absoluteUrl(`/notes/${note.id}`);
+  const noteUrl = absoluteUrl(`/notes/${note.slug}`);
   const seo = getNoteSeoMeta(note);
 
   return {
@@ -96,10 +97,12 @@ export function getNoteSchema(note: Note, profile: PresentationProfile) {
         name: seo.schemaTitle,
         alternateName: [seo.schemaTitle, `โน้ต ${note.name}`, `Cheatsheet ${note.name}`],
         description: seo.schemaDescription,
+        image: buildOgImageUrl("note", seo.schemaTitle, "โน้ตความรู้โดย Napat Pamornsut"),
         inLanguage: ["en", "th"],
         author: { "@id": PERSON_ID },
         publisher: { "@id": ORGANIZATION_ID },
         isPartOf: { "@id": WEBSITE_ID },
+        ...(note.publishedAt ? { datePublished: note.publishedAt, dateModified: note.publishedAt } : {}),
       },
       {
         "@type": "BreadcrumbList",

@@ -7,12 +7,18 @@ import {
   toAbsoluteImageUrl,
 } from "@/config/seo.js";
 
+const OG_IMAGE_WIDTH = 1200;
+const OG_IMAGE_HEIGHT = 630;
+
 type SeoInput = {
   title: string;
   description: string;
   ogTitle?: string;
   ogDescription?: string;
   ogType?: "website" | "article";
+  ogSection?: string;
+  ogKind?: string;
+  ogSubtitle?: string;
   ogImage?: string;
   ogImageAlt?: string;
   ogImageWidth?: number;
@@ -24,12 +30,63 @@ type SeoInput = {
   keywords?: string[];
 };
 
+export function buildOgImageUrl(kind = "site", title = "", subtitle = "") {
+  const params = new URLSearchParams();
+  params.set("kind", kind);
+  if (title) params.set("title", title);
+  if (subtitle) params.set("subtitle", subtitle);
+  return `/api/og?${params.toString()}`;
+}
+
+function isRealContentImage(image?: string) {
+  if (!image) return false;
+  return image !== SEO_DEFAULTS.ogImage && image !== "/favicon.png";
+}
+
+type ResolvedOgImage = {
+  url: string;
+  width: number;
+  height: number;
+};
+
+function resolveOgImage({
+  ogImage,
+  kind,
+  title,
+  subtitle,
+  width,
+  height,
+}: {
+  ogImage?: string;
+  kind: string;
+  title: string;
+  subtitle?: string;
+  width?: number;
+  height?: number;
+}): ResolvedOgImage {
+  if (isRealContentImage(ogImage)) {
+    return {
+      url: toAbsoluteImageUrl(ogImage),
+      width: width || OG_IMAGE_WIDTH,
+      height: height || OG_IMAGE_HEIGHT,
+    };
+  }
+  return {
+    url: buildOgImageUrl(kind, title, subtitle),
+    width: OG_IMAGE_WIDTH,
+    height: OG_IMAGE_HEIGHT,
+  };
+}
+
 export function buildPageMetadata({
   title,
   description,
   ogTitle,
   ogDescription,
   ogType = "website",
+  ogSection,
+  ogKind,
+  ogSubtitle,
   ogImage,
   ogImageAlt,
   ogImageWidth,
@@ -47,10 +104,15 @@ export function buildPageMetadata({
     ogDescription || description,
     ogType === "article" ? 200 : 160,
   );
-  const imageUrl = toAbsoluteImageUrl(ogImage || SEO_DEFAULTS.ogImage);
-  const isProjectImage = Boolean(ogImage && ogImage !== SEO_DEFAULTS.ogImage);
-  const imageWidth = ogImageWidth || (isProjectImage ? 1200 : 512);
-  const imageHeight = ogImageHeight || (isProjectImage ? 630 : 512);
+  const kind = ogKind || path.split("/").filter(Boolean)[0] || "site";
+  const image = resolveOgImage({
+    ogImage,
+    kind,
+    title: effectiveTitle,
+    subtitle: ogSubtitle,
+    width: ogImageWidth,
+    height: ogImageHeight,
+  });
 
   const openGraph: Record<string, unknown> = {
     type: ogType,
@@ -62,9 +124,9 @@ export function buildPageMetadata({
     alternateLocale: [alternateLocale],
     images: [
       {
-        url: imageUrl,
-        width: imageWidth,
-        height: imageHeight,
+        url: image.url,
+        width: image.width,
+        height: image.height,
         alt: ogImageAlt || `${effectiveTitle} - Napat Pamornsut Portfolio`,
       },
     ],
@@ -72,7 +134,7 @@ export function buildPageMetadata({
 
   if (ogType === "article") {
     openGraph.authors = ["Napat Pamornsut"];
-    openGraph.section = "Portfolio Projects";
+    openGraph.section = ogSection || "Portfolio";
   }
 
   return {
@@ -102,7 +164,7 @@ export function buildPageMetadata({
       card: "summary_large_image",
       title: effectiveTitle,
       description: effectiveDescription,
-      images: [imageUrl],
+      images: [image.url],
     },
     other: {
       "geo.region": "TH-10",

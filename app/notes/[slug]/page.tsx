@@ -40,10 +40,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ogTitle: noteSeo.ogTitle,
     ogDescription: noteSeo.ogDescription,
     ogType: "article",
-    ogImage: "/favicon.png",
-    ogImageWidth: 512,
-    ogImageHeight: 512,
-    path: `/notes/${note.id}`,
+    ogSection: "Developer Notes",
+    ogKind: "note",
+    ogSubtitle: `โน้ตความรู้โดย Napat Pamornsut`,
+    path: `/notes/${note.slug}`,
     keywords: [note.name, `Napatdev ${note.name}`, `Napat Pamornsut ${note.name}`, `ณภัทร ภมรสูตร ${note.name}`, "developer notes", "technical cheatsheet"],
   });
 }

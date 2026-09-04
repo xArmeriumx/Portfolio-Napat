@@ -20,8 +20,6 @@ export async function generateMetadata(): Promise<Metadata> {
     ogDescription: contactSeo.description,
     ogImage: contactSeo.ogImage,
     ogImageAlt: contactSeo.ogImageAlt,
-    ogImageWidth: 512,
-    ogImageHeight: 512,
     path: contactSeo.path,
     keywords: contactSeo.keywords,
   });

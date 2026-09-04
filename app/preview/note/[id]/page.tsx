@@ -31,9 +31,9 @@ export default async function NotePreviewPage({ params, searchParams }: Props) {
         revision: { revisionId: revision.revisionId, revisionNumber: revision.revisionNumber, status: "DRAFT", publishedAt: null },
         ...payload,
       });
-      const notes = rawNotes.filter((item) => item.slug !== note.id).map(toPresentationNote);
+      const notes = rawNotes.filter((item) => item.slug !== note.slug).map(toPresentationNote);
       notes.splice(Math.min(payload.order, notes.length), 0, note);
-      return { revisionNumber: revision.revisionNumber, notes, slug: note.id };
+      return { revisionNumber: revision.revisionNumber, notes, slug: note.slug };
     } catch {
       return null;
     }

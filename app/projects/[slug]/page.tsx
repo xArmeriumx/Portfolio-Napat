@@ -47,9 +47,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ogDescription: projectSeo.ogDescription,
     ogImage: projectSeo.ogImage,
     ogImageAlt: projectSeo.ogImageAlt,
-    ogImageWidth: projectSeo.ogImageWidth,
-    ogImageHeight: projectSeo.ogImageHeight,
     ogType: "article",
+    ogSection: "Portfolio Projects",
+    ogKind: "project",
+    ogSubtitle: toPresentationProfile(rawProfile).headline,
     path: projectSeo.path,
     keywords: projectSeo.keywords,
   });

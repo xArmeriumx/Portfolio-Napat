@@ -18,6 +18,17 @@ describe("CMS SEO overrides", () => {
     expect(seo.ogImage).toBe("/custom-profile.png");
   });
 
+  it("keeps titles concise in English with the Thai name in the description", () => {
+    const seo = getSiteSeoDefaults({
+      name: "Napat Pamornsut",
+      seo: { title: null, description: null, image: null },
+    });
+
+    expect(seo.title).toBe("Napat Pamornsut — Web Developer & Software Tester");
+    expect(seo.title.length).toBeLessThanOrEqual(60);
+    expect(seo.description).toContain("ณภัทร ภมรสูตร");
+  });
+
   it("uses Project and Note SEO overrides for derived metadata", () => {
     const projectSeo = getProjectSeoMeta(
       {
@@ -38,15 +49,17 @@ describe("CMS SEO overrides", () => {
       { name: "Napat Pamornsut" },
     );
     expect(projectSeo.title).toContain("Custom project title");
+    expect(projectSeo.title).toContain("Case Study");
     expect(projectSeo.description).toBe("Custom project description");
     expect(projectSeo.ogImage).toBe("/custom-project.png");
 
     const noteSeo = getNoteSeoMeta({
       path: "/notes/cms-note",
-      id: "cms-note",
+      slug: "cms-note",
       content: "# Visible note",
       name: "Visible note",
       rawName: "cms-note.md",
+      publishedAt: null,
       seo: {
         title: { en: "Custom note title", th: "ชื่อโน้ต" },
         description: { en: "Custom note description", th: "คำอธิบายโน้ต" },
@@ -63,7 +76,16 @@ describe("CMS SEO overrides", () => {
       seo: { title: null, description: null, image: "/published-profile.png" },
     });
 
-    expect(seo.title).toContain("Published Profile Name");
+    expect(seo.title).toBe("Developer Notes & Cheatsheets");
     expect(seo.ogImage).toBe("/published-profile.png");
+  });
+
+  it("falls back to the generated OG card when the profile image is the favicon", () => {
+    const seo = getNotesListSeoMeta({
+      name: "Napat Pamornsut",
+      seo: { title: null, description: null, image: "/favicon.png" },
+    });
+
+    expect(seo.ogImage).toBeUndefined();
   });
 });

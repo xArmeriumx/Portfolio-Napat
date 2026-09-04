@@ -1,6 +1,6 @@
 # Napat Pamornsut - Portfolio
 
-Personal portfolio website showcasing my projects, skills, and professional experience as a Fullstack Developer and Automation Tester.
+Personal portfolio website showcasing my projects, skills, and professional experience as a Web Developer and Software Tester. Bilingual (English / Thai) and backed by a built-in CMS for content management.
 
 ## Live Demo
 
@@ -8,87 +8,38 @@ Personal portfolio website showcasing my projects, skills, and professional expe
 
 ---
 
-## Table of Contents
-
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Pages](#pages)
-- [Components](#components)
-- [Customization](#customization)
-- [Deployment](#deployment)
-- [License](#license)
-
----
-
-## Features
-
-### Design
-- **Responsive Design** - Works on desktop, tablet, and mobile
-- **Modern UI** - Clean, minimalist aesthetic
-- **Animations** - Smooth hover effects and transitions
-- **SEO Optimized** - Custom meta tags for each page
-
-### Functionality
-- **Project Showcase** - Detailed project pages with image galleries
-- **Skills Section** - Organized by category (Frontend, Backend, Testing)
-- **Contact Information** - Links to GitHub, LinkedIn, Email
-- **Dynamic Routing** - Project detail pages with URL slugs
-
-### Performance
-- **Fast Loading** - Built with Vite for optimal performance
-- **Lazy Loading** - Images loaded on demand
-- **Code Splitting** - Route-based chunking
-
----
-
 ## Tech Stack
 
 | Category | Technology |
 |----------|------------|
-| Framework | React 18 |
-| Build Tool | Vite |
-| Routing | React Router v6 |
-| Styling | CSS (custom) |
-| Deployment | Vercel / GitHub Pages |
+| Framework | Next.js 16 (App Router), React 19 |
+| Language | TypeScript + JavaScript (JSX views) |
+| Styling | Tailwind CSS 4 |
+| Content | Dual-adapter content repository: static data files (dev) or Supabase Postgres via Prisma (production) |
+| Auth | Better Auth (admin login) |
+| Testing | Vitest (unit), Playwright (E2E) |
+| Deployment | Vercel |
 
 ---
 
 ## Project Structure
 
 ```
+app/                    # Next.js App Router routes, metadata, API handlers
+├── api/og/             # Dynamic OG image generation (next/og + Prompt font)
+├── admin/              # CMS backoffice (noindex)
+├── preview/            # Token-guarded draft previews (noindex)
+├── layout.tsx          # Root metadata (metadataBase, OG, templates)
+├── sitemap.ts          # Dynamic sitemap.xml with content-driven lastModified
+└── robots.ts           # robots.txt (disallows /api, /admin, /preview)
+
 src/
-├── components/             # Reusable UI components
-│   ├── layout/
-│   │   └── Footer.jsx      # Site footer
-│   ├── nav/
-│   │   └── Navbar.jsx      # Navigation bar
-│   └── ui/
-│       ├── Card.jsx        # Card component
-│       └── Section.jsx     # Section wrapper
-│
-├── data/                   # Static data
-│   ├── profile.js          # Personal info, skills
-│   └── projects.js         # Project details
-│
-├── hooks/                  # Custom React hooks
-│   └── usePageMeta.js      # SEO meta management
-│
-├── pages/                  # Page components
-│   ├── Home.jsx            # Landing page
-│   ├── About.jsx           # About me page
-│   ├── ProjectList.jsx     # Project listing
-│   ├── ProjectDetail.jsx   # Individual project
-│   └── NotFound.jsx        # 404 page
-│
-├── styles/                 # CSS files
-│   ├── globals.css         # Main stylesheet
-│   ├── theme.css           # CSS variables
-│   └── grid-bg.css         # Background styles
-│
-├── App.jsx                 # Root component with routes
-└── main.jsx                # Entry point
+├── config/seo.js       # Site-wide SEO defaults, per-page meta, JSON-LD schemas
+├── lib/metadata.ts     # buildPageMetadata() + /api/og URL builder
+├── content/            # Content repository, Zod schemas, static/database adapters
+├── data/               # Static content baseline (profile, projects, markdown notes)
+├── views/              # Page-level JSX views
+└── components/         # UI components
 ```
 
 ---
@@ -97,36 +48,30 @@ src/
 
 ### Prerequisites
 
-- Node.js >= 16.0.0
-- npm or yarn
+- Node.js >= 20
+- npm
 
 ### Installation
 
 ```bash
-# Clone the repository
 git clone https://github.com/xArmeriumx/Portfolio-Napat.git
-
-# Navigate to project directory
 cd Portfolio-Napat
-
-# Install dependencies
 npm install
-
-# Start development server
+npm run prisma:generate
 npm run dev
 ```
+
+By default the app serves content from the static adapter (`CONTENT_STORAGE=static`). Production requires `CONTENT_STORAGE=database` with a `DATABASE_URL` pointing at the Supabase Postgres schema — see `docs/ops/portfolio-cms-operations.md` and `PORTFOLIO_CMS_HANDOVER.md`.
 
 ### Available Scripts
 
 ```bash
-# Development server (port 5173)
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
+npm run dev        # Development server
+npm run build      # Production build (runs prisma generate first via vercel.json)
+npm run lint       # ESLint
+npm run typecheck  # tsc --noEmit
+npm run test       # Vitest unit tests
+npm run test:e2e   # Playwright E2E (public smoke without CMS env vars)
 ```
 
 ---
@@ -135,179 +80,34 @@ npm run preview
 
 | Route | Page | Description |
 |-------|------|-------------|
-| `/` | Home | Hero section with introduction |
-| `/about` | About | Skills, education, contact info |
-| `/projects` | Projects | List of all projects |
-| `/projects/:slug` | Project Detail | Individual project details |
-| `*` | 404 | Not found page |
-
----
-
-## Components
-
-### Navbar
-Fixed navigation bar with links to all pages.
-
-```jsx
-<Navbar />
-```
-
-### Section
-Reusable section wrapper with title and line decoration.
-
-```jsx
-<Section title="About Me">
-  {/* Content */}
-</Section>
-```
-
-### Card
-White card container with hover effects.
-
-```jsx
-<Card>
-  <p>Card content</p>
-</Card>
-```
-
-### ProjectCard
-Project preview card with image, roles, and highlights.
-
-```jsx
-<ProjectCard project={projectData} />
-```
-
-### ImageGallery
-Image gallery with thumbnail navigation.
-
-```jsx
-<ImageGallery 
-  images={imageArray}
-  title="Project Title"
-/>
-```
-
----
-
-## Customization
-
-### Update Personal Info
-
-Edit `src/data/profile.js`:
-
-```javascript
-export const profile = {
-  name: "Your Name",
-  headline: "Your Title",
-  tagline: "Your description...",
-  links: {
-    github: "https://github.com/username",
-    linkedin: "https://linkedin.com/in/username",
-    email: "email@example.com",
-  },
-  skills: [
-    // Your skills
-  ],
-};
-```
-
-### Add Projects
-
-Edit `src/data/projects.js`:
-
-```javascript
-{
-  slug: "project-url-slug",
-  title: "Project Title",
-  images: ["path/to/image.png"],
-  role: ["Developer"],
-  description: "Project description...",
-  technologies: ["React", "Node.js"],
-  keyFeatures: ["Feature 1", "Feature 2"],
-  highlights: ["Highlight 1", "Highlight 2"],
-  responsibilities: ["Task 1", "Task 2"],
-  links: {
-    demo: "https://demo-url.com",
-    repo: "https://github.com/...",
-  },
-}
-```
-
-### Update Styling
-
-Edit CSS variables in `src/styles/theme.css`:
-
-```css
-:root {
-  --maxw: 880px;
-  --accent: #d14d4d;
-  --text: #1d1d1f;
-  --muted: #86868b;
-  --bg: #f5f5f7;
-}
-```
-
----
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Connect your GitHub repository to Vercel
-2. Auto-deploys on push to main branch
-
-### GitHub Pages
-
-1. Update `vite.config.js`:
-   ```javascript
-   base: "/Portfolio-Napat/"
-   ```
-
-2. Build and deploy:
-   ```bash
-   npm run build
-   # Deploy dist/ folder to gh-pages branch
-   ```
-
-### Configuration
-
-**vite.config.js**
-```javascript
-export default defineConfig({
-  plugins: [react()],
-  base: process.env.GITHUB_PAGES ? "/Portfolio-Napat/" : "/",
-  build: {
-    sourcemap: false,
-    minify: 'esbuild',
-  },
-  esbuild: {
-    drop: ['console', 'debugger'],
-  },
-});
-```
+| `/` | Home | Hero and profile introduction |
+| `/about` | About | Bio, education, skills |
+| `/projects` | Projects | Project case study list |
+| `/projects/:slug` | Project Detail | Individual case study with gallery |
+| `/notes` | Developer Notes | Technical notes and cheatsheets |
+| `/notes/:slug` | Note Detail | Markdown note reader |
+| `/contact` | Contact | Contact channels |
+| `/search` | Search | Crawlable site index (noindex when `?q=` present) |
+| `/admin` | CMS | Better Auth-guarded backoffice (noindex) |
+| `/preview/*` | Draft previews | Token-guarded, noindex |
 
 ---
 
 ## SEO
 
-Each page uses the `usePageMeta` hook for dynamic meta tags:
-
-```jsx
-usePageMeta({
-  title: "Page Title | Napat Pamornsut",
-  description: "Page description for SEO",
-  ogTitle: "Open Graph title",
-});
-```
+- **Metadata** — every page exports `generateMetadata` built through `buildPageMetadata()` (`src/lib/metadata.ts`): canonical URLs, Open Graph, Twitter cards, robots directives, geo tags.
+- **Social images** — `/api/og` renders branded 1200×630 cards per page via `next/og` with the Prompt font (Thai supported). Real content images (CMS `seo.image`, project screenshots) take precedence over generated cards.
+- **Structured data** — JSON-LD `@graph` per page (Person, Organization, WebSite, ProfilePage, CollectionPage, SoftwareApplication, TechArticle, ContactPage, BreadcrumbList) from `src/config/seo.js` and `src/lib/notes.ts`.
+- **Crawlers** — dynamic `sitemap.xml` (with `lastModified` from published revisions) and `robots.txt` that disallows `/api/`, `/admin`, and `/preview`.
+- **CMS overrides** — every profile/project/note document carries optional `seo.title/description(/image)` fields that flow straight into metadata and JSON-LD.
 
 ---
 
-## Browser Support
+## Deployment
 
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
+1. Connect the GitHub repository to Vercel
+2. Set production env vars (`DATABASE_URL`, `CONTENT_STORAGE=database`, Better Auth secrets, Supabase storage keys)
+3. Auto-deploys on push to `main` via the CI/CD workflow (`.github/workflows/deploy.yml`)
 
 ---
 
@@ -319,6 +119,6 @@ MIT License
 
 ## Author
 
-**Napat Pamornsut**
-- GitHub: [@NapatPamornsuT](https://github.com/NapatPamornsuT)
-- Email: armnapat.a.03@gmail.com
+**Napat Pamornsut (ณภัทร ภมรสูตร)**
+- GitHub: [@xArmeriumx](https://github.com/xArmeriumx)
+- Website: [napatdev.com](https://napatdev.com)
