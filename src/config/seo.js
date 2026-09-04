@@ -83,7 +83,7 @@ export const SEO_DEFAULTS = {
 };
 
 export function getSiteSeoDefaults(profile) {
-  const defaultTitle = `${profile.name} (ณภัทร ภมรสูตร) | ${SITE_NAME}`;
+  const defaultTitle = `${profile.name} — Web Developer & Software Tester`;
   const defaultDescription =
     `Napatdev is the portfolio of ${profile.name} (ณภัทร ภมรสูตร), a Bangkok Web Developer and Software Tester focused on reliable web applications, QA, and automation testing.`;
   const profileTitle = getLocalizedSeoValue(profile.seo?.title);
@@ -95,6 +95,15 @@ export function getSiteSeoDefaults(profile) {
     description: profileDescription || defaultDescription,
     ogImage: profile.seo?.image || SEO_DEFAULTS.ogImage,
   };
+}
+
+// The static content adapter pins the square favicon as the profile/project
+// image; only treat other values as real content images. Anything else falls
+// back to the generated /api/og social card.
+export function getRealContentImage(image) {
+  if (!image) return undefined;
+  if (image === SEO_DEFAULTS.ogImage || image === "/favicon.png") return undefined;
+  return image;
 }
 
 function getLocalizedSeoValue(value) {
@@ -122,14 +131,13 @@ export function normalizeMetaDescription(text, maxLength = 160) {
 }
 
 export function getAboutSeoMeta(profile) {
-  const siteSeo = getSiteSeoDefaults(profile);
   return {
-    title: getLocalizedSeoValue(profile.seo?.title) || `About ${profile.name} | ณภัทร ภมรสูตร | ${SITE_NAME}`,
+    title: getLocalizedSeoValue(profile.seo?.title) || `About ${profile.name}`,
     description: normalizeMetaDescription(
       getLocalizedSeoValue(profile.seo?.description) || `${profile.headline}. ${profile.about} ${profile.about_th} Based in ${profile.contact.location}.`,
       180,
     ),
-    ogImage: siteSeo.ogImage,
+    ogImage: getRealContentImage(profile.seo?.image),
     ogImageAlt: `${profile.name} — Web Developer & Software Tester`,
     path: "/about",
     keywords: ["About Napat Pamornsut", "ณภัทร ภมรสูตร ประวัติ", "Napatdev profile", "Web Developer Bangkok"],
@@ -142,11 +150,11 @@ export function getProjectSeoMeta(project, getContent, profile) {
     getLocalizedSeoValue(project.seo?.description) || `${getContent(project, "description")} ${project.description_th || ""}`,
     180,
   );
-  const image = project.seo?.image || project.images?.[0] || project.image || SEO_DEFAULTS.ogImage;
+  const image = getRealContentImage(project.seo?.image || project.images?.[0] || project.image);
   const technologies = (project.technologies || []).slice(0, 6).join(", ");
 
   return {
-    title: `${title} | ${profile.name} | ${SITE_NAME}`,
+    title: `${title} — Case Study`,
     description,
     ogTitle: `${title} | Napat Pamornsut`,
     ogDescription: normalizeMetaDescription(
@@ -155,8 +163,6 @@ export function getProjectSeoMeta(project, getContent, profile) {
     ),
     ogImage: image,
     ogImageAlt: `${title} — portfolio project by ${profile.name}`,
-    ogImageWidth: 1200,
-    ogImageHeight: 630,
     path: `/projects/${project.slug}`,
     keywords: [
       title,
@@ -171,12 +177,12 @@ export function getProjectSeoMeta(project, getContent, profile) {
 
 export function getProjectsListSeoMeta(profile) {
   return {
-    title: `Projects by ${profile.name} | ณภัทร ภมรสูตร | ${SITE_NAME}`,
+    title: `Web Development Projects`,
     description: normalizeMetaDescription(
       "Explore portfolio projects by Napat Pamornsut — web development, ERP/POS systems, IoT dashboards, automation testing, and UX/UI design. รวมผลงานโปรเจคเว็บ ระบบ POS/ERP IoT Dashboard และงานทดสอบซอฟต์แวร์",
       180,
     ),
-    ogImage: "/images/shop-inventory-1.png",
+    ogImage: getRealContentImage(profile.seo?.image),
     ogImageAlt: "Napat Pamornsut portfolio projects",
     path: "/projects",
     keywords: ["Napat Pamornsut projects", "Napatdev portfolio projects", "ณภัทร ภมรสูตร ผลงาน", "Web Developer portfolio"],
@@ -184,14 +190,13 @@ export function getProjectsListSeoMeta(profile) {
 }
 
 export function getNotesListSeoMeta(profile) {
-  const siteSeo = getSiteSeoDefaults(profile);
   return {
-    title: `Developer Notes by ${profile.name} | ณภัทร ภมรสูตร | ${SITE_NAME}`,
+    title: `Developer Notes & Cheatsheets`,
     description: normalizeMetaDescription(
       `Developer notes and technical cheatsheets by ${profile.name}. โน้ตความรู้และชีทสรุปด้านเทคนิคโดย ณภัทร ภมรสูตร`,
       180,
     ),
-    ogImage: siteSeo.ogImage,
+    ogImage: getRealContentImage(profile.seo?.image),
     ogImageAlt: `${profile.name} developer notes`,
     path: "/notes",
     keywords: ["Napatdev developer notes", "ณภัทร ภมรสูตร โน้ตความรู้", "Next.js cheatsheet", "TypeScript reference", "SQL examples"],
@@ -199,14 +204,13 @@ export function getNotesListSeoMeta(profile) {
 }
 
 export function getContactSeoMeta(profile) {
-  const siteSeo = getSiteSeoDefaults(profile);
   return {
-    title: `Contact ${profile.name} | ติดต่อ ณภัทร ภมรสูตร | ${SITE_NAME}`,
+    title: `Contact ${profile.name}`,
     description: normalizeMetaDescription(
       `Contact ${profile.name} for web development, QA, automation testing, and software project inquiries in ${profile.contact.location}. ติดต่อ ณภัทร ภมรสูตร สำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์`,
       180,
     ),
-    ogImage: siteSeo.ogImage,
+    ogImage: getRealContentImage(profile.seo?.image),
     ogImageAlt: `${profile.name} contact information`,
     path: "/contact",
     keywords: ["Contact Napat Pamornsut", "ติดต่อ ณภัทร ภมรสูตร", "Napatdev contact", "Web Developer contact Bangkok"],
@@ -215,7 +219,7 @@ export function getContactSeoMeta(profile) {
 
 export function getSearchSeoMeta() {
   return {
-    title: `Search ${SITE_NAME} | Napat Pamornsut`,
+    title: `Site Search`,
     description: normalizeMetaDescription(
       "Search Napatdev portfolio pages, contact information, projects, case studies, and developer notes. ค้นหาข้อมูลพอร์ตโฟลิโอ โปรเจค และโน้ตความรู้ของ ณภัทร ภมรสูตร",
       180,

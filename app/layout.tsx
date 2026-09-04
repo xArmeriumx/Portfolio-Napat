@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Prompt, Space_Grotesk, Space_Mono } from "next/font/google";
 import AppShell from "@/components/layout/AppShell.jsx";
-import { getSiteSeoDefaults, SITE_NAME, SITE_URL } from "@/config/seo.js";
+import { getSiteSeoDefaults, getRealContentImage, SITE_NAME, SITE_URL } from "@/config/seo.js";
+import { buildOgImageUrl } from "@/lib/metadata";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationProfile } from "@/content/presentation";
 import "@/styles/globals.css";
@@ -30,6 +31,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const repository = await getContentRepository();
   const profile = toPresentationProfile(await repository.getPublishedProfile());
   const seo = getSiteSeoDefaults(profile);
+  const ogImage = getRealContentImage(seo.ogImage)
+    || buildOgImageUrl("site", seo.title, profile.headline);
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -40,10 +43,6 @@ export async function generateMetadata(): Promise<Metadata> {
     creator: profile.name,
     publisher: SITE_NAME,
     manifest: "/manifest.json",
-    icons: {
-      icon: [{ url: "/favicon.ico" }, { url: "/favicon.png", type: "image/png" }],
-      apple: "/favicon.png",
-    },
     alternates: { canonical: "/" },
     openGraph: {
       type: "website",
@@ -53,9 +52,9 @@ export async function generateMetadata(): Promise<Metadata> {
       description: seo.description,
       locale: seo.locale,
       alternateLocale: [seo.alternateLocale],
-      images: [{ url: seo.ogImage, width: 512, height: 512, alt: `${profile.name} Portfolio` }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${profile.name} Portfolio` }],
     },
-    twitter: { card: "summary_large_image", title: seo.title, description: seo.description, images: [seo.ogImage] },
+    twitter: { card: "summary_large_image", title: seo.title, description: seo.description, images: [ogImage] },
     robots: {
       index: true,
       follow: true,

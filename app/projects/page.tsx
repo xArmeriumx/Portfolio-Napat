@@ -20,8 +20,6 @@ export async function generateMetadata(): Promise<Metadata> {
     ogDescription: listSeo.description,
     ogImage: listSeo.ogImage,
     ogImageAlt: listSeo.ogImageAlt,
-    ogImageWidth: 1200,
-    ogImageHeight: 630,
     path: listSeo.path,
     keywords: listSeo.keywords,
   });
