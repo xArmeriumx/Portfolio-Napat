@@ -26,7 +26,7 @@ export default function Notes({ initialNotes = [], slug }) {
   const activeNote = useMemo(() => {
     if (notes.length === 0) return null;
     if (!slug) return null; // handled in useEffect
-    return notes.find(n => n.id === slug) || notes[0];
+    return notes.find(n => n.slug === slug) || notes[0];
   }, [notes, slug]);
 
   // Global Cmd+K Listener
@@ -41,7 +41,7 @@ export default function Notes({ initialNotes = [], slug }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const currentIndex = notes.findIndex(n => n.id === activeNote?.id);
+  const currentIndex = notes.findIndex(n => n.slug === activeNote?.slug);
   const prevNote = currentIndex > 0 ? notes[currentIndex - 1] : null;
   const nextNote = currentIndex < notes.length - 1 ? notes[currentIndex + 1] : null;
 
@@ -96,7 +96,7 @@ export default function Notes({ initialNotes = [], slug }) {
     }
     setReadingProgress(0);
     setActiveHeadingId(null);
-  }, [activeNote?.id]);
+  }, [activeNote?.slug]);
 
   // ── Active TOC Highlight – IntersectionObserver ───────────────
   useEffect(() => {
@@ -119,7 +119,7 @@ export default function Notes({ initialNotes = [], slug }) {
     const targets = document.querySelectorAll('main h1, main h2, main h3');
     targets.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [headings, activeNote?.id]);
+  }, [headings, activeNote?.slug]);
 
   const scrollToHeading = (e, id, headingText) => {
     e.preventDefault();
@@ -188,11 +188,11 @@ export default function Notes({ initialNotes = [], slug }) {
               <li key={note.path} className="relative group">
                 <button
                   onClick={() => {
-                    router.push(`/notes/${note.id}`);
+                    router.push(`/notes/${note.slug}`);
                     // Desktop: handled by the activeNote useEffect above (mainRef.scrollTo)
                     if (window.innerWidth < 768) window.scrollTo(0, 0);
                   }}
-                  className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-sm rounded-md transition-all text-left relative z-10 ${activeNote?.id === note.id
+                  className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-sm rounded-md transition-all text-left relative z-10 ${activeNote?.slug === note.slug
                     ? 'bg-red-50 text-red-700 font-semibold before:absolute before:left-[-17px] before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-4 before:bg-red-600 before:rounded-r'
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                     }`}
@@ -208,7 +208,7 @@ export default function Notes({ initialNotes = [], slug }) {
                   ) : note.rawName.toLowerCase().includes('typescript') || note.rawName.toLowerCase().includes('ts') ? (
                     <span className="text-blue-600 font-mono text-[9px] font-bold bg-blue-50 px-1 rounded shadow-sm">TS</span>
                   ) : (
-                    <FileText size={14} className={activeNote?.id === note.id ? 'text-red-500' : 'text-gray-400 group-hover:text-gray-600'} />
+                    <FileText size={14} className={activeNote?.slug === note.slug ? 'text-red-500' : 'text-gray-400 group-hover:text-gray-600'} />
                   )}
                   <span className="truncate flex-1">{note.name}</span>
                 </button>
@@ -258,7 +258,7 @@ export default function Notes({ initialNotes = [], slug }) {
                   <>
                     <AiSummaryPanel
                       noteContent={activeNote.content}
-                      noteId={activeNote.id}
+                      noteId={activeNote.slug}
                     />
 
                     {/* Mobile Onboarding Tip for Long-Press */}
@@ -281,7 +281,7 @@ export default function Notes({ initialNotes = [], slug }) {
               <div className="mt-16 pt-8 border-t border-gray-200 flex flex-col sm:flex-row gap-4 justify-between items-center text-sm">
                 {prevNote ? (
                   <button
-                    onClick={() => router.push(`/notes/${prevNote.id}`)}
+                    onClick={() => router.push(`/notes/${prevNote.slug}`)}
                     className="flex flex-col items-start p-4 border border-gray-200 rounded-lg hover:border-red-400 hover:shadow-sm focus:ring-1 focus:ring-red-400 transition-all w-full sm:w-[48%] bg-white group"
                   >
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
@@ -293,7 +293,7 @@ export default function Notes({ initialNotes = [], slug }) {
 
                 {nextNote ? (
                   <button
-                    onClick={() => router.push(`/notes/${nextNote.id}`)}
+                    onClick={() => router.push(`/notes/${nextNote.slug}`)}
                     className="flex flex-col items-end p-4 border border-gray-200 rounded-lg hover:border-red-400 hover:shadow-sm focus:ring-1 focus:ring-red-400 transition-all w-full sm:w-[48%] bg-white group text-right"
                   >
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
@@ -354,7 +354,7 @@ export default function Notes({ initialNotes = [], slug }) {
         isOpen={isCmdKOpen}
         onClose={() => setIsCmdKOpen(false)}
         onSelectNote={(note) => {
-          router.push(`/notes/${note.id}`);
+          router.push(`/notes/${note.slug}`);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
