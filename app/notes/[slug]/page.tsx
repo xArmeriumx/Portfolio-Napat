@@ -49,6 +49,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ogSection: "Developer Notes",
     ogKind: "note",
     ogSubtitle: `โน้ตความรู้โดย Napat Pamornsut`,
+    publishedTime: note.publishedAt,
+    modifiedTime: note.updatedAt || note.publishedAt,
     path: `/notes/${note.slug}`,
     keywords: [note.name, `Napatdev ${note.name}`, `Napat Pamornsut ${note.name}`, `ณภัทร ภมรสูตร ${note.name}`, "developer notes", "technical cheatsheet"],
   });

@@ -9,6 +9,12 @@ export const PERSON_ID = `${SITE_URL}/#person`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
+// 1024x1024 brand mark used for schema.org image/logo objects that require
+// a real square image (never the dynamic OG card or the legacy favicon).
+export const SITE_LOGO_URL = `${SITE_URL}/icon.png`;
+export const SITE_LOGO_WIDTH = 1024;
+export const SITE_LOGO_HEIGHT = 1024;
+
 export const NAVIGATION_ITEMS = [
   {
     key: "home",
@@ -239,14 +245,19 @@ export function getPersonSchema(profile, overrides = {}) {
   const skillNames = profile.skillCategories.flatMap((cat) =>
     cat.skills.map((s) => s.name),
   );
-  const seoDefaults = getSiteSeoDefaults(profile);
   return {
     "@type": "Person",
     "@id": PERSON_ID,
     name: profile.name,
     alternateName: ["ณภัทร ภมรสูตร", "Napat Dev", "napatdev"],
     url: `${SITE_URL}/`,
-    image: seoDefaults.ogImage,
+    image: {
+      "@type": "ImageObject",
+      url: SITE_LOGO_URL,
+      width: SITE_LOGO_WIDTH,
+      height: SITE_LOGO_HEIGHT,
+      caption: profile.name,
+    },
     jobTitle: profile.headline.replace(" | ", " and "),
     description: `${profile.about} ${profile.about_th}`,
     email: profile.links.email,
@@ -302,7 +313,6 @@ export function getPersonSchema(profile, overrides = {}) {
 }
 
 export function getOrganizationSchema(profile, overrides = {}) {
-  const seoDefaults = getSiteSeoDefaults(profile);
   return {
     "@type": "Organization",
     "@id": ORGANIZATION_ID,
@@ -311,9 +321,9 @@ export function getOrganizationSchema(profile, overrides = {}) {
     url: `${SITE_URL}/`,
     logo: {
       "@type": "ImageObject",
-      url: seoDefaults.ogImage,
-      width: 512,
-      height: 512,
+      url: SITE_LOGO_URL,
+      width: SITE_LOGO_WIDTH,
+      height: SITE_LOGO_HEIGHT,
     },
     founder: { "@id": PERSON_ID },
     sameAs: getSameAsLinks(profile),
@@ -375,6 +385,18 @@ export function getHomeGraphSchema(profile) {
         isPartOf: { "@id": WEBSITE_ID },
         mainEntity: { "@id": PERSON_ID },
         about: { "@id": PERSON_ID },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${SITE_URL}/#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home / หน้าแรก",
+            item: `${SITE_URL}/`,
+          },
+        ],
       },
     ],
   };

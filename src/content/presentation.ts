@@ -40,6 +40,8 @@ export type PresentationProject = {
   links: { demo: string | null; repo: string | null };
   featured: boolean;
   metrics: string[];
+  publishedAt: string | null;
+  updatedAt: string | null;
   seo: ProjectContent["seo"];
 };
 
@@ -50,6 +52,7 @@ export type PresentationNote = {
   name: string;
   rawName: string;
   publishedAt: string | null;
+  updatedAt: string | null;
   seo: NoteContent["seo"];
 };
 
@@ -114,6 +117,8 @@ export function toPresentationProject(project: ProjectContent): PresentationProj
     },
     featured: project.featured,
     metrics: project.metrics,
+    publishedAt: project.revision.publishedAt,
+    updatedAt: project.revision.updatedAt ?? null,
     seo: project.seo,
   };
 }
@@ -126,6 +131,7 @@ export function toPresentationNote(note: NoteContent): PresentationNote {
     name: note.title.en,
     rawName: note.rawName,
     publishedAt: note.revision.publishedAt,
+    updatedAt: note.revision.updatedAt ?? null,
     seo: note.seo,
   };
 }

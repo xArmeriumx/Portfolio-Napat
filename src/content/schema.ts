@@ -38,6 +38,7 @@ export const revisionSchema = z.object({
   revisionNumber: z.number().int().positive(),
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
   publishedAt: z.string().datetime().nullable(),
+  updatedAt: z.string().datetime().nullable().optional(),
 });
 
 const localizedStringArraySchema = z.array(localizedTextSchema);

@@ -46,8 +46,7 @@ describe("buildPageMetadata social image resolution", () => {
     expect(images[0].url).toBe("https://napatdev.com/images/shop-inventory-1.png");
   });
 
-  it("treats the pinned favicon image as missing and generates a card", () => {
-    const metadata = buildPageMetadata({
+  it("treats the pinned favicon image as missing and generates a card", () => {    const metadata = buildPageMetadata({
       title: "Contact Napat Pamornsut",
       description: "Contact page",
       ogImage: "/favicon.png",
@@ -57,5 +56,33 @@ describe("buildPageMetadata social image resolution", () => {
 
     expect(images[0].url).toContain("/api/og?");
     expect(images[0].url).toContain("kind=contact");
+  });
+
+  it("emits article published/modified times when provided", () => {
+    const metadata = buildPageMetadata({
+      title: "Example Note",
+      description: "Note page",
+      ogType: "article",
+      path: "/notes/example",
+      publishedTime: "2026-01-15T00:00:00.000Z",
+      modifiedTime: "2026-02-01T00:00:00.000Z",
+    });
+    const openGraph = metadata.openGraph as Record<string, unknown>;
+
+    expect(openGraph.publishedTime).toBe("2026-01-15T00:00:00.000Z");
+    expect(openGraph.modifiedTime).toBe("2026-02-01T00:00:00.000Z");
+  });
+
+  it("omits article times when unknown", () => {
+    const metadata = buildPageMetadata({
+      title: "Example Note",
+      description: "Note page",
+      ogType: "article",
+      path: "/notes/example",
+    });
+    const openGraph = metadata.openGraph as Record<string, unknown>;
+
+    expect(openGraph.publishedTime).toBeUndefined();
+    expect(openGraph.modifiedTime).toBeUndefined();
   });
 });
