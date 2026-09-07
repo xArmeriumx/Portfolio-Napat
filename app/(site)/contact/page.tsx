@@ -3,15 +3,16 @@ import Link from "next/link";
 import JsonLd from "@/components/utils/JsonLd";
 import { PERSON_ID, SITE_URL, WEBSITE_ID, absoluteUrl, getContactSeoMeta, getCoreSiteSchemas } from "@/config/seo.js";
 import { buildPageMetadata } from "@/lib/metadata";
+import type { SiteLocale } from "../page";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationProfile } from "@/content/presentation";
 
 export const revalidate = 3600;
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function metadataContactPage(locale: SiteLocale = "en"): Promise<Metadata> {
   const repository = await getContentRepository();
   const profile = toPresentationProfile(await repository.getPublishedProfile());
-  const contactSeo = getContactSeoMeta(profile);
+  const contactSeo = getContactSeoMeta(profile, locale);
 
   return buildPageMetadata({
     title: contactSeo.title,
@@ -22,14 +23,19 @@ export async function generateMetadata(): Promise<Metadata> {
     ogImageAlt: contactSeo.ogImageAlt,
     path: contactSeo.path,
     keywords: contactSeo.keywords,
+    locale,
   });
 }
 
-export default async function ContactPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  return metadataContactPage("en");
+}
+
+export async function renderContactPage(locale: SiteLocale = "en") {
   const repository = await getContentRepository();
   const profile = toPresentationProfile(await repository.getPublishedProfile());
-  const contactSeo = getContactSeoMeta(profile);
-  const contactUrl = absoluteUrl("/contact");
+  const contactSeo = getContactSeoMeta(profile, locale);
+  const contactUrl = absoluteUrl(locale === "th" ? "/th/contact" : "/contact");
   const emailHref = `mailto:${profile.links.email}`;
 
   return (
@@ -125,7 +131,7 @@ export default async function ContactPage() {
             </a>
 
             <Link
-              href="/projects"
+              href={locale === "th" ? "/th/projects" : "/projects"}
               className="rounded-2xl border border-gray-200 bg-white p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-0.5 hover:border-[#c43c3c]/30 hover:shadow-[0_14px_32px_rgba(0,0,0,0.08)]"
             >
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Portfolio</span>
@@ -138,4 +144,8 @@ export default async function ContactPage() {
       </section>
     </>
   );
+}
+
+export default async function ContactPage() {
+  return renderContactPage("en");
 }

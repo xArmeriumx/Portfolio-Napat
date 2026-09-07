@@ -11,7 +11,8 @@ import { FEATURES } from '../config/features';
 import AiSummaryPanel from '../components/notes/AiSummaryPanel';
 import AiSelectionTooltip from '../components/notes/AiSelectionTooltip';
 
-export default function Notes({ initialNotes = [], slug, relatedProjects = [] }) {
+export default function Notes({ initialNotes = [], slug, relatedProjects = [], locale = "en" }) {
+  const localePrefix = locale === "th" ? "/th" : "";
   const router = useRouter();
 
   const [notes] = useState(initialNotes);
@@ -188,7 +189,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [] })
               <li key={note.path} className="relative group">
                 <button
                   onClick={() => {
-                    router.push(`/notes/${note.slug}`);
+                    router.push(`${localePrefix}/notes/${note.slug}`);
                     // Desktop: handled by the activeNote useEffect above (mainRef.scrollTo)
                     if (window.innerWidth < 768) window.scrollTo(0, 0);
                   }}
@@ -281,7 +282,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [] })
               <div className="mt-16 pt-8 border-t border-gray-200 flex flex-col sm:flex-row gap-4 justify-between items-center text-sm">
                 {prevNote ? (
                   <button
-                    onClick={() => router.push(`/notes/${prevNote.slug}`)}
+                    onClick={() => router.push(`${localePrefix}/notes/${prevNote.slug}`)}
                     className="flex flex-col items-start p-4 border border-gray-200 rounded-lg hover:border-red-400 hover:shadow-sm focus:ring-1 focus:ring-red-400 transition-all w-full sm:w-[48%] bg-white group"
                   >
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
@@ -293,7 +294,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [] })
 
                 {nextNote ? (
                   <button
-                    onClick={() => router.push(`/notes/${nextNote.slug}`)}
+                    onClick={() => router.push(`${localePrefix}/notes/${nextNote.slug}`)}
                     className="flex flex-col items-end p-4 border border-gray-200 rounded-lg hover:border-red-400 hover:shadow-sm focus:ring-1 focus:ring-red-400 transition-all w-full sm:w-[48%] bg-white group text-right"
                   >
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
@@ -314,7 +315,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [] })
                     {relatedProjects.map((project) => (
                       <li key={project.slug}>
                         <a
-                          href={`/projects/${project.slug}`}
+                          href={`${localePrefix}/projects/${project.slug}`}
                           className="group flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-[#c43c3c]/30 hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)]"
                         >
                           <span>
@@ -385,7 +386,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [] })
         isOpen={isCmdKOpen}
         onClose={() => setIsCmdKOpen(false)}
         onSelectNote={(note) => {
-          router.push(`/notes/${note.slug}`);
+          router.push(`${localePrefix}/notes/${note.slug}`);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />

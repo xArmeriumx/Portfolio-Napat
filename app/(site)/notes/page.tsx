@@ -4,16 +4,17 @@ import JsonLd from "@/components/utils/JsonLd";
 import { getNotesCollectionSchema, getNoteDescription } from "@/lib/notes";
 import { NOTE_TOPICS, isNoteTopicKey } from "@/lib/related";
 import { buildPageMetadata } from "@/lib/metadata";
+import type { SiteLocale } from "../page";
 import { getNotesListSeoMeta } from "@/config/seo.js";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationNote, toPresentationProfile } from "@/content/presentation";
 
 export const revalidate = 1800;
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function metadataNotesPage(locale: SiteLocale = "en"): Promise<Metadata> {
   const repository = await getContentRepository();
   const profile = toPresentationProfile(await repository.getPublishedProfile());
-  const notesSeo = getNotesListSeoMeta(profile);
+  const notesSeo = getNotesListSeoMeta(profile, locale);
 
   return buildPageMetadata({
     title: notesSeo.title,
@@ -24,10 +25,15 @@ export async function generateMetadata(): Promise<Metadata> {
     ogImageAlt: notesSeo.ogImageAlt,
     path: notesSeo.path,
     keywords: notesSeo.keywords,
+    locale,
   });
 }
 
-export default async function NotesIndexPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  return metadataNotesPage("en");
+}
+
+export async function renderNotesPage(locale: SiteLocale = "en") {
   const repository = await getContentRepository();
   const [rawProfile, rawNotes] = await Promise.all([
     repository.getPublishedProfile(),
@@ -52,7 +58,7 @@ export default async function NotesIndexPage() {
             {Object.keys(NOTE_TOPICS).filter(isNoteTopicKey).map((topic) => (
               <Link
                 key={topic}
-                href={`/notes/${topic}`}
+                href={locale === "th" ? `/th/notes/${topic}` : `/notes/${topic}`}
                 className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-bold text-gray-700 transition-colors hover:border-[#c43c3c]/40 hover:text-[#c43c3c]"
               >
                 {NOTE_TOPICS[topic].label}
@@ -62,7 +68,7 @@ export default async function NotesIndexPage() {
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {notes.map((note, index) => (
-              <Link key={note.slug} href={`/notes/${note.slug}`} className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-1 hover:border-[#c43c3c]/30 hover:shadow-[0_16px_35px_rgba(0,0,0,0.08)]">
+              <Link key={note.slug} href={locale === "th" ? `/th/notes/${note.slug}` : `/notes/${note.slug}`} className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-1 hover:border-[#c43c3c]/30 hover:shadow-[0_16px_35px_rgba(0,0,0,0.08)]">
                 <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">
                   <span>{String(index + 1).padStart(2, "0")}</span>
                   <span className="text-[#c43c3c]">Read note</span>
@@ -76,4 +82,8 @@ export default async function NotesIndexPage() {
       </section>
     </>
   );
+}
+
+export default async function NotesIndexPage() {
+  return renderNotesPage("en");
 }

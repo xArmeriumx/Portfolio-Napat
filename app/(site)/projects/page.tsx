@@ -3,15 +3,16 @@ import ProjectList from "@/views/ProjectList.jsx";
 import JsonLd from "@/components/utils/JsonLd";
 import { getProjectsCollectionSchema, getProjectsListSeoMeta } from "@/config/seo.js";
 import { buildPageMetadata } from "@/lib/metadata";
+import type { SiteLocale } from "../page";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationProfile, toPresentationProject } from "@/content/presentation";
 
 export const revalidate = 1800;
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function metadataProjectsPage(locale: SiteLocale = "en"): Promise<Metadata> {
   const repository = await getContentRepository();
   const profile = toPresentationProfile(await repository.getPublishedProfile());
-  const listSeo = getProjectsListSeoMeta(profile);
+  const listSeo = getProjectsListSeoMeta(profile, locale);
 
   return buildPageMetadata({
     title: listSeo.title,
@@ -22,10 +23,15 @@ export async function generateMetadata(): Promise<Metadata> {
     ogImageAlt: listSeo.ogImageAlt,
     path: listSeo.path,
     keywords: listSeo.keywords,
+    locale,
   });
 }
 
-export default async function ProjectsPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  return metadataProjectsPage("en");
+}
+
+export async function renderProjectsPage(locale: SiteLocale = "en") {
   const repository = await getContentRepository();
   const [rawProfile, rawProjects] = await Promise.all([
     repository.getPublishedProfile(),
@@ -42,7 +48,11 @@ export default async function ProjectsPage() {
           profile,
         )}
       />
-      <ProjectList projects={projects} />
+      <ProjectList projects={projects} locale={locale} />
     </>
   );
+}
+
+export default async function ProjectsPage() {
+  return renderProjectsPage("en");
 }

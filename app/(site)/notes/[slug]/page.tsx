@@ -7,6 +7,7 @@ import { buildPageMetadata } from "@/lib/metadata";
 import { getNoteSchema, getNoteSeoMeta } from "@/lib/notes";
 import { NOTE_TOPICS, getRelatedProjects, getTopicHub, isNoteTopicKey } from "@/lib/related";
 import { SITE_URL, WEBSITE_ID, absoluteUrl, getCoreSiteSchemas } from "@/config/seo.js";
+import type { SiteLocale } from "../../page";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationNote, toPresentationProfile, toPresentationProject } from "@/content/presentation";
 
@@ -26,8 +27,11 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+function notesBase(locale: SiteLocale) {
+  return locale === "th" ? "/th/notes" : "/notes";
+}
+
+export async function metadataNotePage(slug: string, locale: SiteLocale = "en"): Promise<Metadata> {
   if (isNoteTopicKey(slug)) {
     const topic = NOTE_TOPICS[slug];
     return buildPageMetadata({
@@ -37,8 +41,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ogDescription: topic.description,
       ogKind: "note",
       ogSubtitle: `โน้ตความรู้โดย Napat Pamornsut`,
-      path: `/notes/${slug}`,
+      path: `${notesBase(locale)}/${slug}`,
       keywords: [topic.label, `${topic.label} guide`, `Napatdev ${topic.label}`, `ณภัทร ภมรสูตร ${topic.label}`, "developer notes"],
+      locale,
     });
   }
   const repository = await getContentRepository();
@@ -53,12 +58,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return buildPageMetadata({
       title: "Note Not Found",
       description: "Developer note not found.",
-      path: `/notes/${slug}`,
+      path: `${notesBase(locale)}/${slug}`,
       noindex: true,
+      locale,
     });
   }
 
-  const noteSeo = getNoteSeoMeta(note);
+  const noteSeo = getNoteSeoMeta(note, locale);
   return buildPageMetadata({
     title: noteSeo.title,
     description: noteSeo.description,
@@ -70,14 +76,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ogSubtitle: `โน้ตความรู้โดย Napat Pamornsut`,
     publishedTime: note.publishedAt,
     modifiedTime: note.updatedAt || note.publishedAt,
-    path: `/notes/${note.slug}`,
+    path: `${notesBase(locale)}/${note.slug}`,
     keywords: [note.name, `Napatdev ${note.name}`, `Napat Pamornsut ${note.name}`, `ณภัทร ภมรสูตร ${note.name}`, "developer notes", "technical cheatsheet"],
+    locale,
   });
 }
 
-export default async function NoteDetailPage({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  return metadataNotePage(slug, "en");
+}
+
+export async function renderNotePage(slug: string, locale: SiteLocale = "en") {
   const repository = await getContentRepository();
+  const base = notesBase(locale);
+  const homeUrl = locale === "th" ? `${SITE_URL}/th` : `${SITE_URL}/`;
   if (isNoteTopicKey(slug)) {
     const [rawProfile, rawNotes] = await Promise.all([
       repository.getPublishedProfile(),
@@ -86,7 +99,8 @@ export default async function NoteDetailPage({ params }: Props) {
     const profile = toPresentationProfile(rawProfile);
     const hubNotes = getTopicHub(slug, rawNotes.map(toPresentationNote));
     const topic = NOTE_TOPICS[slug];
-    const hubUrl = absoluteUrl(`/notes/${slug}`);
+    const hubUrl = absoluteUrl(`${base}/${slug}`);
+    const notesIndexUrl = absoluteUrl(base);
     return (
       <>
         <JsonLd
@@ -110,7 +124,7 @@ export default async function NoteDetailPage({ params }: Props) {
                     "@type": "ListItem",
                     position: index + 1,
                     name: note.displayTitle,
-                    url: absoluteUrl(`/notes/${note.slug}`),
+                    url: absoluteUrl(`${base}/${note.slug}`),
                   })),
                 },
               },
@@ -118,15 +132,15 @@ export default async function NoteDetailPage({ params }: Props) {
                 "@type": "BreadcrumbList",
                 "@id": `${hubUrl}#breadcrumb`,
                 itemListElement: [
-                  { "@type": "ListItem", position: 1, name: "Home / หน้าแรก", item: `${SITE_URL}/` },
-                  { "@type": "ListItem", position: 2, name: "Developer Notes / โน้ตความรู้", item: absoluteUrl("/notes") },
+                  { "@type": "ListItem", position: 1, name: "Home / หน้าแรก", item: homeUrl },
+                  { "@type": "ListItem", position: 2, name: "Developer Notes / โน้ตความรู้", item: notesIndexUrl },
                   { "@type": "ListItem", position: 3, name: topic.title, item: hubUrl },
                 ],
               },
             ],
           }}
         />
-        <TopicHub topic={topic} notes={hubNotes} />
+        <TopicHub topic={topic} notes={hubNotes} locale={locale} />
       </>
     );
   }
@@ -139,7 +153,7 @@ export default async function NoteDetailPage({ params }: Props) {
 
   if (!rawNote) {
     const redirectedSlug = await repository.getPublishedSlugRedirect("NOTE", slug);
-    if (redirectedSlug) permanentRedirect(`/notes/${encodeURIComponent(redirectedSlug)}`);
+    if (redirectedSlug) permanentRedirect(`${base}/${encodeURIComponent(redirectedSlug)}`);
     notFound();
   }
 
@@ -151,7 +165,12 @@ export default async function NoteDetailPage({ params }: Props) {
   return (
     <>
       <JsonLd data={getNoteSchema(note, profile)} />
-      <Notes initialNotes={notes} slug={slug} relatedProjects={relatedProjects} />
+      <Notes initialNotes={notes} slug={slug} relatedProjects={relatedProjects} locale={locale} />
     </>
   );
+}
+
+export default async function NoteDetailPage({ params }: Props) {
+  const { slug } = await params;
+  return renderNotePage(slug, "en");
 }

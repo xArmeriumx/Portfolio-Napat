@@ -60,11 +60,11 @@ function TechChips({ technologies = [], limit = 5 }) {
   );
 }
 
-function ProjectActions({ slug, title, links, onLinkClick }) {
+function ProjectActions({ slug, title, links, onLinkClick, localePrefix = "" }) {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Link
-        href={`/projects/${slug}`}
+        href={`${localePrefix}/projects/${slug}`}
         onClick={onLinkClick}
         className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-900 transition-colors hover:text-[#c43c3c]"
       >
@@ -99,7 +99,7 @@ function ProjectActions({ slug, title, links, onLinkClick }) {
   );
 }
 
-function FeaturedProjectCard({ project }) {
+function FeaturedProjectCard({ project, localePrefix = "" }) {
   const { getContent } = useTranslation();
   const router = useRouter();
   const { slug, role, links, images, image, metrics, technologies } = project;
@@ -110,7 +110,7 @@ function FeaturedProjectCard({ project }) {
 
   const handleCardClick = (e) => {
     if (e.target.closest("a") || e.target.closest("button")) return;
-    router.push(`/projects/${slug}`);
+    router.push(`${localePrefix}/projects/${slug}`);
   };
 
   const stopProp = (e) => e.stopPropagation();
@@ -126,7 +126,7 @@ function FeaturedProjectCard({ project }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <Link
-          href={`/projects/${slug}`}
+          href={`${localePrefix}/projects/${slug}`}
           onClick={stopProp}
           className="relative block min-h-[240px] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 lg:min-h-[340px]"
           aria-label={`View ${title} case study`}
@@ -191,6 +191,7 @@ function FeaturedProjectCard({ project }) {
               title={title}
               links={links}
               onLinkClick={stopProp}
+              localePrefix={localePrefix}
             />
           </div>
         </div>
@@ -199,7 +200,7 @@ function FeaturedProjectCard({ project }) {
   );
 }
 
-function ProjectCard({ project, index }) {
+function ProjectCard({ project, index, localePrefix = "" }) {
   const { getContent } = useTranslation();
   const router = useRouter();
   const { slug, role, links, images, image, technologies, metrics } = project;
@@ -210,7 +211,7 @@ function ProjectCard({ project, index }) {
 
   const handleCardClick = (e) => {
     if (e.target.closest("a") || e.target.closest("button")) return;
-    router.push(`/projects/${slug}`);
+    router.push(`${localePrefix}/projects/${slug}`);
   };
 
   const stopProp = (e) => e.stopPropagation();
@@ -221,7 +222,7 @@ function ProjectCard({ project, index }) {
       className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)]"
     >
       <Link
-        href={`/projects/${slug}`}
+        href={`${localePrefix}/projects/${slug}`}
         onClick={stopProp}
         className="relative block aspect-[16/10] overflow-hidden bg-gradient-to-br from-gray-50 to-white"
         aria-label={`View ${title} details`}
@@ -291,7 +292,8 @@ function ProjectCard({ project, index }) {
   );
 }
 
-export default function ProjectList({ projects = [] }) {
+export default function ProjectList({ projects = [], locale = "en" }) {
+  const localePrefix = locale === "th" ? "/th" : "";
   const featuredIndex = projects.findIndex((project) => project.featured);
   const featured = projects[featuredIndex >= 0 ? featuredIndex : 0];
   const rest = projects.filter((_, index) => index !== (featuredIndex >= 0 ? featuredIndex : 0));
@@ -346,7 +348,7 @@ export default function ProjectList({ projects = [] }) {
             <div className="space-y-10 md:space-y-12">
               {featured && (
                 <ScrollReveal width="100%">
-                  <FeaturedProjectCard project={featured} />
+                  <FeaturedProjectCard project={featured} localePrefix={localePrefix} />
                 </ScrollReveal>
               )}
 
@@ -358,7 +360,7 @@ export default function ProjectList({ projects = [] }) {
                     className="h-full"
                     delay={(idx + 1) * 0.08}
                   >
-                    <ProjectCard project={project} index={idx + 2} />
+                    <ProjectCard project={project} index={idx + 2} localePrefix={localePrefix} />
                   </ScrollReveal>
                 ))}
               </div>

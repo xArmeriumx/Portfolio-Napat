@@ -25,10 +25,9 @@ type SeoInput = {
   ogImageHeight?: number;
   publishedTime?: string | null;
   modifiedTime?: string | null;
+  locale?: "en" | "th";
   path?: string;
   noindex?: boolean;
-  locale?: string;
-  alternateLocale?: string;
   keywords?: string[];
 };
 
@@ -97,18 +96,25 @@ export function buildPageMetadata({
   modifiedTime,
   path = "",
   noindex,
-  locale = SEO_DEFAULTS.locale,
-  alternateLocale = SEO_DEFAULTS.alternateLocale,
+  locale = "en",
   keywords = SEO_DEFAULTS.keywords,
 }: SeoInput): Metadata {
-  const canonical = absoluteUrl(path);
+  const isThai = locale === "th";
+  // `path` may already carry the /th prefix (th helpers return prefixed
+  // paths); normalize so en/th alternates are always a reciprocal pair.
+  const basePath = path.replace(/^\/th(?=\/|$)/, "") || "/";
+  const enUrl = absoluteUrl(basePath);
+  const thUrl = absoluteUrl(`/th${basePath === "/" ? "" : basePath}`);
+  const canonical = isThai ? thUrl : enUrl;
+  const ogLocale = isThai ? "th_TH" : SEO_DEFAULTS.locale;
+  const ogAlternateLocale = isThai ? SEO_DEFAULTS.locale : SEO_DEFAULTS.alternateLocale;
   const pageDescription = normalizeMetaDescription(description, 160);
   const effectiveTitle = ogTitle || title;
   const effectiveDescription = normalizeMetaDescription(
     ogDescription || description,
     ogType === "article" ? 200 : 160,
   );
-  const kind = ogKind || path.split("/").filter(Boolean)[0] || "site";
+  const kind = ogKind || basePath.split("/").filter(Boolean)[0] || "site";
   const image = resolveOgImage({
     ogImage,
     kind,
@@ -124,8 +130,8 @@ export function buildPageMetadata({
     siteName: SITE_NAME,
     title: effectiveTitle,
     description: effectiveDescription,
-    locale,
-    alternateLocale: [alternateLocale],
+    locale: ogLocale,
+    alternateLocale: [ogAlternateLocale],
     images: [
       {
         url: image.url,
@@ -153,6 +159,11 @@ export function buildPageMetadata({
     keywords,
     alternates: noindex ? undefined : {
       canonical,
+      languages: {
+        en: enUrl,
+        th: thUrl,
+        "x-default": enUrl,
+      },
     },
     robots: noindex
       ? { index: false, follow: false }

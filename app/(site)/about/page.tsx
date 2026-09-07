@@ -3,15 +3,16 @@ import About from "@/views/About.jsx";
 import JsonLd from "@/components/utils/JsonLd";
 import { getAboutPageSchema, getAboutSeoMeta } from "@/config/seo.js";
 import { buildPageMetadata } from "@/lib/metadata";
+import type { SiteLocale } from "../page";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationProfile } from "@/content/presentation";
 
 export const revalidate = 3600;
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function metadataAboutPage(locale: SiteLocale = "en"): Promise<Metadata> {
   const repository = await getContentRepository();
   const profile = toPresentationProfile(await repository.getPublishedProfile());
-  const aboutSeo = getAboutSeoMeta(profile);
+  const aboutSeo = getAboutSeoMeta(profile, locale);
 
   return buildPageMetadata({
     title: aboutSeo.title,
@@ -22,10 +23,15 @@ export async function generateMetadata(): Promise<Metadata> {
     ogImageAlt: aboutSeo.ogImageAlt,
     path: aboutSeo.path,
     keywords: aboutSeo.keywords,
+    locale,
   });
 }
 
-export default async function AboutPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  return metadataAboutPage("en");
+}
+
+export async function renderAboutPage() {
   const repository = await getContentRepository();
   const profile = toPresentationProfile(await repository.getPublishedProfile());
 
@@ -35,4 +41,8 @@ export default async function AboutPage() {
       <About profile={profile} />
     </>
   );
+}
+
+export default async function AboutPage() {
+  return renderAboutPage();
 }

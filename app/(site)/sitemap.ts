@@ -10,6 +10,7 @@ type SitemapEntry = {
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
   priority: number;
   lastModified?: Date;
+  alternates?: MetadataRoute.Sitemap[number]["alternates"];
 };
 
 function route(
@@ -24,6 +25,13 @@ function route(
     url: absoluteUrl,
     changeFrequency,
     priority,
+    alternates: {
+      languages: {
+        en: absoluteUrl,
+        th: `${SITE_URL}/th${url === "/" ? "" : url}`,
+        "x-default": absoluteUrl,
+      },
+    },
     ...(lastModified ? { lastModified: new Date(lastModified) } : {}),
   };
 }
@@ -35,7 +43,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     repository.listPublishedNotes(),
   ]);
 
-  return [
+  const staticRoutes = ["/", "/about", "/contact", "/projects", "/notes"];
+  const projectRoutes = projects.map((project) => `/projects/${project.slug}`);
+  const noteRoutes = notes.map((note) => `/notes/${note.slug}`);
+  const topicRoutes = Object.keys(NOTE_TOPICS).filter(isNoteTopicKey).map((topic) => `/notes/${topic}`);
+
+  const enEntries: MetadataRoute.Sitemap = [
     route("/", 1, "monthly"),
     route("/about", 0.9, "monthly"),
     route("/contact", 0.85, "monthly"),
@@ -45,8 +58,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       route(`/projects/${project.slug}`, 0.8, "monthly", project.revision.publishedAt),
     ),
     ...notes.map((note) => route(`/notes/${note.slug}`, 0.65, "monthly", note.revision.publishedAt)),
-    ...Object.keys(NOTE_TOPICS).filter(isNoteTopicKey).map((topic) =>
-      route(`/notes/${topic}`, 0.7, "weekly"),
-    ),
+    ...topicRoutes.map((url) => route(url, 0.7, "weekly")),
   ];
+
+  // Thai tree mirrors every indexable route with identical hreflang pairs.
+  const thEntries: MetadataRoute.Sitemap = [...staticRoutes, ...projectRoutes, ...noteRoutes, ...topicRoutes].map(
+    (url) => {
+      const thUrl = `/th${url === "/" ? "" : url}`;
+      const enUrl = `${SITE_URL}${url}`;
+      const absoluteThUrl = `${SITE_URL}${thUrl}`;
+      return {
+        url: absoluteThUrl,
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+        alternates: {
+          languages: {
+            en: enUrl,
+            th: absoluteThUrl,
+            "x-default": enUrl,
+          },
+        },
+      };
+    },
+  );
+
+  return [...enEntries, ...thEntries];
 }
