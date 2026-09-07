@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/utils/JsonLd";
 import { getNotesCollectionSchema, getNoteDescription } from "@/lib/notes";
+import { NOTE_TOPICS, isNoteTopicKey } from "@/lib/related";
 import { buildPageMetadata } from "@/lib/metadata";
 import { getNotesListSeoMeta } from "@/config/seo.js";
 import { getContentRepository } from "@/content/repository";
@@ -46,6 +47,18 @@ export default async function NotesIndexPage() {
           <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-gray-500 md:text-lg">
             Practical references and lessons from Napat Pamornsut, also known as ณภัทร ภมรสูตร / Napatdev.
           </p>
+
+          <div className="mt-6 flex flex-wrap gap-2">
+            {Object.keys(NOTE_TOPICS).filter(isNoteTopicKey).map((topic) => (
+              <Link
+                key={topic}
+                href={`/notes/${topic}`}
+                className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-bold text-gray-700 transition-colors hover:border-[#c43c3c]/40 hover:text-[#c43c3c]"
+              >
+                {NOTE_TOPICS[topic].label}
+              </Link>
+            ))}
+          </div>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {notes.map((note, index) => (

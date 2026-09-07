@@ -212,7 +212,7 @@ function ListSection({ title, items }) {
   );
 }
 
-export default function ProjectDetail({ slug, project }) {
+export default function ProjectDetail({ slug, project, relatedNotes = [] }) {
   const { getContent } = useTranslation();
 
   if (!project) {
@@ -524,6 +524,30 @@ export default function ProjectDetail({ slug, project }) {
                       </div>
                     </div>
                   </ScrollReveal>
+                  {/* Related notes — contextual internal links */}
+                  {relatedNotes.length > 0 && (
+                    <ScrollReveal width="100%" delay={0.5}>
+                      <div className="pt-8 border-t border-gray-100">
+                        <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">
+                          Related Notes
+                        </h4>
+                        <div className="flex flex-col gap-3">
+                          {relatedNotes.map((note) => (
+                            <Link
+                              key={note.slug}
+                              href={`/notes/${note.slug}`}
+                              className="group flex items-center justify-between gap-3 w-full px-5 py-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-50 transition-all border border-gray-200 hover:border-[#c43c3c]/30"
+                            >
+                              <span>{note.displayTitle || note.name}</span>
+                              <span className="text-sm text-gray-400 group-hover:text-[#c43c3c] transition-colors">
+                                →
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </ScrollReveal>
+                  )}
                 </div>{" "}
                 {/* End Sidebar */}
               </div>

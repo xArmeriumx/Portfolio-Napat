@@ -89,9 +89,9 @@ export const SEO_DEFAULTS = {
 };
 
 export function getSiteSeoDefaults(profile) {
-  const defaultTitle = `${profile.name} — Web Developer & Software Tester`;
+  const defaultTitle = `${profile.name} — Web Developer & Software Tester in Bangkok`;
   const defaultDescription =
-    `Napatdev is the portfolio of ${profile.name} (ณภัทร ภมรสูตร), a Bangkok Web Developer and Software Tester focused on reliable web applications, QA, and automation testing.`;
+    `${profile.name} is a Web Developer and Software Tester based in Bangkok, Thailand, specializing in Next.js, TypeScript, full-stack development and automated testing. พอร์ตโฟลิโอของ ณภัทร ภมรสูตร นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์`;
   const profileTitle = getLocalizedSeoValue(profile.seo?.title);
   const profileDescription = getLocalizedSeoValue(profile.seo?.description);
 
@@ -183,9 +183,9 @@ export function getProjectSeoMeta(project, getContent, profile) {
 
 export function getProjectsListSeoMeta(profile) {
   return {
-    title: `Web Development Projects`,
+    title: `Web Development & Software Testing Projects`,
     description: normalizeMetaDescription(
-      "Explore portfolio projects by Napat Pamornsut — web development, ERP/POS systems, IoT dashboards, automation testing, and UX/UI design. รวมผลงานโปรเจคเว็บ ระบบ POS/ERP IoT Dashboard และงานทดสอบซอฟต์แวร์",
+      "Explore full-stack web development, ERP/POS systems, IoT dashboards and software testing projects by Napat Pamornsut using Next.js, TypeScript, Prisma, Playwright and modern web technologies. รวมผลงานโปรเจคเว็บ ระบบ POS/ERP IoT Dashboard และงานทดสอบซอฟต์แวร์",
       180,
     ),
     ogImage: getRealContentImage(profile.seo?.image),

@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import Notes from "@/views/Notes.jsx";
 import JsonLd from "@/components/utils/JsonLd";
+import TopicHub from "@/components/notes/TopicHub.jsx";
 import { buildPageMetadata } from "@/lib/metadata";
 import { getNoteSchema, getNoteSeoMeta } from "@/lib/notes";
+import { NOTE_TOPICS, getRelatedProjects, getTopicHub, isNoteTopicKey } from "@/lib/related";
+import { SITE_URL, WEBSITE_ID, absoluteUrl, getCoreSiteSchemas } from "@/config/seo.js";
 import { getContentRepository } from "@/content/repository";
-import { toPresentationNote, toPresentationProfile } from "@/content/presentation";
+import { toPresentationNote, toPresentationProfile, toPresentationProject } from "@/content/presentation";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -13,7 +16,10 @@ export const dynamicParams = true;
 export async function generateStaticParams() {
   const repository = await getContentRepository();
   const notes = await repository.listPublishedNotes();
-  return notes.map((note) => ({ slug: note.slug }));
+  return [
+    ...notes.map((note) => ({ slug: note.slug })),
+    ...Object.keys(NOTE_TOPICS).filter(isNoteTopicKey).map((topic) => ({ slug: topic })),
+  ];
 }
 
 type Props = {
@@ -22,6 +28,19 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  if (isNoteTopicKey(slug)) {
+    const topic = NOTE_TOPICS[slug];
+    return buildPageMetadata({
+      title: topic.title,
+      description: topic.description,
+      ogTitle: topic.title,
+      ogDescription: topic.description,
+      ogKind: "note",
+      ogSubtitle: `โน้ตความรู้โดย Napat Pamornsut`,
+      path: `/notes/${slug}`,
+      keywords: [topic.label, `${topic.label} guide`, `Napatdev ${topic.label}`, `ณภัทร ภมรสูตร ${topic.label}`, "developer notes"],
+    });
+  }
   const repository = await getContentRepository();
   let rawNote = await repository.getPublishedNoteBySlug(slug);
   if (!rawNote) {
@@ -59,10 +78,63 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function NoteDetailPage({ params }: Props) {
   const { slug } = await params;
   const repository = await getContentRepository();
-  const [rawProfile, rawNote, rawNotes] = await Promise.all([
+  if (isNoteTopicKey(slug)) {
+    const [rawProfile, rawNotes] = await Promise.all([
+      repository.getPublishedProfile(),
+      repository.listPublishedNotes(),
+    ]);
+    const profile = toPresentationProfile(rawProfile);
+    const hubNotes = getTopicHub(slug, rawNotes.map(toPresentationNote));
+    const topic = NOTE_TOPICS[slug];
+    const hubUrl = absoluteUrl(`/notes/${slug}`);
+    return (
+      <>
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@graph": [
+              ...getCoreSiteSchemas(profile),
+              {
+                "@type": "CollectionPage",
+                "@id": `${hubUrl}#collection`,
+                url: hubUrl,
+                name: topic.title,
+                description: topic.description,
+                inLanguage: ["en", "th"],
+                isPartOf: { "@id": WEBSITE_ID },
+                mainEntity: {
+                  "@type": "ItemList",
+                  name: topic.title,
+                  numberOfItems: hubNotes.length,
+                  itemListElement: hubNotes.map((note, index) => ({
+                    "@type": "ListItem",
+                    position: index + 1,
+                    name: note.displayTitle,
+                    url: absoluteUrl(`/notes/${note.slug}`),
+                  })),
+                },
+              },
+              {
+                "@type": "BreadcrumbList",
+                "@id": `${hubUrl}#breadcrumb`,
+                itemListElement: [
+                  { "@type": "ListItem", position: 1, name: "Home / หน้าแรก", item: `${SITE_URL}/` },
+                  { "@type": "ListItem", position: 2, name: "Developer Notes / โน้ตความรู้", item: absoluteUrl("/notes") },
+                  { "@type": "ListItem", position: 3, name: topic.title, item: hubUrl },
+                ],
+              },
+            ],
+          }}
+        />
+        <TopicHub topic={topic} notes={hubNotes} />
+      </>
+    );
+  }
+  const [rawProfile, rawNote, rawNotes, rawProjects] = await Promise.all([
     repository.getPublishedProfile(),
     repository.getPublishedNoteBySlug(slug),
     repository.listPublishedNotes(),
+    repository.listPublishedProjects(),
   ]);
 
   if (!rawNote) {
@@ -74,11 +146,12 @@ export default async function NoteDetailPage({ params }: Props) {
   const profile = toPresentationProfile(rawProfile);
   const note = toPresentationNote(rawNote);
   const notes = rawNotes.map(toPresentationNote);
+  const relatedProjects = getRelatedProjects(note, rawProjects.map(toPresentationProject));
 
   return (
     <>
       <JsonLd data={getNoteSchema(note, profile)} />
-      <Notes initialNotes={notes} slug={slug} />
+      <Notes initialNotes={notes} slug={slug} relatedProjects={relatedProjects} />
     </>
   );
 }

@@ -4,8 +4,9 @@ import ProjectDetail from "@/views/ProjectDetail.jsx";
 import JsonLd from "@/components/utils/JsonLd";
 import { getProjectSchema, getProjectSeoMeta } from "@/config/seo.js";
 import { buildPageMetadata } from "@/lib/metadata";
+import { getRelatedNotes } from "@/lib/related";
 import { getContentRepository } from "@/content/repository";
-import { toPresentationProfile, toPresentationProject } from "@/content/presentation";
+import { toPresentationNote, toPresentationProfile, toPresentationProject } from "@/content/presentation";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -67,9 +68,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
   const repository = await getContentRepository();
-  const [rawProfile, rawProject] = await Promise.all([
+  const [rawProfile, rawProject, rawNotes] = await Promise.all([
     repository.getPublishedProfile(),
     repository.getPublishedProjectBySlug(slug),
+    repository.listPublishedNotes(),
   ]);
 
   if (!rawProject) {
@@ -80,6 +82,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   const profile = toPresentationProfile(rawProfile);
   const project = toPresentationProject(rawProject);
+  const relatedNotes = getRelatedNotes(project, rawNotes.map(toPresentationNote));
 
   const title = project.title;
   const description = `${project.description} ${project.description_th || ""}`;
@@ -102,7 +105,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           profile,
         })}
       />
-      <ProjectDetail slug={slug} project={project} />
+      <ProjectDetail slug={slug} project={project} relatedNotes={relatedNotes} />
     </>
   );
 }
