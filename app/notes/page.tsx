@@ -54,7 +54,7 @@ export default async function NotesIndexPage() {
                   <span>{String(index + 1).padStart(2, "0")}</span>
                   <span className="text-[#c43c3c]">Read note</span>
                 </div>
-                <h2 className="mt-7 text-xl font-black leading-tight tracking-tight text-gray-900 transition-colors group-hover:text-[#c43c3c]">{note.name}</h2>
+                <h2 className="mt-7 text-xl font-black leading-tight tracking-tight text-gray-900 transition-colors group-hover:text-[#c43c3c]">{note.displayTitle}</h2>
                 <p className="mt-3 line-clamp-3 text-sm font-medium leading-relaxed text-gray-500">{getNoteDescription(note)}</p>
               </Link>
             ))}

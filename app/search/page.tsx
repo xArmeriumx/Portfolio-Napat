@@ -49,12 +49,12 @@ export default async function SearchPage({ searchParams }: Props) {
   const notes = rawNotes.map(toPresentationNote);
   const projects = rawProjects.map(toPresentationProject);
   const noteLinks = notes.map((note) => ({
-    title: note.name,
-    titleEn: note.name,
-    titleTh: `โน้ต ${note.name}`,
+    title: note.displayTitle,
+    titleEn: note.displayTitle,
+    titleTh: `โน้ต ${note.displayTitle}`,
     href: `/notes/${note.slug}`,
-    description: `Developer note and cheatsheet: ${note.name}. โน้ตความรู้และชีทสรุปเรื่อง ${note.name}`,
-    searchText: `${note.name} Developer Notes Cheatsheet โน้ต คู่มือ ชีทสรุป`,
+    description: `Developer note and cheatsheet: ${note.displayTitle}. โน้ตความรู้และชีทสรุปเรื่อง ${note.displayTitle}`,
+    searchText: `${note.displayTitle} ${note.name} Developer Notes Cheatsheet โน้ต คู่มือ ชีทสรุป`,
   }));
   const projectLinks = projects.map((project) => ({
     title: project.title_th ? `${project.title} / ${project.title_th}` : project.title,

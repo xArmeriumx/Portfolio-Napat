@@ -40,15 +40,15 @@ export function getNoteWordCount(note: Note) {
 export function getNoteSeoMeta(note: Note) {
   const titleOverride = note.seo?.title?.en?.trim() || note.seo?.title?.th?.trim() || "";
   const descriptionOverride = note.seo?.description?.en?.trim() || note.seo?.description?.th?.trim() || "";
-  const generatedDescription = `${getNoteDescription(note)} โน้ตความรู้เรื่อง ${note.name} โดย ณภัทร ภมรสูตร และ Napatdev`;
+  const generatedDescription = `${getNoteDescription(note)} โน้ตความรู้เรื่อง ${note.displayTitle} โดย ณภัทร ภมรสูตร และ Napatdev`;
 
   return {
-    title: titleOverride || note.name,
+    title: titleOverride || note.displayTitle,
     description: descriptionOverride || generatedDescription,
-    ogTitle: titleOverride || note.name,
+    ogTitle: titleOverride || note.displayTitle,
     ogDescription: descriptionOverride || getNoteDescription(note, 200),
-    schemaTitle: titleOverride || note.name,
-    schemaDescription: descriptionOverride || `${getNoteDescription(note, 220)} โน้ตความรู้และชีทสรุปเรื่อง ${note.name} โดย ณภัทร ภมรสูตร`,
+    schemaTitle: titleOverride || note.displayTitle,
+    schemaDescription: descriptionOverride || `${getNoteDescription(note, 220)} โน้ตความรู้และชีทสรุปเรื่อง ${note.displayTitle} โดย ณภัทร ภมรสูตร`,
   };
 }
 
@@ -74,8 +74,8 @@ export function getNotesCollectionSchema(notes: Note[], profile: PresentationPro
           itemListElement: notes.map((note, index) => ({
             "@type": "ListItem",
             position: index + 1,
-            name: note.name,
-            alternateName: [note.name, `โน้ต ${note.name}`],
+            name: note.displayTitle,
+            alternateName: [note.name, `โน้ต ${note.displayTitle}`],
             url: absoluteUrl(`/notes/${note.slug}`),
           })),
         },
@@ -132,7 +132,7 @@ export function getNoteSchema(note: Note, profile: PresentationProfile) {
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home / หน้าแรก", item: `${SITE_URL}/` },
           { "@type": "ListItem", position: 2, name: "Developer Notes / โน้ตความรู้", item: absoluteUrl("/notes") },
-          { "@type": "ListItem", position: 3, name: `${note.name} / โน้ต ${note.name}`, item: noteUrl },
+          { "@type": "ListItem", position: 3, name: `${note.displayTitle} / โน้ต ${note.displayTitle}`, item: noteUrl },
         ],
       },
     ],

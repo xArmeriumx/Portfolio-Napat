@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import ProjectDetail from "@/views/ProjectDetail.jsx";
 import JsonLd from "@/components/utils/JsonLd";
 import { getProjectSchema, getProjectSeoMeta } from "@/config/seo.js";
@@ -74,7 +74,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   if (!rawProject) {
     const redirectedSlug = await repository.getPublishedSlugRedirect("PROJECT", slug);
-    if (redirectedSlug) redirect(`/projects/${encodeURIComponent(redirectedSlug)}`);
+    if (redirectedSlug) permanentRedirect(`/projects/${encodeURIComponent(redirectedSlug)}`);
     notFound();
   }
 

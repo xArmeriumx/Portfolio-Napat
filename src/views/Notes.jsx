@@ -210,7 +210,7 @@ export default function Notes({ initialNotes = [], slug }) {
                   ) : (
                     <FileText size={14} className={activeNote?.slug === note.slug ? 'text-red-500' : 'text-gray-400 group-hover:text-gray-600'} />
                   )}
-                  <span className="truncate flex-1">{note.name}</span>
+                  <span className="truncate flex-1">{note.displayTitle || note.name}</span>
                 </button>
               </li>
             ))}
@@ -230,7 +230,7 @@ export default function Notes({ initialNotes = [], slug }) {
             <div className="h-14 flex items-center">
               <div className="flex items-center h-full px-8 border-r border-gray-200 bg-white border-t-[3px] border-t-red-500 text-sm gap-2.5 min-w-fit shadow-sm relative">
                 <Hash size={16} className="text-gray-400" />
-                <span className="font-bold text-gray-800 tracking-wide">{activeNote.name}</span>
+                <span className="font-bold text-gray-800 tracking-wide">{activeNote.displayTitle || activeNote.name}</span>
                 {/* Bottom cover to blend with content area */}
                 <div className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-white z-10"></div>
               </div>
@@ -287,7 +287,7 @@ export default function Notes({ initialNotes = [], slug }) {
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
                       <ArrowLeft size={12} /> Previous
                     </span>
-                    <span className="font-medium text-gray-800 truncate w-full text-left">{prevNote.name}</span>
+                    <span className="font-medium text-gray-800 truncate w-full text-left">{prevNote.displayTitle || prevNote.name}</span>
                   </button>
                 ) : <div className="hidden sm:block sm:w-[48%]"></div>}
 
@@ -299,7 +299,7 @@ export default function Notes({ initialNotes = [], slug }) {
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
                       Next <ArrowRight size={12} />
                     </span>
-                    <span className="font-medium text-gray-800 truncate w-full">{nextNote.name}</span>
+                    <span className="font-medium text-gray-800 truncate w-full">{nextNote.displayTitle || nextNote.name}</span>
                   </button>
                 ) : <div className="hidden sm:block sm:w-[48%]"></div>}
               </div>
