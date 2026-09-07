@@ -20,7 +20,10 @@ const KIND_LABELS = {
 
 const DEFAULT_TITLE = "Napat Pamornsut — Web Developer & Software Tester";
 
-async function loadPromptFonts() {
+// Fonts are read from disk once per server instance, not per request.
+let cachedFonts: Promise<Awaited<ReturnType<typeof readPromptFonts>>> | undefined;
+
+async function readPromptFonts() {
   const fontsDir = path.join(process.cwd(), "app", "api", "og", "fonts");
   const [regular, semiBold] = await Promise.all([
     readFile(path.join(fontsDir, "Prompt-Regular.ttf")),
@@ -30,6 +33,11 @@ async function loadPromptFonts() {
     { name: "Prompt", data: regular, weight: 400 as const, style: "normal" as const },
     { name: "Prompt", data: semiBold, weight: 600 as const, style: "normal" as const },
   ];
+}
+
+function loadPromptFonts() {
+  if (!cachedFonts) cachedFonts = readPromptFonts();
+  return cachedFonts;
 }
 
 function titleFontSize(title) {

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useTranslation } from "../context/LanguageContext.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
@@ -23,9 +25,14 @@ import "swiper/css/autoplay";
 import "swiper/css/thumbs";
 import "swiper/css/free-mode";
 
-import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
+
+// Lightbox is only needed after user interaction — split it out of the
+// initial gallery bundle.
+const Lightbox = dynamic(() => import("yet-another-react-lightbox"), {
+  ssr: false,
+});
 
 /* ========================================
    ImageGallery Component
@@ -85,12 +92,17 @@ function ImageGallery({ images, title }) {
             {images.map((img, i) => (
               <SwiperSlide key={i} className="flex items-center justify-center">
                 <div className="w-full h-full flex items-center justify-center p-2 relative group">
-                  <img
-                    src={img}
-                    alt={`${title} ${i + 1}`}
-                    className="max-h-full max-w-full object-contain select-none"
-                    draggable="false"
-                  />
+                  <div className="relative h-full w-full">
+                    <Image
+                      src={img}
+                      alt={`${title} ${i + 1}`}
+                      fill
+                      priority={i === 0}
+                      sizes="(max-width: 1024px) 100vw, 1024px"
+                      className="object-contain select-none"
+                      draggable="false"
+                    />
+                  </div>
                   {/* Zoom Hint Overlay */}
                   <div className="absolute bottom-6 right-6 bg-black/50 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex items-center gap-2">
                     <svg
@@ -138,10 +150,12 @@ function ImageGallery({ images, title }) {
                       : "opacity-60 hover:opacity-100"
                   }`}
                 >
-                  <img
+                  <Image
                     src={img}
                     alt={`Thumbnail ${i + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 768px) 20vw, 160px"
+                    className="object-cover"
                   />
                 </div>
               </SwiperSlide>
