@@ -26,6 +26,17 @@ export function getNoteDescription(note: Note, maxLength = 160) {
   );
 }
 
+export function getNoteWordCount(note: Note) {
+  const plainText = note.content
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/[#*`_[\]()]/g, "")
+    .replace(/(\r\n|\n|\r)/gm, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!plainText) return 0;
+  return plainText.split(" ").length;
+}
+
 export function getNoteSeoMeta(note: Note) {
   const titleOverride = note.seo?.title?.en?.trim() || note.seo?.title?.th?.trim() || "";
   const descriptionOverride = note.seo?.description?.en?.trim() || note.seo?.description?.th?.trim() || "";
@@ -93,16 +104,27 @@ export function getNoteSchema(note: Note, profile: PresentationProfile) {
         "@type": "TechArticle",
         "@id": `${noteUrl}#article`,
         url: noteUrl,
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": noteUrl,
+        },
         headline: seo.schemaTitle,
         name: seo.schemaTitle,
         alternateName: [seo.schemaTitle, `โน้ต ${note.name}`, `Cheatsheet ${note.name}`],
         description: seo.schemaDescription,
-        image: buildOgImageUrl("note", seo.schemaTitle, "โน้ตความรู้โดย Napat Pamornsut"),
+        image: absoluteUrl(buildOgImageUrl("note", seo.schemaTitle, "โน้ตความรู้โดย Napat Pamornsut")),
         inLanguage: ["en", "th"],
-        author: { "@id": PERSON_ID },
+        wordCount: getNoteWordCount(note),
+        author: {
+          "@id": PERSON_ID,
+          "@type": "Person",
+          name: profile.name,
+          url: `${SITE_URL}/`,
+        },
         publisher: { "@id": ORGANIZATION_ID },
         isPartOf: { "@id": WEBSITE_ID },
-        ...(note.publishedAt ? { datePublished: note.publishedAt, dateModified: note.publishedAt } : {}),
+        ...(note.publishedAt ? { datePublished: note.publishedAt } : {}),
+        ...(note.updatedAt || note.publishedAt ? { dateModified: note.updatedAt || note.publishedAt } : {}),
       },
       {
         "@type": "BreadcrumbList",

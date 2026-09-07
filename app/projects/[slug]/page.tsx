@@ -57,6 +57,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ogSection: "Portfolio Projects",
     ogKind: "project",
     ogSubtitle: toPresentationProfile(rawProfile).headline,
+    publishedTime: project.publishedAt,
+    modifiedTime: project.updatedAt || project.publishedAt,
     path: projectSeo.path,
     keywords: projectSeo.keywords,
   });

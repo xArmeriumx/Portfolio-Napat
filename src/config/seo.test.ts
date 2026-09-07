@@ -60,6 +60,7 @@ describe("CMS SEO overrides", () => {
       name: "Visible note",
       rawName: "cms-note.md",
       publishedAt: null,
+      updatedAt: null,
       seo: {
         title: { en: "Custom note title", th: "ชื่อโน้ต" },
         description: { en: "Custom note description", th: "คำอธิบายโน้ต" },

@@ -23,6 +23,8 @@ type SeoInput = {
   ogImageAlt?: string;
   ogImageWidth?: number;
   ogImageHeight?: number;
+  publishedTime?: string | null;
+  modifiedTime?: string | null;
   path?: string;
   noindex?: boolean;
   locale?: string;
@@ -91,6 +93,8 @@ export function buildPageMetadata({
   ogImageAlt,
   ogImageWidth,
   ogImageHeight,
+  publishedTime,
+  modifiedTime,
   path = "",
   noindex,
   locale = SEO_DEFAULTS.locale,
@@ -135,6 +139,8 @@ export function buildPageMetadata({
   if (ogType === "article") {
     openGraph.authors = ["Napat Pamornsut"];
     openGraph.section = ogSection || "Portfolio";
+    if (publishedTime) openGraph.publishedTime = publishedTime;
+    if (modifiedTime) openGraph.modifiedTime = modifiedTime;
   }
 
   return {

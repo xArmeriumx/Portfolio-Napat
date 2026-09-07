@@ -28,6 +28,7 @@ function makeNote(overrides: Partial<PresentationNote> = {}): PresentationNote {
     name: "Example Note",
     rawName: "example.md",
     publishedAt: null,
+    updatedAt: null,
     seo: { title: null, description: null },
     ...overrides,
   };
@@ -43,12 +44,32 @@ describe("getNoteSchema", () => {
   });
 
   it("includes article dates when the revision was published", () => {
-    const published = makeNote({ publishedAt: "2026-01-15T00:00:00.000Z" });
+    const published = makeNote({
+      publishedAt: "2026-01-15T00:00:00.000Z",
+      updatedAt: "2026-02-01T00:00:00.000Z",
+    });
     const schema = getNoteSchema(published, profile);
     const article = schema["@graph"].find((node) => node["@type"] === "TechArticle") as Record<string, any>;
 
     expect(article.datePublished).toBe("2026-01-15T00:00:00.000Z");
+    expect(article.dateModified).toBe("2026-02-01T00:00:00.000Z");
+  });
+
+  it("falls back to published date for dateModified when no update is known", () => {
+    const published = makeNote({ publishedAt: "2026-01-15T00:00:00.000Z" });
+    const schema = getNoteSchema(published, profile);
+    const article = schema["@graph"].find((node) => node["@type"] === "TechArticle") as Record<string, any>;
+
     expect(article.dateModified).toBe("2026-01-15T00:00:00.000Z");
+  });
+
+  it("emits absolute schema image, mainEntityOfPage, and wordCount", () => {
+    const schema = getNoteSchema(makeNote({ content: "# Hello world example" }), profile);
+    const article = schema["@graph"].find((node) => node["@type"] === "TechArticle") as Record<string, any>;
+
+    expect(article.image).toMatch(/^https:\/\/napatdev\.com\/api\/og\?/);
+    expect(article.mainEntityOfPage["@id"]).toBe("https://napatdev.com/notes/example-note");
+    expect(article.wordCount).toBe(3);
   });
 
   it("omits article dates when unknown", () => {

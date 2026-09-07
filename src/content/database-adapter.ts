@@ -13,6 +13,7 @@ type PublishedDocument = {
   id: string;
   publishedRevision: ContentRevision | null;
   displayOrder: number;
+  updatedAt: Date;
 };
 
 function payloadRecord(revision: ContentRevision) {
@@ -22,13 +23,14 @@ function payloadRecord(revision: ContentRevision) {
   return revision.payload as Record<string, unknown>;
 }
 
-function publishedRevision(revision: ContentRevision) {
+function publishedRevision(revision: ContentRevision, documentUpdatedAt: Date) {
   if (revision.status !== "PUBLISHED") throw new Error("Selected revision is not published");
   return {
     revisionId: revision.id,
     revisionNumber: revision.revisionNumber,
     status: "PUBLISHED" as const,
     publishedAt: revision.publishedAt?.toISOString() || null,
+    updatedAt: documentUpdatedAt?.toISOString() ?? null,
   };
 }
 
@@ -37,7 +39,7 @@ function mapProfile(document: PublishedDocument): ProfileContent {
   return profileContentSchema.parse({
     ...payloadRecord(document.publishedRevision),
     id: document.id,
-    revision: publishedRevision(document.publishedRevision),
+    revision: publishedRevision(document.publishedRevision, document.updatedAt),
   });
 }
 
@@ -46,7 +48,7 @@ function mapProject(document: PublishedDocument): ProjectContent {
   return projectContentSchema.parse({
     ...payloadRecord(document.publishedRevision),
     id: document.id,
-    revision: publishedRevision(document.publishedRevision),
+    revision: publishedRevision(document.publishedRevision, document.updatedAt),
   });
 }
 
@@ -55,7 +57,7 @@ function mapNote(document: PublishedDocument): NoteContent {
   return noteContentSchema.parse({
     ...payloadRecord(document.publishedRevision),
     id: document.id,
-    revision: publishedRevision(document.publishedRevision),
+    revision: publishedRevision(document.publishedRevision, document.updatedAt),
   });
 }
 
