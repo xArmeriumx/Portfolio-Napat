@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { buildPageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Page Not Found | Napatdev",
+  title: "Page Not Found",
   description: "The requested page was not found on Napatdev, the portfolio of Napat Pamornsut (ณภัทร ภมรสูตร).",
   path: "/404",
   noindex: true,

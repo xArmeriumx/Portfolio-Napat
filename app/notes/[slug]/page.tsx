@@ -7,8 +7,14 @@ import { getNoteSchema, getNoteSeoMeta } from "@/lib/notes";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationNote, toPresentationProfile } from "@/content/presentation";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const repository = await getContentRepository();
+  const notes = await repository.listPublishedNotes();
+  return notes.map((note) => ({ slug: note.slug }));
+}
 
 type Props = {
   params: Promise<{ slug: string }>;
