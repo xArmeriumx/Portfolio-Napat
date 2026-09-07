@@ -1,6 +1,7 @@
 /**
  * BrandWordmark — โลโก้หลักของเว็บ (favicon + wordmark บรรทัดเดียว)
  */
+import Image from "next/image";
 export default function BrandWordmark({
   className = "",
   wordmarkClassName = "",
@@ -13,9 +14,11 @@ export default function BrandWordmark({
 
   if (iconOnly) {
     return (
-      <img
+      <Image
         src="/favicon.png"
         alt={title}
+        width={40}
+        height={40}
         className={`${iconSize} object-contain mix-blend-multiply flex-shrink-0 ${className}`}
       />
     );
@@ -27,10 +30,12 @@ export default function BrandWordmark({
       role="img"
       aria-label={title}
     >
-      <img
+      <Image
         src="/favicon.png"
         alt=""
         aria-hidden="true"
+        width={40}
+        height={40}
         className={`${iconSize} object-contain flex-shrink-0 mix-blend-multiply`}
       />
       <svg

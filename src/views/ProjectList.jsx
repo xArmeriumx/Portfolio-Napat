@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "../context/LanguageContext.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
@@ -130,10 +131,13 @@ function FeaturedProjectCard({ project }) {
           className="relative block min-h-[240px] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 lg:min-h-[340px]"
           aria-label={`View ${title} case study`}
         >
-          <img
+          <Image
             src={coverImage}
             alt={title}
-            className="h-full w-full object-contain p-6 transition-transform duration-700 group-hover:scale-105"
+            fill
+            priority
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-contain p-6 transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
           <div className="absolute bottom-5 left-5 right-5 translate-y-2 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
@@ -225,10 +229,12 @@ function ProjectCard({ project, index }) {
         <span className="absolute left-4 top-4 z-10 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold text-gray-500 backdrop-blur-sm">
           {String(index).padStart(2, "0")}
         </span>
-        <img
+        <Image
           src={coverImage}
           alt={title}
-          className="h-full w-full object-contain p-4 transition-transform duration-700 group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-contain p-4 transition-transform duration-700 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/35 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </Link>

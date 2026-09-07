@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useTranslation } from "../context/LanguageContext.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
@@ -148,9 +149,11 @@ export default function About({ profile }) {
                 <div className="relative flex-shrink-0">
                   <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-[#c43c3c]/20 to-transparent blur-sm" />
                   <div className="relative flex h-24 w-24 items-center justify-center rounded-2xl border border-gray-200 bg-white p-3 shadow-[0_8px_24px_rgba(0,0,0,0.06)] md:h-28 md:w-28">
-                    <img
+                    <Image
                       src="/favicon.png"
                       alt=""
+                      width={112}
+                      height={112}
                       className="h-full w-full object-contain mix-blend-multiply"
                     />
                   </div>
