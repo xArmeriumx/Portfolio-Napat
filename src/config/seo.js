@@ -88,12 +88,17 @@ export const SEO_DEFAULTS = {
   ],
 };
 
-export function getSiteSeoDefaults(profile) {
-  const defaultTitle = `${profile.name} — Web Developer & Software Tester in Bangkok`;
+export function getSiteSeoDefaults(profile, locale = "en") {
+  const defaultTitle =
+    locale === "th"
+      ? `${profile.name} — นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ กรุงเทพฯ`
+      : `${profile.name} — Web Developer & Software Tester in Bangkok`;
   const defaultDescription =
-    `${profile.name} is a Web Developer and Software Tester based in Bangkok, Thailand, specializing in Next.js, TypeScript, full-stack development and automated testing. พอร์ตโฟลิโอของ ณภัทร ภมรสูตร นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์`;
-  const profileTitle = getLocalizedSeoValue(profile.seo?.title);
-  const profileDescription = getLocalizedSeoValue(profile.seo?.description);
+    locale === "th"
+      ? `พอร์ตโฟลิโอของ ${profile.name} (ณภัทร ภมรสูตร) นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ในกรุงเทพฯ เชี่ยวชาญ Next.js TypeScript ฟูลสแต็กและการทดสอบอัตโนมัติ ${profile.name} is a Bangkok-based Web Developer & Software Tester.`
+      : `${profile.name} is a Web Developer and Software Tester based in Bangkok, Thailand, specializing in Next.js, TypeScript, full-stack development and automated testing. พอร์ตโฟลิโอของ ณภัทร ภมรสูตร นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์`;
+  const profileTitle = getLocalizedSeoValue(profile.seo?.title, locale);
+  const profileDescription = getLocalizedSeoValue(profile.seo?.description, locale);
 
   return {
     ...SEO_DEFAULTS,
@@ -112,7 +117,8 @@ export function getRealContentImage(image) {
   return image;
 }
 
-function getLocalizedSeoValue(value) {
+function getLocalizedSeoValue(value, locale = "en") {
+  if (locale === "th") return value?.th?.trim() || value?.en?.trim() || "";
   return value?.en?.trim() || value?.th?.trim() || "";
 }
 
@@ -136,24 +142,36 @@ export function normalizeMetaDescription(text, maxLength = 160) {
   return `${cleaned.slice(0, maxLength - 3).trimEnd()}...`;
 }
 
-export function getAboutSeoMeta(profile) {
+export function getAboutSeoMeta(profile, locale = "en") {
+  const th = locale === "th";
   return {
-    title: getLocalizedSeoValue(profile.seo?.title) || `About ${profile.name}`,
+    title: getLocalizedSeoValue(profile.seo?.title, locale) || (th ? `เกี่ยวกับ ${profile.name}` : `About ${profile.name}`),
     description: normalizeMetaDescription(
-      getLocalizedSeoValue(profile.seo?.description) || `${profile.headline}. ${profile.about} ${profile.about_th} Based in ${profile.contact.location}.`,
+      getLocalizedSeoValue(profile.seo?.description, locale) ||
+        (th
+          ? `${profile.about_th} ${profile.about} อยู่ใน${profile.contact.location_th || profile.contact.location}`
+          : `${profile.headline}. ${profile.about} ${profile.about_th} Based in ${profile.contact.location}.`),
       180,
     ),
     ogImage: getRealContentImage(profile.seo?.image),
-    ogImageAlt: `${profile.name} — Web Developer & Software Tester`,
-    path: "/about",
-    keywords: ["About Napat Pamornsut", "ณภัทร ภมรสูตร ประวัติ", "Napatdev profile", "Web Developer Bangkok"],
+    ogImageAlt: th ? `${profile.name} — นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์` : `${profile.name} — Web Developer & Software Tester`,
+    path: th ? "/th/about" : "/about",
+    keywords: th
+      ? [`เกี่ยวกับ ${profile.name}`, "ณภัทร ภมรสูตร ประวัติ", "Napatdev profile", "นักพัฒนาเว็บ กรุงเทพ"]
+      : ["About Napat Pamornsut", "ณภัทร ภมรสูตร ประวัติ", "Napatdev profile", "Web Developer Bangkok"],
   };
 }
 
-export function getProjectSeoMeta(project, getContent, profile) {
-  const title = getLocalizedSeoValue(project.seo?.title) || getContent(project, "title");
+export function getProjectSeoMeta(project, getContent, profile, locale = "en") {
+  const th = locale === "th";
+  const title =
+    getLocalizedSeoValue(project.seo?.title, locale) ||
+    (th ? project.title_th || getContent(project, "title") : getContent(project, "title"));
   const description = normalizeMetaDescription(
-    getLocalizedSeoValue(project.seo?.description) || `${getContent(project, "description")} ${project.description_th || ""}`,
+    getLocalizedSeoValue(project.seo?.description, locale) ||
+      (th
+        ? `${project.description_th || ""} ${getContent(project, "description")}`
+        : `${getContent(project, "description")} ${project.description_th || ""}`),
     180,
   );
   const image = getRealContentImage(project.seo?.image || project.images?.[0] || project.image);
@@ -169,7 +187,7 @@ export function getProjectSeoMeta(project, getContent, profile) {
     ),
     ogImage: image,
     ogImageAlt: `${title} — portfolio project by ${profile.name}`,
-    path: `/projects/${project.slug}`,
+    path: th ? `/th/projects/${project.slug}` : `/projects/${project.slug}`,
     keywords: [
       title,
       project.title_th,
@@ -181,57 +199,77 @@ export function getProjectSeoMeta(project, getContent, profile) {
   };
 }
 
-export function getProjectsListSeoMeta(profile) {
+export function getProjectsListSeoMeta(profile, locale = "en") {
+  const th = locale === "th";
   return {
-    title: `Web Development & Software Testing Projects`,
+    title: th ? `โปรเจคพัฒนาเว็บและทดสอบซอฟต์แวร์` : `Web Development & Software Testing Projects`,
     description: normalizeMetaDescription(
-      "Explore full-stack web development, ERP/POS systems, IoT dashboards and software testing projects by Napat Pamornsut using Next.js, TypeScript, Prisma, Playwright and modern web technologies. รวมผลงานโปรเจคเว็บ ระบบ POS/ERP IoT Dashboard และงานทดสอบซอฟต์แวร์",
+      th
+        ? "รวมผลงานโปรเจคเว็บ ระบบ POS/ERP IoT Dashboard และงานทดสอบซอฟต์แวร์ของ ณภัทร ภมรสูตร ด้วย Next.js TypeScript Prisma Playwright Explore full-stack and testing projects by Napat Pamornsut"
+        : "Explore full-stack web development, ERP/POS systems, IoT dashboards and software testing projects by Napat Pamornsut using Next.js, TypeScript, Prisma, Playwright and modern web technologies. รวมผลงานโปรเจคเว็บ ระบบ POS/ERP IoT Dashboard และงานทดสอบซอฟต์แวร์",
       180,
     ),
     ogImage: getRealContentImage(profile.seo?.image),
-    ogImageAlt: "Napat Pamornsut portfolio projects",
-    path: "/projects",
-    keywords: ["Napat Pamornsut projects", "Napatdev portfolio projects", "ณภัทร ภมรสูตร ผลงาน", "Web Developer portfolio"],
+    ogImageAlt: th ? "ผลงานโปรเจคของ ณภัทร ภมรสูตร" : "Napat Pamornsut portfolio projects",
+    path: th ? "/th/projects" : "/projects",
+    keywords: th
+      ? ["ผลงาน ณภัทร ภมรสูตร", "Napatdev portfolio projects", "โปรเจคพัฒนาเว็บ", "พอร์ตโฟลิโอ"]
+      : ["Napat Pamornsut projects", "Napatdev portfolio projects", "ณภัทร ภมรสูตร ผลงาน", "Web Developer portfolio"],
   };
 }
 
-export function getNotesListSeoMeta(profile) {
+export function getNotesListSeoMeta(profile, locale = "en") {
+  const th = locale === "th";
   return {
-    title: `Developer Notes & Cheatsheets`,
+    title: th ? `โน้ตความรู้และชีทสรุปสำหรับนักพัฒนา` : `Developer Notes & Cheatsheets`,
     description: normalizeMetaDescription(
-      `Developer notes and technical cheatsheets by ${profile.name}. โน้ตความรู้และชีทสรุปด้านเทคนิคโดย ณภัทร ภมรสูตร`,
+      th
+        ? `โน้ตความรู้และชีทสรุปด้านเทคนิคโดย ณภัทร ภมรสูตร Developer notes and technical cheatsheets by ${profile.name}`
+        : `Developer notes and technical cheatsheets by ${profile.name}. โน้ตความรู้และชีทสรุปด้านเทคนิคโดย ณภัทร ภมรสูตร`,
       180,
     ),
     ogImage: getRealContentImage(profile.seo?.image),
-    ogImageAlt: `${profile.name} developer notes`,
-    path: "/notes",
-    keywords: ["Napatdev developer notes", "ณภัทร ภมรสูตร โน้ตความรู้", "Next.js cheatsheet", "TypeScript reference", "SQL examples"],
+    ogImageAlt: th ? `โน้ตความรู้ของ ${profile.name}` : `${profile.name} developer notes`,
+    path: th ? "/th/notes" : "/notes",
+    keywords: th
+      ? ["โน้ตความรู้ ณภัทร ภมรสูตร", "Napatdev developer notes", "ชีทสรุป Next.js", "คู่มือ TypeScript", "ตัวอย่าง SQL"]
+      : ["Napatdev developer notes", "ณภัทร ภมรสูตร โน้ตความรู้", "Next.js cheatsheet", "TypeScript reference", "SQL examples"],
   };
 }
 
-export function getContactSeoMeta(profile) {
+export function getContactSeoMeta(profile, locale = "en") {
+  const th = locale === "th";
   return {
-    title: `Contact ${profile.name}`,
+    title: th ? `ติดต่อ ${profile.name}` : `Contact ${profile.name}`,
     description: normalizeMetaDescription(
-      `Contact ${profile.name} for web development, QA, automation testing, and software project inquiries in ${profile.contact.location}. ติดต่อ ณภัทร ภมรสูตร สำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์`,
+      th
+        ? `ติดต่อ ${profile.name} สำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์ใน${profile.contact.location_th || profile.contact.location} Contact for web development, QA and automation testing inquiries`
+        : `Contact ${profile.name} for web development, QA, automation testing, and software project inquiries in ${profile.contact.location}. ติดต่อ ณภัทร ภมรสูตร สำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์`,
       180,
     ),
     ogImage: getRealContentImage(profile.seo?.image),
-    ogImageAlt: `${profile.name} contact information`,
-    path: "/contact",
-    keywords: ["Contact Napat Pamornsut", "ติดต่อ ณภัทร ภมรสูตร", "Napatdev contact", "Web Developer contact Bangkok"],
+    ogImageAlt: th ? `ข้อมูลติดต่อ ${profile.name}` : `${profile.name} contact information`,
+    path: th ? "/th/contact" : "/contact",
+    keywords: th
+      ? ["ติดต่อ ณภัทร ภมรสูตร", "Napatdev contact", "ช่องทางติดต่อ", "นักพัฒนาเว็บ กรุงเทพ"]
+      : ["Contact Napat Pamornsut", "ติดต่อ ณภัทร ภมรสูตร", "Napatdev contact", "Web Developer contact Bangkok"],
   };
 }
 
-export function getSearchSeoMeta() {
+export function getSearchSeoMeta(locale = "en") {
+  const th = locale === "th";
   return {
-    title: `Site Search`,
+    title: th ? `ค้นหาในเว็บ` : `Site Search`,
     description: normalizeMetaDescription(
-      "Search Napatdev portfolio pages, contact information, projects, case studies, and developer notes. ค้นหาข้อมูลพอร์ตโฟลิโอ โปรเจค และโน้ตความรู้ของ ณภัทร ภมรสูตร",
+      th
+        ? "ค้นหาข้อมูลพอร์ตโฟลิโอ โปรเจค และโน้ตความรู้ของ ณภัทร ภมรสูตร Search portfolio pages, projects and developer notes"
+        : "Search Napatdev portfolio pages, contact information, projects, case studies, and developer notes. ค้นหาข้อมูลพอร์ตโฟลิโอ โปรเจค และโน้ตความรู้ของ ณภัทร ภมรสูตร",
       180,
     ),
-    path: "/search",
-    keywords: ["Search Napatdev", "ค้นหา Napatdev", "Napat Pamornsut site search", "ค้นหา ณภัทร ภมรสูตร"],
+    path: th ? "/th/search" : "/search",
+    keywords: th
+      ? ["ค้นหา Napatdev", "Search Napatdev", "สารบัญเว็บไซต์", "ค้นหา ณภัทร ภมรสูตร"]
+      : ["Search Napatdev", "ค้นหา Napatdev", "Napat Pamornsut site search", "ค้นหา ณภัทร ภมรสูตร"],
   };
 }
 
@@ -368,8 +406,8 @@ export function getCoreSiteSchemas(profile) {
   return [getPersonSchema(profile), getOrganizationSchema(profile), getWebSiteSchema(profile)];
 }
 
-export function getHomeGraphSchema(profile) {
-  const seoDefaults = getSiteSeoDefaults(profile);
+export function getHomeGraphSchema(profile, locale = "en") {
+  const seoDefaults = getSiteSeoDefaults(profile, locale);
   return {
     "@context": "https://schema.org",
     "@graph": [

@@ -212,7 +212,8 @@ function ListSection({ title, items }) {
   );
 }
 
-export default function ProjectDetail({ slug, project, relatedNotes = [] }) {
+export default function ProjectDetail({ slug, project, relatedNotes = [], locale = "en" }) {
+  const localePrefix = locale === "th" ? "/th" : "";
   const { getContent } = useTranslation();
 
   if (!project) {
@@ -303,7 +304,7 @@ export default function ProjectDetail({ slug, project, relatedNotes = [] }) {
               {/* HEADER SECTION: Human/Editorial Vibe */}
               <div className="mb-12 md:mb-16">
                 <Link
-                  href="/projects"
+                  href={`${localePrefix}/projects`}
                   className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-gray-900 uppercase tracking-widest transition-colors mb-8 group"
                 >
                   <svg
@@ -535,7 +536,7 @@ export default function ProjectDetail({ slug, project, relatedNotes = [] }) {
                           {relatedNotes.map((note) => (
                             <Link
                               key={note.slug}
-                              href={`/notes/${note.slug}`}
+                              href={`${localePrefix}/notes/${note.slug}`}
                               className="group flex items-center justify-between gap-3 w-full px-5 py-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-50 transition-all border border-gray-200 hover:border-[#c43c3c]/30"
                             >
                               <span>{note.displayTitle || note.name}</span>

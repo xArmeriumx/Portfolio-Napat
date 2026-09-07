@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-export default function TopicHub({ topic, notes }) {
+export default function TopicHub({ topic, notes, locale = "en" }) {
+  const localePrefix = locale === "th" ? "/th" : "";
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#f9fafb] px-4 pb-24 pt-28 md:px-6 md:pt-32">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(#e5e7eb_1px,transparent_1px),linear-gradient(90deg,#e5e7eb_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 [mask-image:radial-gradient(circle_at_top,black_20%,transparent_72%)]" />
@@ -19,7 +20,7 @@ export default function TopicHub({ topic, notes }) {
           {notes.map((note, index) => (
             <Link
               key={note.slug}
-              href={`/notes/${note.slug}`}
+              href={`${localePrefix}/notes/${note.slug}`}
               className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-1 hover:border-[#c43c3c]/30 hover:shadow-[0_16px_35px_rgba(0,0,0,0.08)]"
             >
               <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">
@@ -35,7 +36,7 @@ export default function TopicHub({ topic, notes }) {
 
         <div className="mt-10">
           <Link
-            href="/notes"
+            href={`${localePrefix}/notes`}
             className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 transition-colors hover:text-[#c43c3c]"
           >
             ← All developer notes

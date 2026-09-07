@@ -4,14 +4,15 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 const LanguageContext = createContext();
 
-export function LanguageProvider({ children }) {
-  // Default to English or check localStorage
-  const [language, setLanguage] = useState("en");
+export function LanguageProvider({ children, initialLanguage = "en" }) {
+  // URL locale wins on first paint (SSR + crawler correctness);
+  // the saved preference only restores on the default locale tree.
+  const [language, setLanguage] = useState(initialLanguage);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("language");
-    if (saved) setLanguage(saved);
-  }, []);
+    if (saved && initialLanguage === "en") setLanguage(saved);
+  }, [initialLanguage]);
 
   useEffect(() => {
     window.localStorage.setItem("language", language);

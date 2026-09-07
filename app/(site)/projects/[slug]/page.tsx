@@ -5,6 +5,7 @@ import JsonLd from "@/components/utils/JsonLd";
 import { getProjectSchema, getProjectSeoMeta } from "@/config/seo.js";
 import { buildPageMetadata } from "@/lib/metadata";
 import { getRelatedNotes } from "@/lib/related";
+import type { SiteLocale } from "../../page";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationNote, toPresentationProfile, toPresentationProject } from "@/content/presentation";
 
@@ -21,12 +22,14 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-function getEnglishContent(project: Record<string, unknown>, field: string) {
-  return project[field] || "";
+function getLocalizedContent(locale: SiteLocale) {
+  return (project: Record<string, unknown>, field: string) => {
+    if (locale === "th") return project[`${field}_th`] || project[field] || "";
+    return project[field] || "";
+  };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+export async function metadataProjectPage(slug: string, locale: SiteLocale = "en"): Promise<Metadata> {
   const repository = await getContentRepository();
   const rawProfile = await repository.getPublishedProfile();
   let rawProject = await repository.getPublishedProjectBySlug(slug);
@@ -40,12 +43,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return buildPageMetadata({
       title: "Project Not Found",
       description: "Project details",
-      path: `/projects/${slug}`,
+      path: `${locale === "th" ? "/th" : ""}/projects/${slug}`,
       noindex: true,
+      locale,
     });
   }
 
-  const projectSeo = getProjectSeoMeta(project, getEnglishContent, toPresentationProfile(rawProfile));
+  const profile = toPresentationProfile(rawProfile);
+  const projectSeo = getProjectSeoMeta(project, getLocalizedContent(locale), profile, locale);
 
   return buildPageMetadata({
     title: projectSeo.title,
@@ -57,16 +62,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ogType: "article",
     ogSection: "Portfolio Projects",
     ogKind: "project",
-    ogSubtitle: toPresentationProfile(rawProfile).headline,
+    ogSubtitle: locale === "th" ? profile.headline_th : profile.headline,
     publishedTime: project.publishedAt,
     modifiedTime: project.updatedAt || project.publishedAt,
     path: projectSeo.path,
     keywords: projectSeo.keywords,
+    locale,
   });
 }
 
-export default async function ProjectDetailPage({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  return metadataProjectPage(slug, "en");
+}
+
+export async function renderProjectPage(slug: string, locale: SiteLocale = "en") {
   const repository = await getContentRepository();
   const [rawProfile, rawProject, rawNotes] = await Promise.all([
     repository.getPublishedProfile(),
@@ -76,7 +86,10 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   if (!rawProject) {
     const redirectedSlug = await repository.getPublishedSlugRedirect("PROJECT", slug);
-    if (redirectedSlug) permanentRedirect(`/projects/${encodeURIComponent(redirectedSlug)}`);
+    if (redirectedSlug) {
+      const base = locale === "th" ? "/th/projects" : "/projects";
+      permanentRedirect(`${base}/${encodeURIComponent(redirectedSlug)}`);
+    }
     notFound();
   }
 
@@ -105,7 +118,12 @@ export default async function ProjectDetailPage({ params }: Props) {
           profile,
         })}
       />
-      <ProjectDetail slug={slug} project={project} relatedNotes={relatedNotes} />
+      <ProjectDetail slug={slug} project={project} relatedNotes={relatedNotes} locale={locale} />
     </>
   );
+}
+
+export default async function ProjectDetailPage({ params }: Props) {
+  const { slug } = await params;
+  return renderProjectPage(slug, "en");
 }

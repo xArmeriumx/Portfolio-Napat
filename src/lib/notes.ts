@@ -37,10 +37,19 @@ export function getNoteWordCount(note: Note) {
   return plainText.split(" ").length;
 }
 
-export function getNoteSeoMeta(note: Note) {
-  const titleOverride = note.seo?.title?.en?.trim() || note.seo?.title?.th?.trim() || "";
-  const descriptionOverride = note.seo?.description?.en?.trim() || note.seo?.description?.th?.trim() || "";
-  const generatedDescription = `${getNoteDescription(note)} โน้ตความรู้เรื่อง ${note.displayTitle} โดย ณภัทร ภมรสูตร และ Napatdev`;
+export function getNoteSeoMeta(note: Note, locale: "en" | "th" = "en") {
+  const titleOverride =
+    locale === "th"
+      ? note.seo?.title?.th?.trim() || note.seo?.title?.en?.trim() || ""
+      : note.seo?.title?.en?.trim() || note.seo?.title?.th?.trim() || "";
+  const descriptionOverride =
+    locale === "th"
+      ? note.seo?.description?.th?.trim() || note.seo?.description?.en?.trim() || ""
+      : note.seo?.description?.en?.trim() || note.seo?.description?.th?.trim() || "";
+  const generatedDescription =
+    locale === "th"
+      ? `โน้ตความรู้เรื่อง ${note.displayTitle} โดย ณภัทร ภมรสูตร และ Napatdev ${getNoteDescription(note)}`
+      : `${getNoteDescription(note)} โน้ตความรู้เรื่อง ${note.displayTitle} โดย ณภัทร ภมรสูตร และ Napatdev`;
 
   return {
     title: titleOverride || note.displayTitle,

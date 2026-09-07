@@ -24,9 +24,9 @@ function AppShellContent({ children }) {
   );
 }
 
-export default function AppShell({ children }) {
+export default function AppShell({ children, locale = "en" }) {
   return (
-    <LanguageProvider>
+    <LanguageProvider initialLanguage={locale}>
       <TransitionProvider>
         <AppShellContent>{children}</AppShellContent>
       </TransitionProvider>

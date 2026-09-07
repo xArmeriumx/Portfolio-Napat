@@ -3,6 +3,7 @@ import Link from "next/link";
 import JsonLd from "@/components/utils/JsonLd";
 import { NAVIGATION_ITEMS, absoluteUrl, getCoreSiteSchemas, getSearchSeoMeta, SITE_URL, WEBSITE_ID } from "@/config/seo.js";
 import { buildPageMetadata } from "@/lib/metadata";
+import type { SiteLocale } from "../page";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationNote, toPresentationProfile, toPresentationProject } from "@/content/presentation";
 
@@ -21,24 +22,38 @@ const corePages = NAVIGATION_ITEMS.map((item) => ({
   searchText: item.searchTerms.join(" "),
 }));
 
-const searchSeo = getSearchSeoMeta();
+function localeHref(href: string, locale: SiteLocale) {
+  return locale === "th" ? (href === "/" ? "/th" : `/th${href}`) : href;
+}
 
-export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  const params = await searchParams;
-  const hasQuery = Boolean(params?.q?.trim());
+export async function metadataSearchPage(locale: SiteLocale = "en", searchParams?: Props["searchParams"]): Promise<Metadata> {
+  const searchSeo = getSearchSeoMeta(locale);
 
+  // Site search is a thin utility surface: always noindex (already excluded
+  // from the sitemap), so it never participates in hreflang clusters.
   return buildPageMetadata({
     title: searchSeo.title,
     description: searchSeo.description,
     path: searchSeo.path,
     keywords: searchSeo.keywords,
-    noindex: hasQuery,
+    noindex: true,
+    locale,
   });
 }
 
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  return metadataSearchPage("en", searchParams);
+}
+
 export default async function SearchPage({ searchParams }: Props) {
-  const params = await searchParams;
+  return renderSearchPage("en", searchParams);
+}
+
+export async function renderSearchPage(locale: SiteLocale = "en", searchParams?: Props["searchParams"]) {
+  const params = searchParams ? await searchParams : undefined;
   const query = params?.q?.trim().toLowerCase() || "";
+  const searchSeo = getSearchSeoMeta(locale);
+  const searchPath = locale === "th" ? "/th/search" : "/search";
   const repository = await getContentRepository();
   const [rawProfile, rawProjects, rawNotes] = await Promise.all([
     repository.getPublishedProfile(),
@@ -52,7 +67,7 @@ export default async function SearchPage({ searchParams }: Props) {
     title: note.displayTitle,
     titleEn: note.displayTitle,
     titleTh: `โน้ต ${note.displayTitle}`,
-    href: `/notes/${note.slug}`,
+    href: localeHref(`/notes/${note.slug}`, locale),
     description: `Developer note and cheatsheet: ${note.displayTitle}. โน้ตความรู้และชีทสรุปเรื่อง ${note.displayTitle}`,
     searchText: `${note.displayTitle} ${note.name} Developer Notes Cheatsheet โน้ต คู่มือ ชีทสรุป`,
   }));
@@ -60,11 +75,15 @@ export default async function SearchPage({ searchParams }: Props) {
     title: project.title_th ? `${project.title} / ${project.title_th}` : project.title,
     titleEn: project.title,
     titleTh: project.title_th || project.title,
-    href: `/projects/${project.slug}`,
+    href: localeHref(`/projects/${project.slug}`, locale),
     description: `${project.description?.replace(/\s+/g, " ").trim() || "Portfolio project."} ${project.description_th?.replace(/\s+/g, " ").trim() || ""}`,
     searchText: [project.title, project.title_th, ...(project.technologies || []), "โปรเจค", "ผลงาน"].filter(Boolean).join(" "),
   }));
-  const items = [...corePages, ...projectLinks, ...noteLinks];
+  const items = [
+    ...corePages.map((item) => ({ ...item, href: localeHref(item.href, locale) })),
+    ...projectLinks,
+    ...noteLinks,
+  ];
   const filteredItems = query
     ? items.filter((item) => `${item.title} ${item.description} ${item.searchText}`.toLowerCase().includes(query))
     : items;
@@ -78,8 +97,8 @@ export default async function SearchPage({ searchParams }: Props) {
             ...getCoreSiteSchemas(profile),
             {
               "@type": "SearchResultsPage",
-              "@id": `${SITE_URL}/search#search`,
-              url: absoluteUrl(query ? `/search?q=${encodeURIComponent(query)}` : "/search"),
+              "@id": `${SITE_URL}${searchPath}#search`,
+              url: absoluteUrl(query ? `${searchPath}?q=${encodeURIComponent(query)}` : searchPath),
               name: "Napatdev Search",
               alternateName: ["Search Napatdev", "ค้นหา Napatdev", "สารบัญเว็บไซต์ Napatdev"],
               description: searchSeo.description,
@@ -98,7 +117,7 @@ export default async function SearchPage({ searchParams }: Props) {
               },
               potentialAction: {
                 "@type": "SearchAction",
-                target: `${SITE_URL}/search?q={search_term_string}`,
+                target: `${SITE_URL}${searchPath}?q={search_term_string}`,
                 "query-input": "required name=search_term_string",
               },
             },

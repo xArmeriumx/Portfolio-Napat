@@ -8,28 +8,39 @@ import { toPresentationProfile } from "@/content/presentation";
 
 export const revalidate = 3600;
 
-export async function generateMetadata(): Promise<Metadata> {
+export type SiteLocale = "en" | "th";
+
+export async function metadataHomePage(locale: SiteLocale = "en"): Promise<Metadata> {
   const repository = await getContentRepository();
   const profile = toPresentationProfile(await repository.getPublishedProfile());
-  const seo = getSiteSeoDefaults(profile);
+  const seo = getSiteSeoDefaults(profile, locale);
 
   return buildPageMetadata({
     title: seo.title,
     description: seo.description,
     keywords: seo.keywords,
-    ogSubtitle: profile.headline,
-    path: "/",
+    ogSubtitle: locale === "th" ? profile.headline_th : profile.headline,
+    path: locale === "th" ? "/th" : "/",
+    locale,
   });
 }
 
-export default async function HomePage() {
+export async function generateMetadata(): Promise<Metadata> {
+  return metadataHomePage("en");
+}
+
+export async function renderHomePage(locale: SiteLocale = "en") {
   const repository = await getContentRepository();
   const profile = toPresentationProfile(await repository.getPublishedProfile());
 
   return (
     <>
-      <JsonLd data={getHomeGraphSchema(profile)} />
+      <JsonLd data={getHomeGraphSchema(profile, locale)} />
       <Home profile={profile} />
     </>
   );
+}
+
+export default async function HomePage() {
+  return renderHomePage("en");
 }

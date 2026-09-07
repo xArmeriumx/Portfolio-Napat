@@ -13,19 +13,30 @@ const navItems = [
   { href: "/notes", label: "Notes", labelTh: "โน้ตความรู้" },
 ];
 
+function stripLocalePrefix(pathname) {
+  return pathname === "/th" ? "/" : pathname.replace(/^\/th(?=\/|$)/, "") || "/";
+}
+
 function isActivePath(pathname, href, exact = false) {
-  if (exact) return pathname === href;
-  if (href === "/about" && pathname === "/contact") return true;
-  return pathname === href || pathname.startsWith(`${href}/`);
+  const path = stripLocalePrefix(pathname || "/");
+  if (exact) return path === href;
+  if (href === "/about" && path === "/contact") return true;
+  return path === href || path.startsWith(`${href}/`);
+}
+
+function localeHref(href, language) {
+  if (language !== "th") return href;
+  return href === "/" ? "/th" : `/th${href}`;
 }
 
 function DesktopNavLink({ href, label, labelTh, exact }) {
   const pathname = usePathname();
+  const { language } = useLanguage();
   const isActive = isActivePath(pathname, href, exact);
 
   return (
     <Link
-      href={href}
+      href={localeHref(href, language)}
       prefetch
       aria-label={`${label} / ${labelTh}`}
       title={`${label} / ${labelTh}`}
@@ -42,11 +53,12 @@ function DesktopNavLink({ href, label, labelTh, exact }) {
 
 function MobileNavLink({ href, label, labelTh, exact, onClick }) {
   const pathname = usePathname();
+  const { language } = useLanguage();
   const isActive = isActivePath(pathname, href, exact);
 
   return (
     <Link
-      href={href}
+      href={localeHref(href, language)}
       prefetch
       onClick={onClick}
       aria-label={`${label} / ${labelTh}`}
@@ -89,7 +101,7 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm transition-all duration-300">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link
-          href="/"
+          href={localeHref("/", language)}
           className={`flex items-center z-[60] group transition-opacity ${
             isOpen
               ? "opacity-0 pointer-events-none duration-0 md:opacity-100 md:pointer-events-auto"

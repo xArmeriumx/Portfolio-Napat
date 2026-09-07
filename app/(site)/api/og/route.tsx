@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { ImageResponse } from "next/og";
 
 export const runtime = "nodejs";
@@ -24,7 +25,7 @@ const DEFAULT_TITLE = "Napat Pamornsut — Web Developer & Software Tester";
 let cachedFonts: Promise<Awaited<ReturnType<typeof readPromptFonts>>> | undefined;
 
 async function readPromptFonts() {
-  const fontsDir = path.join(process.cwd(), "app", "api", "og", "fonts");
+  const fontsDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "fonts");
   const [regular, semiBold] = await Promise.all([
     readFile(path.join(fontsDir, "Prompt-Regular.ttf")),
     readFile(path.join(fontsDir, "Prompt-SemiBold.ttf")),

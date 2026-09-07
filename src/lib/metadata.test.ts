@@ -85,4 +85,19 @@ describe("buildPageMetadata social image resolution", () => {
     expect(openGraph.publishedTime).toBeUndefined();
     expect(openGraph.modifiedTime).toBeUndefined();
   });
+
+  it("emits reciprocal en/th hreflang with a self canonical", () => {
+    const en = buildPageMetadata({ title: "About", description: "About page", path: "/about" });
+    const th = buildPageMetadata({ title: "เกี่ยวกับ", description: "หน้าเกี่ยวกับ", path: "/th/about", locale: "th" });
+
+    expect(en.alternates?.canonical).toBe("https://napatdev.com/about");
+    expect(en.alternates?.languages).toEqual({
+      en: "https://napatdev.com/about",
+      th: "https://napatdev.com/th/about",
+      "x-default": "https://napatdev.com/about",
+    });
+    expect(th.alternates?.canonical).toBe("https://napatdev.com/th/about");
+    expect(th.alternates?.languages).toEqual(en.alternates?.languages);
+    expect((th.openGraph as Record<string, unknown>).locale).toBe("th_TH");
+  });
 });
