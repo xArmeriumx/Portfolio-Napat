@@ -58,6 +58,7 @@ describe("CMS SEO overrides", () => {
       slug: "cms-note",
       content: "# Visible note",
       name: "Visible note",
+      displayTitle: "Visible note",
       rawName: "cms-note.md",
       publishedAt: null,
       updatedAt: null,

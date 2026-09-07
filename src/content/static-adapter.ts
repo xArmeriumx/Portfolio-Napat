@@ -131,6 +131,16 @@ function getNotesDirectory() {
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../data/notes");
 }
 
+// Permanent slug renames. Mirrors the SlugRedirect rows that the CMS
+// publish flow auto-creates in production (admin-service publishDraft),
+// so previews and static builds 308 old URLs to their replacements.
+const STATIC_SLUG_REDIRECTS: Record<string, string> = {
+  "NOTE:NEXTJS_ARCHITECTURE": "nextjs-app-router-guide",
+  "NOTE:TYPESCRIPT_REFERENCE": "typescript-reference-guide",
+  "NOTE:sql_basics_with_examples_easy": "sql-basics",
+  "NOTE:sql_code_and_response_tables": "sql-query-examples",
+};
+
 function getNoteDescription(markdown: string, name: string) {
   const plainText = markdown
     .replace(/```[\s\S]*?```/g, " ")
@@ -187,8 +197,8 @@ export class StaticContentRepository implements ContentRepository {
     return (await this.listPublishedProjects()).find((project) => project.slug === slug) || null;
   }
 
-  async getPublishedSlugRedirect() {
-    return null;
+  async getPublishedSlugRedirect(contentType: "PROJECT" | "NOTE", slug: string) {
+    return STATIC_SLUG_REDIRECTS[`${contentType}:${slug}`] ?? null;
   }
 
   async listPublishedNotes() {

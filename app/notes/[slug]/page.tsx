@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Notes from "@/views/Notes.jsx";
 import JsonLd from "@/components/utils/JsonLd";
 import { buildPageMetadata } from "@/lib/metadata";
@@ -67,7 +67,7 @@ export default async function NoteDetailPage({ params }: Props) {
 
   if (!rawNote) {
     const redirectedSlug = await repository.getPublishedSlugRedirect("NOTE", slug);
-    if (redirectedSlug) redirect(`/notes/${encodeURIComponent(redirectedSlug)}`);
+    if (redirectedSlug) permanentRedirect(`/notes/${encodeURIComponent(redirectedSlug)}`);
     notFound();
   }
 

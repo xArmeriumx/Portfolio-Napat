@@ -26,8 +26,7 @@ describe("StaticContentRepository contract", () => {
     const projects = await repository.listPublishedProjects();
 
     expect(projects).toHaveLength(7);
-    expect(projects.map((project) => project.slug)).toEqual([
-      "shop-inventory-management",
+    expect(projects.map((project) => project.slug)).toEqual([      "shop-inventory-management",
       "jodbill-expense-tracker",
       "clean-water-monitoring",
       "automate-test-pipeline",
@@ -40,14 +39,32 @@ describe("StaticContentRepository contract", () => {
     expect((await repository.getPublishedProjectBySlug("missing-project"))).toBeNull();
   });
 
-  it("preserves note markdown, order, and slug lookup", async () => {
-    const notes = await repository.listPublishedNotes();
+  it("preserves note markdown, order, and slug lookup", async () => {    const notes = await repository.listPublishedNotes();
 
     expect(notes).toHaveLength(4);
     expect(notes[0].bodyMarkdown).toContain("#");
     expect(notes.map((note) => note.order)).toEqual([0, 1, 2, 3]);
     expect((await repository.getPublishedNoteBySlug(notes[0].slug))?.rawName).toBe(notes[0].rawName);
     expect((await repository.getPublishedNoteBySlug("missing-note"))).toBeNull();
+  });
+
+  it("resolves legacy uppercase note slugs to their replacements", async () => {
+    const repository = new StaticContentRepository();
+
+    expect(await repository.getPublishedSlugRedirect("NOTE", "NEXTJS_ARCHITECTURE")).toBe(
+      "nextjs-app-router-guide",
+    );
+    expect(await repository.getPublishedSlugRedirect("NOTE", "TYPESCRIPT_REFERENCE")).toBe(
+      "typescript-reference-guide",
+    );
+    expect(await repository.getPublishedSlugRedirect("NOTE", "sql_basics_with_examples_easy")).toBe(
+      "sql-basics",
+    );
+    expect(await repository.getPublishedSlugRedirect("NOTE", "sql_code_and_response_tables")).toBe(
+      "sql-query-examples",
+    );
+    expect(await repository.getPublishedSlugRedirect("NOTE", "nextjs-app-router-guide")).toBeNull();
+    expect(await repository.getPublishedSlugRedirect("PROJECT", "NEXTJS_ARCHITECTURE")).toBeNull();
   });
 
   it("uses English as the explicit fallback when Thai content is absent", () => {

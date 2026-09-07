@@ -50,6 +50,7 @@ export type PresentationNote = {
   slug: string;
   content: string;
   name: string;
+  displayTitle: string;
   rawName: string;
   publishedAt: string | null;
   updatedAt: string | null;
@@ -123,12 +124,19 @@ export function toPresentationProject(project: ProjectContent): PresentationProj
   };
 }
 
+export function extractMarkdownH1(markdown: string): string | null {
+  const match = markdown.match(/^#{1}\s+(.+)$/m);
+  if (!match) return null;
+  return match[1].replace(/[#*`_[\]()]/g, "").replace(/\s+/g, " ").trim() || null;
+}
+
 export function toPresentationNote(note: NoteContent): PresentationNote {
   return {
     path: `/src/data/notes/${note.rawName}`,
     slug: note.slug,
     content: note.bodyMarkdown,
     name: note.title.en,
+    displayTitle: extractMarkdownH1(note.bodyMarkdown) ?? note.title.en,
     rawName: note.rawName,
     publishedAt: note.revision.publishedAt,
     updatedAt: note.revision.updatedAt ?? null,

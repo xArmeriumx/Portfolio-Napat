@@ -26,6 +26,7 @@ function makeNote(overrides: Partial<PresentationNote> = {}): PresentationNote {
     slug: "example-note",
     content: "# Example",
     name: "Example Note",
+    displayTitle: "Example Note",
     rawName: "example.md",
     publishedAt: null,
     updatedAt: null,
@@ -70,6 +71,18 @@ describe("getNoteSchema", () => {
     expect(article.image).toMatch(/^https:\/\/napatdev\.com\/api\/og\?/);
     expect(article.mainEntityOfPage["@id"]).toBe("https://napatdev.com/notes/example-note");
     expect(article.wordCount).toBe(3);
+  });
+
+  it("prefers the markdown H1 as display title in SEO meta", () => {
+    const note = makeNote({
+      content: "# Next.js Mastery: The Complete App Router Guide\n\nBody",
+      name: "Nextjs App Router Guide",
+      displayTitle: "Next.js Mastery: The Complete App Router Guide",
+    });
+    const schema = getNoteSchema(note, profile);
+    const article = schema["@graph"].find((node) => node["@type"] === "TechArticle") as Record<string, any>;
+
+    expect(article.headline).toBe("Next.js Mastery: The Complete App Router Guide");
   });
 
   it("omits article dates when unknown", () => {
