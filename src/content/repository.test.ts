@@ -68,4 +68,13 @@ describe("StaticContentRepository contract", () => {
 
     await expect(getContentRepository()).rejects.toThrow("Production runtime must use database content storage");
   });
+
+  it("uses the static adapter at build time even when storage is database", async () => {
+    vi.stubEnv("NEXT_PHASE", "phase-production-build");
+    vi.stubEnv("CONTENT_STORAGE", "database");
+
+    const repository = await getContentRepository();
+
+    expect(repository).toBeInstanceOf(StaticContentRepository);
+  });
 });

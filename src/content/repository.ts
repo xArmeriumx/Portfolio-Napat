@@ -15,7 +15,15 @@ export function getContentRepository(): Promise<ContentRepository> {
   if (!repositoryPromise) {
     repositoryPromise = (async () => {
       const isNextBuild = process.env.NEXT_PHASE === "phase-production-build";
-      const isProductionRuntime = process.env.NODE_ENV === "production" && !isNextBuild;
+      if (isNextBuild) {
+        // Build-time prerender (SSG/ISR) must never hit the database:
+        // production env sets CONTENT_STORAGE=database and concurrent
+        // prerender queries exhaust the small pooled connection limit
+        // (Prisma P2024). Runtime ISR revalidation still reads the database.
+        const { StaticContentRepository } = await import("./static-adapter");
+        return new StaticContentRepository();
+      }
+      const isProductionRuntime = process.env.NODE_ENV === "production";
       const storage = process.env.CONTENT_STORAGE || (isProductionRuntime ? "database" : "static");
       if (isProductionRuntime && storage !== "database") {
         throw new Error("Production runtime must use database content storage");
