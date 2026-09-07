@@ -24,7 +24,7 @@ describe("CMS SEO overrides", () => {
       seo: { title: null, description: null, image: null },
     });
 
-    expect(seo.title).toBe("Napat Pamornsut — Web Developer & Software Tester");
+    expect(seo.title).toBe("Napat Pamornsut — Web Developer & Software Tester in Bangkok");
     expect(seo.title.length).toBeLessThanOrEqual(60);
     expect(seo.description).toContain("ณภัทร ภมรสูตร");
   });

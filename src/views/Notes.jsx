@@ -11,7 +11,7 @@ import { FEATURES } from '../config/features';
 import AiSummaryPanel from '../components/notes/AiSummaryPanel';
 import AiSelectionTooltip from '../components/notes/AiSelectionTooltip';
 
-export default function Notes({ initialNotes = [], slug }) {
+export default function Notes({ initialNotes = [], slug, relatedProjects = [] }) {
   const router = useRouter();
 
   const [notes] = useState(initialNotes);
@@ -303,6 +303,37 @@ export default function Notes({ initialNotes = [], slug }) {
                   </button>
                 ) : <div className="hidden sm:block sm:w-[48%]"></div>}
               </div>
+
+              {/* Related projects — contextual internal links */}
+              {relatedProjects.length > 0 && (
+                <div className="mt-12 rounded-2xl border border-gray-200 bg-gray-50/60 p-6">
+                  <h2 className="text-sm font-black uppercase tracking-[0.18em] text-gray-500">
+                    Related projects / โปรเจคที่เกี่ยวข้อง
+                  </h2>
+                  <ul className="mt-4 space-y-3">
+                    {relatedProjects.map((project) => (
+                      <li key={project.slug}>
+                        <a
+                          href={`/projects/${project.slug}`}
+                          className="group flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-[#c43c3c]/30 hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)]"
+                        >
+                          <span>
+                            <span className="block font-bold text-gray-900 group-hover:text-[#c43c3c]">
+                              {project.title}
+                            </span>
+                            {project.technologies?.length > 0 && (
+                              <span className="mt-1 block text-xs font-medium text-gray-500">
+                                {project.title_th ? `${project.title_th} · ` : ""}{project.technologies.slice(0, 4).join(" · ")}
+                              </span>
+                            )}
+                          </span>
+                          <ArrowRight size={16} className="shrink-0 text-gray-400 group-hover:text-[#c43c3c]" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
             </div>
           ) : (

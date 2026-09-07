@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/config/seo.js";
+import { NOTE_TOPICS, isNoteTopicKey } from "@/lib/related";
 import { getContentRepository } from "@/content/repository";
 
 export const revalidate = 3600;
@@ -44,5 +45,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       route(`/projects/${project.slug}`, 0.8, "monthly", project.revision.publishedAt),
     ),
     ...notes.map((note) => route(`/notes/${note.slug}`, 0.65, "monthly", note.revision.publishedAt)),
+    ...Object.keys(NOTE_TOPICS).filter(isNoteTopicKey).map((topic) =>
+      route(`/notes/${topic}`, 0.7, "weekly"),
+    ),
   ];
 }
