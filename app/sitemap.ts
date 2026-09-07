@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/config/seo.js";
 import { getContentRepository } from "@/content/repository";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 type SitemapEntry = {
   url: string;
@@ -40,7 +40,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     route("/contact", 0.85, "monthly"),
     route("/projects", 0.95, "weekly"),
     route("/notes", 0.8, "weekly"),
-    route("/search", 0.7, "weekly"),
     ...projects.map((project) =>
       route(`/projects/${project.slug}`, 0.8, "monthly", project.revision.publishedAt),
     ),

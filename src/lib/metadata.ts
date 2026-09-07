@@ -145,7 +145,7 @@ export function buildPageMetadata({
     publisher: SITE_NAME,
     category: "Portfolio",
     keywords,
-    alternates: {
+    alternates: noindex ? undefined : {
       canonical,
     },
     robots: noindex

@@ -7,7 +7,7 @@ import { getNotesListSeoMeta } from "@/config/seo.js";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationNote, toPresentationProfile } from "@/content/presentation";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 1800;
 
 export async function generateMetadata(): Promise<Metadata> {
   const repository = await getContentRepository();

@@ -7,8 +7,14 @@ import { buildPageMetadata } from "@/lib/metadata";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationProfile, toPresentationProject } from "@/content/presentation";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const repository = await getContentRepository();
+  const projects = await repository.listPublishedProjects();
+  return projects.map((project) => ({ slug: project.slug }));
+}
 
 type Props = {
   params: Promise<{ slug: string }>;

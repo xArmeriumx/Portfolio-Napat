@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Prompt, Space_Grotesk, Space_Mono } from "next/font/google";
 import AppShell from "@/components/layout/AppShell.jsx";
-import { getSiteSeoDefaults, getRealContentImage, SITE_NAME, SITE_URL } from "@/config/seo.js";
+import { getSiteSeoDefaults, getRealContentImage, normalizeMetaDescription, SITE_NAME, SITE_URL } from "@/config/seo.js";
 import { buildOgImageUrl } from "@/lib/metadata";
 import { getContentRepository } from "@/content/repository";
 import { toPresentationProfile } from "@/content/presentation";
@@ -38,12 +38,11 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(SITE_URL),
     applicationName: SITE_NAME,
     title: { default: seo.title, template: `%s | ${SITE_NAME}` },
-    description: seo.description,
+    description: normalizeMetaDescription(seo.description, 160),
     authors: [{ name: profile.name, url: SITE_URL }],
     creator: profile.name,
     publisher: SITE_NAME,
     manifest: "/manifest.json",
-    alternates: { canonical: "/" },
     openGraph: {
       type: "website",
       url: SITE_URL,
