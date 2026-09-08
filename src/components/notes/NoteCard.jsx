@@ -375,12 +375,12 @@ const markdownComponents = {
 export default function NoteCard({ markdown, title = "Developer note" }) {
 
   return (
-    <div className="break-inside-avoid mb-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all hover:shadow-md hover:border-red-200 group relative">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-red-400 opacity-0 group-hover:opacity-100 rounded-t-xl transition-opacity"></div>
+    <div className="mb-6 min-w-0 relative">
+
       
       {/* We use prose for tailwindcss/typography standard markdown styling.
           prose-pre:hidden is to hide the default unstyled pre block from tailwind typography, since we custom designed the box above */}
-      <div className="prose prose-slate max-w-none 
+      <div className="reading-prose prose prose-slate max-w-none
           prose-headings:font-bold prose-headings:tracking-tight prose-headings:scroll-mt-24
           prose-h1:text-2xl prose-h1:mb-4 prose-h1:mt-0
           prose-h2:text-xl prose-h2:mt-6 prose-h2:border-b prose-h2:pb-2

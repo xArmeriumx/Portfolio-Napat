@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -8,22 +8,6 @@ import { useTranslation } from "../context/LanguageContext.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import AnimatedText from "../components/ui/AnimatedText.jsx";
-
-// Libraries
-import { Swiper, SwiperSlide } from "swiper/react";
-import {
-  Pagination,
-  Navigation,
-  Autoplay,
-  Thumbs,
-  FreeMode,
-} from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
-import "swiper/css/autoplay";
-import "swiper/css/thumbs";
-import "swiper/css/free-mode";
 
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
@@ -37,154 +21,28 @@ const Lightbox = dynamic(() => import("yet-another-react-lightbox"), {
 /* ========================================
    ImageGallery Component
 ======================================== */
-function ImageGallery({ images, title }) {
+function ImageGallery({ images, title, locale }) {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const [swiperRef, setSwiperRef] = useState(null);
-
-  // Stop/Start Autoplay when Lightbox is open/closed
-  useEffect(() => {
-    if (swiperRef && swiperRef.autoplay) {
-      if (open) {
-        swiperRef.autoplay.stop();
-      } else {
-        swiperRef.autoplay.start();
-      }
-    }
-  }, [open, swiperRef]);
-
-  // Convert images for Lightbox
-  const slides = images.map((src) => ({ src, alt: title }));
-
+  const th = locale === "th";
+  if (!images.length) return null;
+  const slides = images.map((src, i) => ({ src, alt: `${title} — ${i + 1}` }));
   return (
-    <>
-      <div className="space-y-4">
-        {/* Main Swiper */}
-        <div className="rounded-[2rem] overflow-hidden shadow-2xl shadow-gray-200/50 bg-gray-100 ring-1 ring-gray-200">
-          <Swiper
-            onSwiper={setSwiperRef}
-            style={{
-              "--swiper-navigation-color": "rgba(75, 85, 99, 0.6)",
-              "--swiper-navigation-size": "24px",
-              "--swiper-pagination-color": "#4b5563",
-            }}
-            modules={[Pagination, Navigation, Autoplay, Thumbs, FreeMode]}
-            thumbs={{
-              swiper:
-                thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
-            }}
-            autoplay={{
-              delay: 4000,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-            }}
-            speed={2000}
-            pagination={{ clickable: true, dynamicBullets: true }}
-            navigation={true}
-            loop={true}
-            spaceBetween={20}
-            slidesPerView={1}
-            className="aspect-video w-full bg-white cursor-zoom-in"
-            onSlideChange={(swiper) => setIndex(swiper.realLoopIndex)}
-            onClick={() => setOpen(true)}
-          >
-            {images.map((img, i) => (
-              <SwiperSlide key={i} className="flex items-center justify-center">
-                <div className="w-full h-full flex items-center justify-center p-2 relative group">
-                  <div className="relative h-full w-full">
-                    <Image
-                      src={img}
-                      alt={`${title} ${i + 1}`}
-                      fill
-                      priority={i === 0}
-                      sizes="(max-width: 1024px) 100vw, 1024px"
-                      className="object-contain select-none"
-                      draggable="false"
-                    />
-                  </div>
-                  {/* Zoom Hint Overlay */}
-                  <div className="absolute bottom-6 right-6 bg-black/50 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex items-center gap-2">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-                      />
-                    </svg>
-                    Click to Expand
-                  </div>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-
-        {/* Thumbnail Swiper */}
-        {images.length > 1 && (
-          <Swiper
-            onSwiper={setThumbsSwiper}
-            loop={true}
-            spaceBetween={10}
-            slidesPerView={5}
-            freeMode={true}
-            watchSlidesProgress={true}
-            modules={[FreeMode, Navigation, Thumbs]}
-            className="thumbs-swiper rounded-xl"
-          >
-            {images.map((img, i) => (
-              <SwiperSlide
-                key={i}
-                className="cursor-pointer rounded-lg overflow-hidden border-2 border-transparent transition-all border-opacity-50 hover:border-gray-400 !h-auto"
-              >
-                <div
-                  className={`w-full aspect-video relative ${
-                    index === i
-                      ? "ring-2 ring-gray-800 ring-offset-1"
-                      : "opacity-60 hover:opacity-100"
-                  }`}
-                >
-                  <Image
-                    src={img}
-                    alt={`Thumbnail ${i + 1}`}
-                    fill
-                    sizes="(max-width: 768px) 20vw, 160px"
-                    className="object-cover"
-                  />
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        )}
-      </div>
-
-      <Lightbox
-        open={open}
-        close={() => setOpen(false)}
-        index={index}
-        slides={slides}
-        plugins={[Zoom]}
-        zoom={{ maxZoomPixelRatio: 3 }}
-        animation={{
-          fade: 0,
-        }} /* Disable default fade to use custom animation */
-        controller={{ closeOnBackdropClick: true }}
-        styles={{
-          root: {
-            "--yarl__container_background_color": "rgba(0, 0, 0, 0.2)",
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
-            animation: "zoomIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards",
-          },
-        }}
-      />
-    </>
+    <figure aria-label={th ? "ภาพผลงาน" : "Project gallery"}>
+      <button type="button" onClick={() => setOpen(true)} aria-label={th ? "ขยายภาพผลงาน" : "Expand project image"} className="relative block aspect-video w-full cursor-zoom-in overflow-hidden rounded-xl bg-surface-muted">
+        <Image src={images[index]} alt={`${title} — ${index + 1}`} fill priority={index === 0} sizes="(max-width: 1024px) 100vw, 1024px" className="object-contain p-3 md:p-6" />
+      </button>
+      <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
+        <span aria-live="polite">{th ? "ภาพ" : "Image"} {index + 1} / {images.length}</span>
+        <button type="button" onClick={() => setOpen(true)} className="min-h-11 px-2 font-semibold text-accent underline">{th ? "เปิดภาพขนาดใหญ่" : "View full size"}</button>
+      </figcaption>
+      {images.length > 1 && <div className="mt-3 flex gap-3 overflow-x-auto pb-3" aria-label={th ? "เลือกภาพ" : "Choose an image"}>
+        {images.map((src, i) => <button type="button" key={`${src}-${i}`} aria-label={`${th ? "ดูภาพ" : "View image"} ${i + 1}`} aria-pressed={index === i} onClick={() => setIndex(i)} className={`relative aspect-video w-28 shrink-0 overflow-hidden rounded-lg bg-surface-muted border-2 ${index === i ? "border-accent" : "border-transparent hover:border-gray-300"}`}>
+          <Image src={src} alt="" fill sizes="112px" className="object-contain p-1" />
+        </button>)}
+      </div>}
+      {open && <Lightbox open close={() => setOpen(false)} index={index} slides={slides} plugins={[Zoom]} zoom={{ maxZoomPixelRatio: 3 }} on={{ view: ({ index: nextIndex }) => setIndex(nextIndex) }} controller={{ closeOnBackdropClick: true }} />}
+    </figure>
   );
 }
 
@@ -259,7 +117,7 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
   const role = project.role || [];
   const stack = project.stack;
   const technologies = project.technologies || [];
-  const projectImages = project.images || [project.image];
+  const projectImages = (project.images?.length ? project.images : [project.image]).filter(Boolean);
   const links = project.links;
 
   const keyFeatures = getContent(project, "keyFeatures") || [];
@@ -267,7 +125,7 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
   const responsibilities = getContent(project, "responsibilities") || [];
 
   // Labels - Always English
-  const labels = {
+  const labels = locale === "th" ? { overview: "ภาพรวม", role: "บทบาท", tech: "เทคโนโลยี", keyFeatures: "ความสามารถหลัก", highlights: "จุดเด่น", responsibilities: "หน้าที่รับผิดชอบ", links: "ลิงก์", repo: "ซอร์สโค้ด", demo: "ดูตัวอย่าง", back: "กลับ" } : {
     overview: "Overview",
     role: "Role",
     tech: "Technologies",
@@ -283,7 +141,7 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
   return (
     <>
       <PageTransition>
-        <div className="relative min-h-screen bg-[#f9fafb] overflow-hidden pt-28 md:pt-36 pb-32">
+        <div className="relative min-h-screen bg-canvas overflow-hidden pt-28 md:pt-36 pb-32">
           {/* Dimensional Background */}
           <div className="absolute inset-0 pointer-events-none">
             <div
@@ -320,7 +178,7 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
                       d="M15 19l-7-7 7-7"
                     />
                   </svg>
-                  Back to Projects
+                  {locale === "th" ? "กลับไปหน้าผลงาน" : "Back to Projects"}
                 </Link>
 
                 <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-8">
@@ -351,9 +209,7 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
 
               {/* HERO IMAGE GALLERY - Immersive & Clean */}
               <div className="mb-16 md:mb-24">
-                <div className="rounded-[2rem] overflow-hidden shadow-2xl shadow-gray-200/50">
-                  <ImageGallery images={projectImages} title={title} />
-                </div>
+                <ImageGallery images={projectImages} title={title} locale={locale} />
               </div>
 
               {/* CONTENT NARRATIVE */}
@@ -537,10 +393,10 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
                             <Link
                               key={note.slug}
                               href={`${localePrefix}/notes/${note.slug}`}
-                              className="group flex items-center justify-between gap-3 w-full px-5 py-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-50 transition-all border border-gray-200 hover:border-[#c43c3c]/30"
+                              className="group flex items-center justify-between gap-3 w-full px-5 py-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-50 transition-all border border-gray-200 hover:border-accent/30"
                             >
                               <span>{note.displayTitle || note.name}</span>
-                              <span className="text-sm text-gray-400 group-hover:text-[#c43c3c] transition-colors">
+                              <span className="text-sm text-gray-400 group-hover:text-accent transition-colors">
                                 →
                               </span>
                             </Link>

@@ -4,7 +4,7 @@ import JsonLd from "@/components/utils/JsonLd";
 import { getHomeGraphSchema, getSiteSeoDefaults } from "@/config/seo.js";
 import { buildPageMetadata } from "@/lib/metadata";
 import { getContentRepository } from "@/content/repository";
-import { toPresentationProfile } from "@/content/presentation";
+import { toPresentationProfile, toPresentationProject } from "@/content/presentation";
 
 export const revalidate = 3600;
 
@@ -31,12 +31,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export async function renderHomePage(locale: SiteLocale = "en") {
   const repository = await getContentRepository();
-  const profile = toPresentationProfile(await repository.getPublishedProfile());
+  const [rawProfile, rawProjects] = await Promise.all([repository.getPublishedProfile(), repository.listPublishedProjects()]);
+  const profile = toPresentationProfile(rawProfile);
+  const selectedProjects = rawProjects.filter((project) => project.featured).slice(0, 3).map(toPresentationProject);
 
   return (
     <>
       <JsonLd data={getHomeGraphSchema(profile, locale)} />
-      <Home profile={profile} locale={locale} />
+      <Home profile={profile} selectedProjects={selectedProjects} locale={locale} />
     </>
   );
 }

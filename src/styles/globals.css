@@ -17,8 +17,8 @@ body,
 
 body {
   margin: 0;
-  background: #fdfdfd; 
-  color: #1d1d1f;
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font-space-grotesk), var(--font-prompt), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   overflow-x: hidden;
 }
@@ -67,12 +67,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: var(--line);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: var(--muted);
 }
 
 /* Utility to hide scrollbar but allow scrolling */
@@ -91,7 +91,7 @@ html {
 
 /* Focus Outline */
 :focus-visible {
-  outline: 2px solid #ef4444;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -194,3 +194,41 @@ html {
   color: #86868b;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
+
+::selection { background: var(--accent-soft); color: var(--accent-hover); }
+input, textarea { caret-color: var(--accent); }
+a { text-underline-offset: .2em; }
+h1, h2 { text-wrap: balance; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-blur-in, .animate-fade-in-up, .animate-cinematic { animation: none; }
+}
+
+/* The profile editor is a static object, not another entrance animation. */
+.profile-ide-stage { isolation: isolate; perspective: 1400px; padding: 14px 0 20px; }
+.profile-ide-stage::before {
+  content: ""; position: absolute; inset: 0 12px 36px 24px; z-index: -1;
+  border-radius: var(--radius2); background: var(--surface-muted);
+  transform: rotate(3deg); border: 1px solid var(--line);
+}
+.profile-ide-window { transform: rotateY(-5deg) rotateX(2deg); box-shadow: var(--shadow-raised), 0 4px 8px rgb(36 36 34 / 6%); }
+.profile-ide-code { color: var(--muted); }
+.profile-ide-code .syntax-keyword { color: var(--syntax-keyword); }
+.profile-ide-code .syntax-property { color: var(--syntax-property); }
+.profile-ide-code .syntax-string { color: var(--syntax-string); }
+.selected-work { padding-block: var(--space-section); }
+.selected-work-row { display: grid; gap: 2rem; padding-block: 2.5rem; border-top: 1px solid var(--line); }
+.selected-work-image { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--surface-muted); border-radius: var(--radius); }
+@media (min-width: 768px) { .selected-work-row { grid-template-columns: 1.2fr 1fr; align-items: center; gap: 4rem; } }
+@media (max-width: 767px) { .profile-ide-window { transform: none; } }
+
+/* A document scrolls with the page; only code and tables scroll sideways. */
+.notes-reading .reading-prose { max-width: var(--reading-width); color: var(--text); font-size: 1rem; line-height: 1.85; }
+.notes-reading .reading-prose :where(h1,h2,h3) { color: var(--text); scroll-margin-top: 7rem; line-height: 1.35; }
+.notes-reading .reading-prose h1 { font-size: clamp(1.8rem, 3vw, 2.5rem); letter-spacing: -.025em; margin-bottom: 1.5rem; }
+.notes-reading .reading-prose h2 { margin-top: 3rem; margin-bottom: 1rem; border: 0; }
+.notes-reading .reading-prose h3 { margin-top: 2rem; }
+.notes-reading .reading-prose p { margin-block: 1.2em; }
+.notes-reading .reading-prose a { color: var(--accent); }
+.notes-reading .reading-prose pre { max-width: 100%; overflow-x: auto; }
+.notes-reading .reading-prose table { display: block; max-width: 100%; overflow-x: auto; }

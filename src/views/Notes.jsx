@@ -78,50 +78,22 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
     return items;
   }, [activeNote]);
 
-  // ── Reading Progress Bar ─────────────────────────────────────
+  // Use the page's scroll position on desktop and mobile alike.
   useEffect(() => {
-    const el = mainRef.current;
-    if (!el) return;
     const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = el;
-      const total = scrollHeight - clientHeight;
-      setReadingProgress(total > 0 ? Math.round((scrollTop / total) * 100) : 0);
+      const article = mainRef.current;
+      if (!article) return;
+      const start = article.getBoundingClientRect().top + window.scrollY;
+      const total = article.offsetHeight - window.innerHeight;
+      setReadingProgress(total > 0 ? Math.max(0, Math.min(100, Math.round((window.scrollY - start) / total * 100))) : 100);
+      const visible = [...article.querySelectorAll('h1[id], h2[id], h3[id]')].filter(heading => heading.getBoundingClientRect().top <= 150);
+      setActiveHeadingId(visible.at(-1)?.id || null);
     };
-    el.addEventListener('scroll', handleScroll, { passive: true });
-    return () => el.removeEventListener('scroll', handleScroll);
-  }, [activeNote]); // re-attach when note changes
-
-  // ── Reset scroll position when switching notes (Desktop fix) ──
-  useEffect(() => {
-    if (mainRef.current) {
-      mainRef.current.scrollTo({ top: 0 });
-    }
-    setReadingProgress(0);
-    setActiveHeadingId(null);
-  }, [activeNote?.slug]);
-
-  // ── Active TOC Highlight – IntersectionObserver ───────────────
-  useEffect(() => {
-    if (!headings.length) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Pick the topmost visible heading
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible.length > 0) setActiveHeadingId(visible[0].target.id);
-      },
-      {
-        root: mainRef.current,       // observe inside the scrollable container
-        rootMargin: '-80px 0px -60% 0px', // trigger when heading enters top 40% of viewport
-        threshold: 0,
-      }
-    );
-    // Observe every heading rendered in the document
-    const targets = document.querySelectorAll('main h1, main h2, main h3');
-    targets.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, [headings, activeNote?.slug]);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+    return () => { window.removeEventListener('scroll', handleScroll); window.removeEventListener('resize', handleScroll); };
+  }, [activeNote]);
 
   const scrollToHeading = (e, id, headingText) => {
     e.preventDefault();
@@ -151,10 +123,10 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
   };
 
   return (
-    <div className="pt-16 min-h-screen bg-[#fdfdfd] flex flex-col md:flex-row relative z-10 w-full animate-fade-in-up md:overflow-hidden">
+    <div className="notes-reading pt-24 min-h-screen bg-canvas flex flex-col lg:flex-row relative z-10 w-full">
 
       {/* 1) Sidebar Explorer */}
-      <aside className="w-full md:w-72 bg-[#fdfdfd] border-b md:border-b-0 md:border-r border-gray-200 md:h-[calc(100vh-64px)] flex flex-col shrink-0 text-sm">
+      <aside className="hidden lg:flex lg:sticky lg:top-24 w-60 bg-canvas border-r border-line h-[calc(100vh-96px)] flex-col shrink-0 text-sm">
         <div className="p-4 border-b border-gray-100 flex items-center justify-between text-gray-800">
           <div className="flex items-center gap-2">
             <FolderTree size={18} className="text-red-500" />
@@ -220,13 +192,13 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
       </aside>
 
       {/* 2) Main Workspace (Scrollable area) */}
-      <main ref={mainRef} className="flex-1 min-w-0 bg-white md:h-[calc(100vh-64px)] md:overflow-y-auto scrollbar-hide flex flex-col relative">
+      <main ref={mainRef} className="flex-1 min-w-0 bg-canvas flex flex-col relative">
 
         {/* Editor Tabs / Header */}
         {activeNote && (
-          <div className="border-b border-gray-200 flex flex-col bg-gray-50/80 sticky top-0 z-20">
-            <div className="h-14 flex items-center">
-              <div className="flex items-center h-full px-8 border-r border-gray-200 bg-white border-t-[3px] border-t-red-500 text-sm gap-2.5 min-w-fit shadow-sm relative">
+          <div className="border-b border-line flex flex-col bg-canvas">
+            <div className="min-h-14 flex items-center">
+              <div className="flex items-center py-4 px-5 text-sm gap-2.5 min-w-0 relative">
                 <Hash size={16} className="text-gray-400" />
                 <span className="font-bold text-gray-800 tracking-wide">{activeNote.displayTitle || activeNote.name}</span>
                 {/* Bottom cover to blend with content area */}
@@ -238,7 +210,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
             {/* ── Reading Progress Bar ── */}
             <div className="h-[2px] w-full bg-gray-100">
               <div
-                className="h-full bg-gradient-to-r from-red-500 to-red-400 transition-[width] duration-150 ease-out"
+                className="h-full bg-accent transition-[width] duration-150 ease-out"
                 style={{ width: `${readingProgress}%` }}
               />
             </div>
@@ -247,10 +219,18 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
 
         <div className="flex-1 flex justify-center pb-24">
           {activeNote ? (
-            <div className="w-full max-w-3xl p-4 md:p-8 shrink-0 pb-16">
+            <div className="w-full min-w-0 max-w-3xl px-5 py-8 md:px-10 shrink pb-16">
 
+              <div className="mb-8 flex flex-wrap gap-4 text-sm lg:hidden">
+                <Link href={`${localePrefix}/notes`} className="py-2 text-accent">{locale === "th" ? "บทความทั้งหมด" : "All notes"}</Link>
+                <button type="button" onClick={() => setIsCmdKOpen(true)} className="py-2 text-accent">{locale === "th" ? "ค้นหาบทความ" : "Search notes"}</button>
+                {headings.length > 0 && <details className="w-full border-y border-line py-3">
+                  <summary className="cursor-pointer font-semibold">{locale === "th" ? "สารบัญ" : "On this page"}</summary>
+                  <ul className="mt-3 space-y-3">{headings.map((heading, i) => <li key={`${heading.id}-${i}`}><a className="block py-1 text-muted" href={`#${heading.id}`} onClick={e => scrollToHeading(e, heading.id, heading.text)}>{heading.text}</a></li>)}</ul>
+                </details>}
+              </div>
               {/* The Core Cheatsheet Content */}
-              <div className="animate-fade-in-up">
+              <div className="min-w-0">
                 {/* AI Summary Injection */}
                 {FEATURES.ENABLE_AI_ASSISTANT && activeNote?.content && (
                   <>
@@ -313,10 +293,10 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
                       <li key={project.slug}>
                         <a
                           href={`${localePrefix}/projects/${project.slug}`}
-                          className="group flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-[#c43c3c]/30 hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)]"
+                          className="group flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)]"
                         >
                           <span>
-                            <span className="block font-bold text-gray-900 group-hover:text-[#c43c3c]">
+                            <span className="block font-bold text-gray-900 group-hover:text-accent">
                               {project.title}
                             </span>
                             {project.technologies?.length > 0 && (
@@ -325,7 +305,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
                               </span>
                             )}
                           </span>
-                          <ArrowRight size={16} className="shrink-0 text-gray-400 group-hover:text-[#c43c3c]" />
+                          <ArrowRight size={16} className="shrink-0 text-gray-400 group-hover:text-accent" />
                         </a>
                       </li>
                     ))}
@@ -343,7 +323,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
 
           {/* 3) Right Sidebar: Table of Contents (TOC) */}
           {activeNote && headings.length > 0 && (
-            <aside className="hidden xl:block w-64 shrink-0 px-6 py-8 border-l border-gray-100 bg-[#fdfdfd] h-[calc(100vh-104px)] sticky top-10 overflow-y-auto scrollbar-hide">
+            <aside className="hidden xl:block w-56 shrink-0 px-5 py-8 border-l border-line bg-canvas h-[calc(100vh-112px)] sticky top-28 overflow-y-auto">
               <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4 flex items-center gap-1.5"><List size={14} className="text-gray-400" /> On this page</h3>
               <ul className="space-y-2.5 text-sm text-gray-500">
                 {headings.map((heading, i) => {
