@@ -1,0 +1,1816 @@
+{
+  "capturedAt": "2026-09-08T04:24:50.754Z",
+  "base": "http://localhost:3100/",
+  "limitations": [
+    "HTTP crawl; not Search Console indexing evidence or a browser performance score",
+    "Maximum 150 HTML pages; private routes excluded",
+    "CDN email-protection paths are recorded but excluded from authored broken-link findings",
+    "Image downloads, field indexing and external schema validators are separate checks"
+  ],
+  "sitemap": {
+    "status": 200,
+    "paths": [
+      "/",
+      "/th",
+      "/about",
+      "/th/about",
+      "/contact",
+      "/th/contact",
+      "/projects",
+      "/th/projects",
+      "/notes",
+      "/th/notes",
+      "/projects/shop-inventory-management",
+      "/th/projects/shop-inventory-management",
+      "/projects/jodbill-expense-tracker",
+      "/th/projects/jodbill-expense-tracker",
+      "/projects/clean-water-monitoring",
+      "/th/projects/clean-water-monitoring",
+      "/projects/automate-test-pipeline",
+      "/th/projects/automate-test-pipeline",
+      "/projects/stock-management-system",
+      "/th/projects/stock-management-system",
+      "/projects/pharmacy-store",
+      "/th/projects/pharmacy-store",
+      "/projects/uat-testkit",
+      "/th/projects/uat-testkit"
+    ]
+  },
+  "robots": {
+    "status": 200,
+    "body": "User-Agent: *\nAllow: /\nAllow: /api/og\nDisallow: /admin\nDisallow: /preview\nDisallow: /api/admin/\nDisallow: /api/auth/\n\nUser-Agent: GPTBot\nUser-Agent: ClaudeBot\nUser-Agent: PerplexityBot\nUser-Agent: GoogleOther\nAllow: /\nAllow: /api/og\nDisallow: /admin\nDisallow: /preview\nDisallow: /api/admin/\nDisallow: /api/auth/\n\nSitemap: https://napatdev.com/sitemap.xml\n"
+  },
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/",
+      "redirects": 0,
+      "seconds": 0.03569,
+      "lang": "en",
+      "title": "Napat Pamornsut — Web Developer & Software Tester in Bangkok",
+      "description": "Napat Pamornsut is a Web Developer and Software Tester based in Bangkok, Thailand, specializing in Next.js, TypeScript, full-stack development and automated...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com"
+        }
+      ],
+      "h1": [
+        "Napat Pamornsut (ณภัทร ภมรสูตร)"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "ProfilePage",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "ProfilePage",
+          "url": "https://napatdev.com/",
+          "language": "en"
+        }
+      ],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th",
+        "/contact"
+      ]
+    },
+    {
+      "path": "/about",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/about",
+      "redirects": 0,
+      "seconds": 0.133197,
+      "lang": "en",
+      "title": "About Napat Pamornsut | Napatdev",
+      "description": "Web Developer | Software Tester. I have experience as a Web Developer and Software Tester, with a strong focus on quality, validation, and practical usage. I...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/about",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/about"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/about"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/about"
+        }
+      ],
+      "h1": [
+        "Napat Pamornsut"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "ProfilePage",
+        "AboutPage",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "ProfilePage",
+          "url": "https://napatdev.com/about",
+          "language": "en"
+        },
+        {
+          "type": "AboutPage",
+          "url": "https://napatdev.com/about"
+        }
+      ],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/about",
+        "/resume.pdf"
+      ]
+    },
+    {
+      "path": "/contact",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/contact",
+      "redirects": 0,
+      "seconds": 0.157715,
+      "lang": "en",
+      "title": "Contact Napat Pamornsut | Napatdev",
+      "description": "Contact Napat Pamornsut for web development, QA, automation testing, and software project inquiries in Bangkok, Thailand",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/contact",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/contact"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/contact"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/contact"
+        }
+      ],
+      "h1": [
+        "Contact Napat Pamornsut"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "ContactPage",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "ContactPage",
+          "url": "https://napatdev.com/contact",
+          "language": "en"
+        }
+      ],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/contact"
+      ]
+    },
+    {
+      "path": "/notes",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/notes",
+      "redirects": 0,
+      "seconds": 0.064558,
+      "lang": "en",
+      "title": "Developer Notes & Cheatsheets | Napatdev",
+      "description": "Developer notes and technical cheatsheets by Napat Pamornsut",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/notes",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/notes"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/notes"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/notes"
+        }
+      ],
+      "h1": [
+        "Developer & QA Notes"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "CollectionPage",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "CollectionPage",
+          "url": "https://napatdev.com/notes",
+          "language": "en"
+        }
+      ],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/notes",
+        "/notes/nextjs-app-router-guide",
+        "/notes/sql-basics",
+        "/notes/sql-query-examples",
+        "/notes/typescript-reference-guide"
+      ]
+    },
+    {
+      "path": "/notes/nextjs-app-router-guide",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/notes/nextjs-app-router-guide",
+      "redirects": 0,
+      "seconds": 0.306382,
+      "lang": "en",
+      "title": "Next.js Mastery: The Complete App Router Guide | Napatdev",
+      "description": "Next.js Mastery: The Complete App Router Guide เอกสารอ้างอิงและสรุปแนวคิดทั้งหมดที่จำเป็นสำหรับการเขียนโปรเจกต์ด้วย Next.js App Router คัดมาเฉพาะส่วนสำคัญที่...",
+      "robots": [
+        "noindex, nofollow"
+      ],
+      "alternates": [],
+      "h1": [
+        "Next.js Mastery: The Complete App Router Guide"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [],
+      "schemaPages": [],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/notes",
+        "/notes/nextjs-app-router-guide",
+        "/notes/sql-basics",
+        "/notes/sql-query-examples",
+        "/notes/typescript-reference-guide",
+        "/projects/shop-inventory-management",
+        "/projects/jodbill-expense-tracker",
+        "/projects/clean-water-monitoring"
+      ]
+    },
+    {
+      "path": "/notes/sql-basics",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/notes/sql-basics",
+      "redirects": 0,
+      "seconds": 0.394558,
+      "lang": "en",
+      "title": "SQL พื้นฐานสำหรับงานจริง ฉบับเข้าใจง่าย | Napatdev",
+      "description": "SQL พื้นฐานสำหรับงานจริง ฉบับเข้าใจง่าย เอกสารนี้สรุปเฉพาะหัวข้อที่เราเรียนกันไปก่อน โดยเน้นสิ่งที่ใช้จริงในงาน และอธิบายแบบค่อยเป็นค่อยไป พร้อมตัวอย่างตาราง...",
+      "robots": [
+        "noindex, nofollow"
+      ],
+      "alternates": [],
+      "h1": [
+        "SQL พื้นฐานสำหรับงานจริง (ฉบับเข้าใจง่าย)"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [],
+      "schemaPages": [],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/notes",
+        "/notes/nextjs-app-router-guide",
+        "/notes/sql-basics",
+        "/notes/sql-query-examples",
+        "/notes/typescript-reference-guide",
+        "/projects/shop-inventory-management",
+        "/projects/jodbill-expense-tracker",
+        "/projects/pharmacy-store"
+      ]
+    },
+    {
+      "path": "/notes/sql-query-examples",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/notes/sql-query-examples",
+      "redirects": 0,
+      "seconds": 0.445277,
+      "lang": "en",
+      "title": "SQL สรุปโค้ด + Response Table ให้เห็นภาพ | Napatdev",
+      "description": "SQL สรุปโค้ด + Response Table ให้เห็นภาพ เอกสารนี้สรุปแบบ “ดูโค้ด แล้วดูผลลัพธ์” เหมาะกับใช้ทบทวนเร็ว --- 1 INNER JOIN ตารางตั้งต้น customers | customerid |...",
+      "robots": [
+        "noindex, nofollow"
+      ],
+      "alternates": [],
+      "h1": [
+        "SQL สรุปโค้ด + Response Table ให้เห็นภาพ"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [],
+      "schemaPages": [],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/notes",
+        "/notes/nextjs-app-router-guide",
+        "/notes/sql-basics",
+        "/notes/sql-query-examples",
+        "/notes/typescript-reference-guide",
+        "/projects/pharmacy-store",
+        "/projects/shop-inventory-management",
+        "/projects/jodbill-expense-tracker"
+      ]
+    },
+    {
+      "path": "/notes/typescript-reference-guide",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/notes/typescript-reference-guide",
+      "redirects": 0,
+      "seconds": 0.4535,
+      "lang": "en",
+      "title": "TypeScript Mastery: The Complete Reference Guide | Napatdev",
+      "description": "TypeScript Mastery: The Complete Reference Guide เอกสารอ้างอิงและสรุปแนวคิดทั้งหมดที่ได้จากการเรียนรู้และการเขียนโค้ดในโปรเจกต์นี้ --- 1. การกำหนดประเภทข้อมู...",
+      "robots": [
+        "noindex, nofollow"
+      ],
+      "alternates": [],
+      "h1": [
+        "TypeScript Mastery: The Complete Reference Guide"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [],
+      "schemaPages": [],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/notes",
+        "/notes/nextjs-app-router-guide",
+        "/notes/sql-basics",
+        "/notes/sql-query-examples",
+        "/notes/typescript-reference-guide",
+        "/projects/shop-inventory-management",
+        "/projects/automate-test-pipeline",
+        "/projects/jodbill-expense-tracker"
+      ]
+    },
+    {
+      "path": "/projects",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/projects",
+      "redirects": 0,
+      "seconds": 0.163143,
+      "lang": "en",
+      "title": "Web Development & Software Testing Projects | Napatdev",
+      "description": "Explore full-stack web development, ERP/POS systems, IoT dashboards and software testing projects by Napat Pamornsut using Next.js, TypeScript, Prisma, Playw...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/projects",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects"
+        }
+      ],
+      "h1": [
+        "Projects"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "CollectionPage",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "CollectionPage",
+          "url": "https://napatdev.com/projects",
+          "language": "en"
+        }
+      ],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/projects",
+        "/projects/shop-inventory-management",
+        "/projects/jodbill-expense-tracker",
+        "/projects/clean-water-monitoring",
+        "/projects/automate-test-pipeline",
+        "/projects/stock-management-system",
+        "/projects/pharmacy-store",
+        "/projects/uat-testkit"
+      ]
+    },
+    {
+      "path": "/projects/automate-test-pipeline",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/projects/automate-test-pipeline",
+      "redirects": 0,
+      "seconds": 0.05744,
+      "lang": "en",
+      "title": "Automated Testing for Clean Water Monitoring — Case Study | Napatdev",
+      "description": "Comprehensive automated testing suite for the Clean Water Monitoring project. Covers API testing (6 modules), Admin UI testing, and E2E flows using Playwrigh...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/projects/automate-test-pipeline",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/automate-test-pipeline"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/automate-test-pipeline"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/automate-test-pipeline"
+        }
+      ],
+      "h1": [
+        "Automated Testing for Clean Water Monitoring"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/projects/automate-test-pipeline",
+          "language": "en"
+        }
+      ],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/projects/automate-test-pipeline",
+        "/notes/typescript-reference-guide",
+        "/notes/nextjs-app-router-guide",
+        "/notes/sql-query-examples"
+      ]
+    },
+    {
+      "path": "/projects/clean-water-monitoring",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/projects/clean-water-monitoring",
+      "redirects": 0,
+      "seconds": 0.190365,
+      "lang": "en",
+      "title": "Clean Water Monitoring — Case Study | Napatdev",
+      "description": "Final Year Project - Real-time water quality monitoring system. Built with React frontend and Node.js/Express backend, integrated with IoT sensors via MQTT....",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/projects/clean-water-monitoring",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/clean-water-monitoring"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/clean-water-monitoring"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/clean-water-monitoring"
+        }
+      ],
+      "h1": [
+        "Clean Water Monitoring"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/projects/clean-water-monitoring",
+          "language": "en"
+        }
+      ],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/projects/clean-water-monitoring",
+        "/notes/nextjs-app-router-guide",
+        "/notes/sql-query-examples"
+      ]
+    },
+    {
+      "path": "/projects/jodbill-expense-tracker",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/projects/jodbill-expense-tracker",
+      "redirects": 0,
+      "seconds": 0.051869,
+      "lang": "en",
+      "title": "JodBill — Smart Expense Tracker — Case Study | Napatdev",
+      "description": "A personal finance PWA — scan receipts with AI, track income & expenses, set budgets, and get AI-driven financial coaching. Designed as a mobile-first app wi...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/projects/jodbill-expense-tracker",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/jodbill-expense-tracker"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/jodbill-expense-tracker"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/jodbill-expense-tracker"
+        }
+      ],
+      "h1": [
+        "JodBill — Smart Expense Tracker"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/projects/jodbill-expense-tracker",
+          "language": "en"
+        }
+      ],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/projects/jodbill-expense-tracker",
+        "/notes/sql-basics",
+        "/notes/sql-query-examples",
+        "/notes/nextjs-app-router-guide"
+      ]
+    },
+    {
+      "path": "/projects/pharmacy-store",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/projects/pharmacy-store",
+      "redirects": 0,
+      "seconds": 0.134972,
+      "lang": "en",
+      "title": "Pharmacy Store — Case Study | Napatdev",
+      "description": "An e-commerce pharmacy system for selling medicines and health supplements online. Features product catalog with categories, shopping cart management, order...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/projects/pharmacy-store",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/pharmacy-store"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/pharmacy-store"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/pharmacy-store"
+        }
+      ],
+      "h1": [
+        "Pharmacy Store"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/projects/pharmacy-store",
+          "language": "en"
+        }
+      ],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/projects/pharmacy-store",
+        "/notes/sql-query-examples",
+        "/notes/sql-basics"
+      ]
+    },
+    {
+      "path": "/projects/shop-inventory-management",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/projects/shop-inventory-management",
+      "redirects": 0,
+      "seconds": 0.249697,
+      "lang": "en",
+      "title": "Shop Inventory & Sales Management System — Case Study | Napatdev",
+      "description": "An Enterprise Resource Planning (ERP) and POS system designed for multi-tenant environments. Developed with Next.js 14 and TypeScript. Features include Role-...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/projects/shop-inventory-management",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/shop-inventory-management"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/shop-inventory-management"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/shop-inventory-management"
+        }
+      ],
+      "h1": [
+        "Shop Inventory & Sales Management System"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/projects/shop-inventory-management",
+          "language": "en"
+        }
+      ],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/projects/shop-inventory-management",
+        "/notes/sql-basics",
+        "/notes/sql-query-examples",
+        "/notes/nextjs-app-router-guide"
+      ]
+    },
+    {
+      "path": "/projects/stock-management-system",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/projects/stock-management-system",
+      "redirects": 0,
+      "seconds": 0.172301,
+      "lang": "en",
+      "title": "Stock Management System — Case Study | Napatdev",
+      "description": "A comprehensive inventory management system designed for restaurants and food service businesses. Features product categorization, expiration tracking, purch...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/projects/stock-management-system",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/stock-management-system"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/stock-management-system"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/stock-management-system"
+        }
+      ],
+      "h1": [
+        "Stock Management System"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/projects/stock-management-system",
+          "language": "en"
+        }
+      ],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/projects/stock-management-system"
+      ]
+    },
+    {
+      "path": "/projects/uat-testkit",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/projects/uat-testkit",
+      "redirects": 0,
+      "seconds": 0.165429,
+      "lang": "en",
+      "title": "UAT / Test Case & Bug Report Template — Case Study | Napatdev",
+      "description": "Template set for UAT, test case design, and bug reporting used in real projects to improve communication between dev, tester, and business.",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/projects/uat-testkit",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/uat-testkit"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/uat-testkit"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/uat-testkit"
+        }
+      ],
+      "h1": [
+        "UAT / Test Case & Bug Report Template"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/projects/uat-testkit",
+          "language": "en"
+        }
+      ],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/projects/uat-testkit"
+      ]
+    },
+    {
+      "path": "/search",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/search",
+      "redirects": 0,
+      "seconds": 0.080944,
+      "lang": "en",
+      "title": "Site Search | Napatdev",
+      "description": "Search Napatdev portfolio pages, contact information, projects, case studies, and developer notes",
+      "robots": [
+        "noindex, nofollow"
+      ],
+      "alternates": [],
+      "h1": [
+        "Search Napatdev / ค้นหา Napatdev"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "SearchResultsPage"
+      ],
+      "schemaPages": [],
+      "links": [
+        "/",
+        "/about",
+        "/projects",
+        "/notes",
+        "/th/search",
+        "/contact",
+        "/search",
+        "/projects/shop-inventory-management",
+        "/projects/jodbill-expense-tracker",
+        "/projects/clean-water-monitoring",
+        "/projects/automate-test-pipeline",
+        "/projects/stock-management-system",
+        "/projects/pharmacy-store",
+        "/projects/uat-testkit",
+        "/notes/nextjs-app-router-guide",
+        "/notes/sql-basics",
+        "/notes/sql-query-examples",
+        "/notes/typescript-reference-guide"
+      ]
+    },
+    {
+      "path": "/seo-audit-missing-page",
+      "status": 404,
+      "finalUrl": "http://localhost:3100/seo-audit-missing-page",
+      "redirects": 0,
+      "seconds": 0.125657,
+      "title": "404: This page could not be found.",
+      "robots": [
+        "noindex"
+      ],
+      "alternates": [],
+      "h1": [
+        "404"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [],
+      "schemaPages": [],
+      "links": []
+    },
+    {
+      "path": "/th",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th",
+      "redirects": 0,
+      "seconds": 0.13042,
+      "lang": "th",
+      "title": "Napat Pamornsut — นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ กรุงเทพฯ",
+      "description": "พอร์ตโฟลิโอของ Napat Pamornsut (ณภัทร ภมรสูตร) นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ในกรุงเทพฯ เชี่ยวชาญ Next.js TypeScript ฟูลสแต็กและการทดสอบอัตโนมัติ",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/th",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com"
+        }
+      ],
+      "h1": [
+        "ณภัทร ภมรสูตร (ณภัทร ภมรสูตร)"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "ProfilePage",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "ProfilePage",
+          "url": "https://napatdev.com/th",
+          "language": "th"
+        }
+      ],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/",
+        "/th/contact"
+      ]
+    },
+    {
+      "path": "/th/about",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/about",
+      "redirects": 0,
+      "seconds": 0.135159,
+      "lang": "th",
+      "title": "เกี่ยวกับ ณภัทร ภมรสูตร | Napatdev",
+      "description": "มีประสบการณ์เป็น Web Developer และ Software Tester โดยเน้นที่คุณภาพและการตรวจสอบความถูกต้อง ใช้แนวคิดด้านการทดสอบในการพัฒนาเพื่อสร้างระบบที่เชื่อถือได้และบำร...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/th/about",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/about"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/about"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/about"
+        }
+      ],
+      "h1": [
+        "ณภัทร ภมรสูตร"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "ProfilePage",
+        "AboutPage",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "ProfilePage",
+          "url": "https://napatdev.com/th/about",
+          "language": "th"
+        },
+        {
+          "type": "AboutPage",
+          "url": "https://napatdev.com/th/about"
+        }
+      ],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/about",
+        "/resume.pdf"
+      ]
+    },
+    {
+      "path": "/th/contact",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/contact",
+      "redirects": 0,
+      "seconds": 0.11584,
+      "lang": "th",
+      "title": "ติดต่อ Napat Pamornsut | Napatdev",
+      "description": "ติดต่อ Napat Pamornsut สำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์ในกรุงเทพฯ ประเทศไทย",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/th/contact",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/contact"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/contact"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/contact"
+        }
+      ],
+      "h1": [
+        "ติดต่อ ณภัทร ภมรสูตร"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "ContactPage",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "ContactPage",
+          "url": "https://napatdev.com/th/contact",
+          "language": "th"
+        }
+      ],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/contact"
+      ]
+    },
+    {
+      "path": "/th/notes",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/notes",
+      "redirects": 0,
+      "seconds": 0.065979,
+      "lang": "th",
+      "title": "โน้ตความรู้และชีทสรุปสำหรับนักพัฒนา | Napatdev",
+      "description": "โน้ตความรู้และชีทสรุปด้านเทคนิคโดย ณภัทร ภมรสูตร",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/th/notes",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/notes"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/notes"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/notes"
+        }
+      ],
+      "h1": [
+        "โน้ตพัฒนาเว็บและทดสอบซอฟต์แวร์"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "CollectionPage",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "CollectionPage",
+          "url": "https://napatdev.com/th/notes",
+          "language": "th"
+        }
+      ],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/notes",
+        "/th/notes/nextjs-app-router-guide",
+        "/th/notes/sql-basics",
+        "/th/notes/sql-query-examples",
+        "/th/notes/typescript-reference-guide"
+      ]
+    },
+    {
+      "path": "/th/notes/nextjs-app-router-guide",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/notes/nextjs-app-router-guide",
+      "redirects": 0,
+      "seconds": 0.116191,
+      "lang": "th",
+      "title": "Next.js Mastery: The Complete App Router Guide | Napatdev",
+      "description": "Next.js Mastery: The Complete App Router Guide เอกสารอ้างอิงและสรุปแนวคิดทั้งหมดที่จำเป็นสำหรับการเขียนโปรเจกต์ด้วย Next.js App Router คัดมาเฉพาะส่วนสำคัญที่...",
+      "robots": [
+        "noindex, nofollow"
+      ],
+      "alternates": [],
+      "h1": [
+        "Next.js Mastery: The Complete App Router Guide"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [],
+      "schemaPages": [],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/notes",
+        "/th/notes/nextjs-app-router-guide",
+        "/th/notes/sql-basics",
+        "/th/notes/sql-query-examples",
+        "/th/notes/typescript-reference-guide",
+        "/th/projects/shop-inventory-management",
+        "/th/projects/jodbill-expense-tracker",
+        "/th/projects/clean-water-monitoring",
+        "/"
+      ]
+    },
+    {
+      "path": "/th/notes/sql-basics",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/notes/sql-basics",
+      "redirects": 0,
+      "seconds": 0.291548,
+      "lang": "th",
+      "title": "SQL พื้นฐานสำหรับงานจริง ฉบับเข้าใจง่าย | Napatdev",
+      "description": "SQL พื้นฐานสำหรับงานจริง ฉบับเข้าใจง่าย เอกสารนี้สรุปเฉพาะหัวข้อที่เราเรียนกันไปก่อน โดยเน้นสิ่งที่ใช้จริงในงาน และอธิบายแบบค่อยเป็นค่อยไป พร้อมตัวอย่างตาราง...",
+      "robots": [
+        "noindex, nofollow"
+      ],
+      "alternates": [],
+      "h1": [
+        "SQL พื้นฐานสำหรับงานจริง (ฉบับเข้าใจง่าย)"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [],
+      "schemaPages": [],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/notes",
+        "/th/notes/nextjs-app-router-guide",
+        "/th/notes/sql-basics",
+        "/th/notes/sql-query-examples",
+        "/th/notes/typescript-reference-guide",
+        "/th/projects/shop-inventory-management",
+        "/th/projects/jodbill-expense-tracker",
+        "/th/projects/pharmacy-store",
+        "/"
+      ]
+    },
+    {
+      "path": "/th/notes/sql-query-examples",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/notes/sql-query-examples",
+      "redirects": 0,
+      "seconds": 0.301867,
+      "lang": "th",
+      "title": "SQL สรุปโค้ด + Response Table ให้เห็นภาพ | Napatdev",
+      "description": "SQL สรุปโค้ด + Response Table ให้เห็นภาพ เอกสารนี้สรุปแบบ “ดูโค้ด แล้วดูผลลัพธ์” เหมาะกับใช้ทบทวนเร็ว --- 1 INNER JOIN ตารางตั้งต้น customers | customerid |...",
+      "robots": [
+        "noindex, nofollow"
+      ],
+      "alternates": [],
+      "h1": [
+        "SQL สรุปโค้ด + Response Table ให้เห็นภาพ"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [],
+      "schemaPages": [],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/notes",
+        "/th/notes/nextjs-app-router-guide",
+        "/th/notes/sql-basics",
+        "/th/notes/sql-query-examples",
+        "/th/notes/typescript-reference-guide",
+        "/th/projects/pharmacy-store",
+        "/th/projects/shop-inventory-management",
+        "/th/projects/jodbill-expense-tracker",
+        "/"
+      ]
+    },
+    {
+      "path": "/th/notes/typescript-reference-guide",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/notes/typescript-reference-guide",
+      "redirects": 0,
+      "seconds": 0.29968,
+      "lang": "th",
+      "title": "TypeScript Mastery: The Complete Reference Guide | Napatdev",
+      "description": "TypeScript Mastery: The Complete Reference Guide เอกสารอ้างอิงและสรุปแนวคิดทั้งหมดที่ได้จากการเรียนรู้และการเขียนโค้ดในโปรเจกต์นี้ --- 1. การกำหนดประเภทข้อมู...",
+      "robots": [
+        "noindex, nofollow"
+      ],
+      "alternates": [],
+      "h1": [
+        "TypeScript Mastery: The Complete Reference Guide"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [],
+      "schemaPages": [],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/notes",
+        "/th/notes/nextjs-app-router-guide",
+        "/th/notes/sql-basics",
+        "/th/notes/sql-query-examples",
+        "/th/notes/typescript-reference-guide",
+        "/th/projects/shop-inventory-management",
+        "/th/projects/automate-test-pipeline",
+        "/th/projects/jodbill-expense-tracker",
+        "/"
+      ]
+    },
+    {
+      "path": "/th/projects",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/projects",
+      "redirects": 0,
+      "seconds": 0.160672,
+      "lang": "th",
+      "title": "โปรเจคพัฒนาเว็บและทดสอบซอฟต์แวร์ | Napatdev",
+      "description": "รวมผลงานโปรเจคเว็บ ระบบ POS/ERP IoT Dashboard และงานทดสอบซอฟต์แวร์ของ ณภัทร ภมรสูตร ด้วย Next.js TypeScript Prisma Playwright",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/th/projects",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects"
+        }
+      ],
+      "h1": [
+        "Projects"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "CollectionPage",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "CollectionPage",
+          "url": "https://napatdev.com/th/projects",
+          "language": "th"
+        }
+      ],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/projects",
+        "/th/projects/shop-inventory-management",
+        "/th/projects/jodbill-expense-tracker",
+        "/projects/jodbill-expense-tracker",
+        "/th/projects/clean-water-monitoring",
+        "/projects/clean-water-monitoring",
+        "/th/projects/automate-test-pipeline",
+        "/projects/automate-test-pipeline",
+        "/th/projects/stock-management-system",
+        "/projects/stock-management-system",
+        "/th/projects/pharmacy-store",
+        "/projects/pharmacy-store",
+        "/th/projects/uat-testkit",
+        "/projects/uat-testkit"
+      ]
+    },
+    {
+      "path": "/th/projects/automate-test-pipeline",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/projects/automate-test-pipeline",
+      "redirects": 0,
+      "seconds": 0.098802,
+      "lang": "th",
+      "title": "Automated Testing Suite (Playwright + CI/CD) — กรณีศึกษา | Napatdev",
+      "description": "ชุดทดสอบอัตโนมัติสำหรับโปรเจกต์ Clean Water Monitoring พัฒนาด้วย Playwright และ TypeScript ครอบคลุม API Testing (6 โมดูล), Admin UI Testing และ E2E Testing ต...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/th/projects/automate-test-pipeline",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/automate-test-pipeline"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/automate-test-pipeline"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/automate-test-pipeline"
+        }
+      ],
+      "h1": [
+        "Automated Testing Suite (Playwright + CI/CD)"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/th/projects/automate-test-pipeline",
+          "language": "th"
+        }
+      ],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/projects/automate-test-pipeline",
+        "/th/notes/typescript-reference-guide",
+        "/th/notes/nextjs-app-router-guide",
+        "/th/notes/sql-query-examples"
+      ]
+    },
+    {
+      "path": "/th/projects/clean-water-monitoring",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/projects/clean-water-monitoring",
+      "redirects": 0,
+      "seconds": 0.193599,
+      "lang": "th",
+      "title": "Clean Water Monitoring (IoT + Real-time Dashboard) — กรณีศึกษา | Napatdev",
+      "description": "โปรเจกต์ปริญญานิพนธ์ — ระบบติดตามคุณภาพน้ำแบบ Real-time เซ็นเซอร์ IoT ส่งข้อมูลผ่าน MQTT มาเก็บใน Firebase แล้วแสดงผลบน Dashboard พัฒนาด้วย React (Frontend)...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/th/projects/clean-water-monitoring",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/clean-water-monitoring"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/clean-water-monitoring"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/clean-water-monitoring"
+        }
+      ],
+      "h1": [
+        "Clean Water Monitoring (IoT + Real-time Dashboard)"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/th/projects/clean-water-monitoring",
+          "language": "th"
+        }
+      ],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/projects/clean-water-monitoring",
+        "/th/notes/nextjs-app-router-guide",
+        "/th/notes/sql-query-examples"
+      ]
+    },
+    {
+      "path": "/th/projects/jodbill-expense-tracker",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/projects/jodbill-expense-tracker",
+      "redirects": 0,
+      "seconds": 0.112623,
+      "lang": "th",
+      "title": "JodBill — แอปบันทึกรายรับรายจ่าย (AI-Powered PWA) — กรณีศึกษา | Napatdev",
+      "description": "แอปบันทึกรายรับรายจ่ายส่วนตัว พัฒนาเป็น PWA ให้ติดตั้งได้เหมือนแอปปกติโดยไม่ต้องผ่าน Store ฟีเจอร์หลักคือการใช้ AI สแกนใบเสร็จ บันทึกรายการ ตั้งงบประมาณ และร...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/th/projects/jodbill-expense-tracker",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/jodbill-expense-tracker"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/jodbill-expense-tracker"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/jodbill-expense-tracker"
+        }
+      ],
+      "h1": [
+        "JodBill — แอปบันทึกรายรับรายจ่าย (AI-Powered PWA)"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/th/projects/jodbill-expense-tracker",
+          "language": "th"
+        }
+      ],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/projects/jodbill-expense-tracker",
+        "/th/notes/sql-basics",
+        "/th/notes/sql-query-examples",
+        "/th/notes/nextjs-app-router-guide"
+      ]
+    },
+    {
+      "path": "/th/projects/pharmacy-store",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/projects/pharmacy-store",
+      "redirects": 0,
+      "seconds": 0.133179,
+      "lang": "th",
+      "title": "Pharmacy E-commerce System (PHP + MySQL) — กรณีศึกษา | Napatdev",
+      "description": "ระบบ E-commerce สำหรับร้านขายยา พัฒนาด้วย PHP และ MySQL Flow การซื้อขายครบตั้งแต่เลือกสินค้า → ใส่ตะกร้า → Checkout มีหน้า Admin สำหรับจัดการสินค้า คำสั่งซื้...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/th/projects/pharmacy-store",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/pharmacy-store"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/pharmacy-store"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/pharmacy-store"
+        }
+      ],
+      "h1": [
+        "Pharmacy E-commerce System (PHP + MySQL)"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/th/projects/pharmacy-store",
+          "language": "th"
+        }
+      ],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/projects/pharmacy-store",
+        "/th/notes/sql-query-examples",
+        "/th/notes/sql-basics"
+      ]
+    },
+    {
+      "path": "/th/projects/shop-inventory-management",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/projects/shop-inventory-management",
+      "redirects": 0,
+      "seconds": 0.25272,
+      "lang": "th",
+      "title": "Shop Inventory & Sales Management System (Multi-tenant POS) — กรณีศึกษา | Napatdev",
+      "description": "ระบบ Enterprise Resource Planning (ERP) และ POS พัฒนาด้วย Next.js 14 และ TypeScript ออกแบบมาเพื่อรองรับการใช้งานแบบ Multi-tenant ฟีเจอร์หลักประกอบด้วยระบบจัด...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/th/projects/shop-inventory-management",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/shop-inventory-management"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/shop-inventory-management"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/shop-inventory-management"
+        }
+      ],
+      "h1": [
+        "Shop Inventory & Sales Management System (Multi-tenant POS)"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/th/projects/shop-inventory-management",
+          "language": "th"
+        }
+      ],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/projects/shop-inventory-management",
+        "/th/notes/sql-basics",
+        "/th/notes/sql-query-examples",
+        "/th/notes/nextjs-app-router-guide"
+      ]
+    },
+    {
+      "path": "/th/projects/stock-management-system",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/projects/stock-management-system",
+      "redirects": 0,
+      "seconds": 0.168447,
+      "lang": "th",
+      "title": "Stock Management System (UX/UI Design) — กรณีศึกษา | Napatdev",
+      "description": "ออกแบบ UX/UI สำหรับระบบจัดการสินค้าคงคลังของร้านอาหาร ใช้ Figma และ Adobe XD วิเคราะห์ Business Logic ของธุรกิจร้านอาหาร เช่น การแยกประเภทวัตถุดิบ การติดตามว...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/th/projects/stock-management-system",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/stock-management-system"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/stock-management-system"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/stock-management-system"
+        }
+      ],
+      "h1": [
+        "Stock Management System (UX/UI Design)"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/th/projects/stock-management-system",
+          "language": "th"
+        }
+      ],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/projects/stock-management-system"
+      ]
+    },
+    {
+      "path": "/th/projects/uat-testkit",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/projects/uat-testkit",
+      "redirects": 0,
+      "seconds": 0.161681,
+      "lang": "th",
+      "title": "UAT / Test Case & Bug Report Template — กรณีศึกษา | Napatdev",
+      "description": "ชุดเทมเพลตมาตรฐานสำหรับการทดสอบระบบ ประกอบด้วย UAT, Test Case Design และ Bug Report ออกแบบให้ใช้ได้กับโปรเจกต์จริง ช่วยให้ทีม Developer, Tester และ Business...",
+      "robots": [
+        "index, follow",
+        "index, follow, max-image-preview:large"
+      ],
+      "canonical": "https://napatdev.com/th/projects/uat-testkit",
+      "alternates": [
+        {
+          "locale": "en",
+          "url": "https://napatdev.com/projects/uat-testkit"
+        },
+        {
+          "locale": "th",
+          "url": "https://napatdev.com/th/projects/uat-testkit"
+        },
+        {
+          "locale": "x-default",
+          "url": "https://napatdev.com/projects/uat-testkit"
+        }
+      ],
+      "h1": [
+        "UAT / Test Case & Bug Report Template"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "WebPage",
+        "ImageObject",
+        "CreativeWork",
+        "BreadcrumbList"
+      ],
+      "schemaPages": [
+        {
+          "type": "WebPage",
+          "url": "https://napatdev.com/th/projects/uat-testkit",
+          "language": "th"
+        }
+      ],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/projects/uat-testkit"
+      ]
+    },
+    {
+      "path": "/th/search",
+      "status": 200,
+      "finalUrl": "http://localhost:3100/th/search",
+      "redirects": 0,
+      "seconds": 0.12362,
+      "lang": "th",
+      "title": "ค้นหาในเว็บ | Napatdev",
+      "description": "ค้นหาข้อมูลพอร์ตโฟลิโอ โปรเจค และโน้ตความรู้ของ ณภัทร ภมรสูตร",
+      "robots": [
+        "noindex, nofollow"
+      ],
+      "alternates": [],
+      "h1": [
+        "Search Napatdev / ค้นหา Napatdev"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [
+        "Person",
+        "WebSite",
+        "SearchResultsPage"
+      ],
+      "schemaPages": [],
+      "links": [
+        "/th",
+        "/th/about",
+        "/th/projects",
+        "/th/notes",
+        "/search",
+        "/th/contact",
+        "/th/search",
+        "/th/projects/shop-inventory-management",
+        "/th/projects/jodbill-expense-tracker",
+        "/th/projects/clean-water-monitoring",
+        "/th/projects/automate-test-pipeline",
+        "/th/projects/stock-management-system",
+        "/th/projects/pharmacy-store",
+        "/th/projects/uat-testkit",
+        "/th/notes/nextjs-app-router-guide",
+        "/th/notes/sql-basics",
+        "/th/notes/sql-query-examples",
+        "/th/notes/typescript-reference-guide"
+      ]
+    },
+    {
+      "path": "/th/seo-audit-missing-page",
+      "status": 404,
+      "finalUrl": "http://localhost:3100/th/seo-audit-missing-page",
+      "redirects": 0,
+      "seconds": 0.125783,
+      "title": "404: This page could not be found.",
+      "robots": [
+        "noindex"
+      ],
+      "alternates": [],
+      "h1": [
+        "404"
+      ],
+      "imagesMissingAlt": 0,
+      "schemaTypes": [],
+      "schemaPages": [],
+      "links": []
+    }
+  ],
+  "findings": []
+}

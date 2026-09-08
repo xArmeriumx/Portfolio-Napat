@@ -1,0 +1,139 @@
+{
+  "date": "2026-09-08T00:55:22.364Z",
+  "base": "https://napatdev.com",
+  "method": "Single lab sample per route, Chromium, fresh page, no CPU/network throttle, 1s after load. Viewport simulation only; no INP interaction sample. CLS accumulated in this observation window. Not Lighthouse or CrUX.",
+  "rows": [
+    {
+      "route": "/",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 1656,
+      "cls": 0,
+      "ttfb": 610.1999999992549,
+      "scriptTransferBytes": 222546
+    },
+    {
+      "route": "/th",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 336,
+      "cls": 0,
+      "ttfb": 144.89999999850988,
+      "scriptTransferBytes": 906
+    },
+    {
+      "route": "/about",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 272,
+      "cls": 0,
+      "ttfb": 153,
+      "scriptTransferBytes": 3863
+    },
+    {
+      "route": "/th/about",
+      "device": "mobile viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/th/about\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/th/about\", waiting un"
+    },
+    {
+      "route": "/projects",
+      "device": "mobile viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/projects\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/projects\", waiting un"
+    },
+    {
+      "route": "/th/projects",
+      "device": "mobile viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/th/projects\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/th/projects\", wait"
+    },
+    {
+      "route": "/projects/shop-inventory-management",
+      "device": "mobile viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/projects/shop-inventory-management\nCall log:\n\u001b[2m  - navigating to \"https://napatdev"
+    },
+    {
+      "route": "/th/projects/shop-inventory-management",
+      "device": "mobile viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/th/projects/shop-inventory-management\nCall log:\n\u001b[2m  - navigating to \"https://napat"
+    },
+    {
+      "route": "/notes",
+      "device": "mobile viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/notes\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/notes\", waiting until \"l"
+    },
+    {
+      "route": "/th/notes",
+      "device": "mobile viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/th/notes\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/th/notes\", waiting un"
+    },
+    {
+      "route": "/notes/nextjs-app-router-guide",
+      "device": "mobile viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/notes/nextjs-app-router-guide\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/"
+    },
+    {
+      "route": "/th/notes/nextjs-app-router-guide",
+      "device": "mobile viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/th/notes/nextjs-app-router-guide\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.c"
+    },
+    {
+      "route": "/",
+      "device": "desktop viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/\", waiting until \"load\"\u001b[22m\n"
+    },
+    {
+      "route": "/th",
+      "device": "desktop viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/th\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/th\", waiting until \"load\"\u001b["
+    },
+    {
+      "route": "/about",
+      "device": "desktop viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/about\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/about\", waiting until \"l"
+    },
+    {
+      "route": "/th/about",
+      "device": "desktop viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/th/about\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/th/about\", waiting un"
+    },
+    {
+      "route": "/projects",
+      "device": "desktop viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/projects\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/projects\", waiting un"
+    },
+    {
+      "route": "/th/projects",
+      "device": "desktop viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/th/projects\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/th/projects\", wait"
+    },
+    {
+      "route": "/projects/shop-inventory-management",
+      "device": "desktop viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/projects/shop-inventory-management\nCall log:\n\u001b[2m  - navigating to \"https://napatdev"
+    },
+    {
+      "route": "/th/projects/shop-inventory-management",
+      "device": "desktop viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/th/projects/shop-inventory-management\nCall log:\n\u001b[2m  - navigating to \"https://napat"
+    },
+    {
+      "route": "/notes",
+      "device": "desktop viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/notes\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/notes\", waiting until \"l"
+    },
+    {
+      "route": "/th/notes",
+      "device": "desktop viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/th/notes\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/th/notes\", waiting un"
+    },
+    {
+      "route": "/notes/nextjs-app-router-guide",
+      "device": "desktop viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/notes/nextjs-app-router-guide\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.com/"
+    },
+    {
+      "route": "/th/notes/nextjs-app-router-guide",
+      "device": "desktop viewport",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://napatdev.com/th/notes/nextjs-app-router-guide\nCall log:\n\u001b[2m  - navigating to \"https://napatdev.c"
+    }
+  ]
+}

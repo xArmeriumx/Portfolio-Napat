@@ -1,0 +1,29 @@
+{
+  "status": "DRAFT_NOT_PUBLISHED",
+  "evidence": "Portfolio-Napat source and local tests in this SEO change; publication requires review and CMS preview.",
+  "payload": {
+    "slug": "testing-seo-beyond-build",
+    "title": {
+      "en": "Testing SEO beyond a successful build",
+      "th": "ทดสอบ SEO ให้มากกว่าการ Build ผ่าน"
+    },
+    "bodyMarkdown": "# Testing SEO beyond a successful build\n\nA build can validate imports and types while still producing pages with the wrong language, hidden content or stale metadata. The portfolio SEO upgrade uses several independent checks because each answers a different question.\n\n## Contract tests\n\nUnit tests cover localized body selection, fallback behavior, Markdown safety, language links and sitemap inclusion. The expected result is concrete: an unavailable translation is not advertised as indexable, and both published translations share reciprocal alternates.\n\n## Browser checks\n\nPlaywright opens pages with JavaScript disabled to check whether the main heading and navigation are actually visible. A separate test stores a conflicting language preference and verifies that an English URL remains English. HTTP assertions cover missing pages and search noindex.\n\nThat no-JavaScript check exposed a loading boundary that streamed content into a hidden container. Checking only whether the response contained an H1 would have missed the behavior.\n\n## Production evidence\n\nA local crawl cannot prove that a deployed CMS has the right content, that a CDN permits access, or that Search Console has indexed a page. Production crawl, browser inspection, CMS lifecycle testing and Search Console checks remain separate evidence layers.\n\nPerformance lab samples should record viewport, throttling and timing window. A short local sample is not field Core Web Vitals, and a click on Contact is not a confirmed job opportunity.\n\n[Testing project](/projects/automate-test-pipeline) · [UAT templates](/projects/uat-testkit) · [Contact](/contact)\n",
+    "bodyMarkdownByLocale": {
+      "en": "# Testing SEO beyond a successful build\n\nA build can validate imports and types while still producing pages with the wrong language, hidden content or stale metadata. The portfolio SEO upgrade uses several independent checks because each answers a different question.\n\n## Contract tests\n\nUnit tests cover localized body selection, fallback behavior, Markdown safety, language links and sitemap inclusion. The expected result is concrete: an unavailable translation is not advertised as indexable, and both published translations share reciprocal alternates.\n\n## Browser checks\n\nPlaywright opens pages with JavaScript disabled to check whether the main heading and navigation are actually visible. A separate test stores a conflicting language preference and verifies that an English URL remains English. HTTP assertions cover missing pages and search noindex.\n\nThat no-JavaScript check exposed a loading boundary that streamed content into a hidden container. Checking only whether the response contained an H1 would have missed the behavior.\n\n## Production evidence\n\nA local crawl cannot prove that a deployed CMS has the right content, that a CDN permits access, or that Search Console has indexed a page. Production crawl, browser inspection, CMS lifecycle testing and Search Console checks remain separate evidence layers.\n\nPerformance lab samples should record viewport, throttling and timing window. A short local sample is not field Core Web Vitals, and a click on Contact is not a confirmed job opportunity.\n\n[Testing project](/projects/automate-test-pipeline) · [UAT templates](/projects/uat-testkit) · [Contact](/contact)\n",
+      "th": "# ทดสอบ SEO ให้มากกว่าการ Build ผ่าน\n\nBuild ตรวจ imports และ types ได้ แต่หน้าเว็บอาจยังแสดงภาษาผิด ซ่อนเนื้อหา หรือใช้ metadata เก่า งาน SEO ของพอร์ตนี้จึงใช้หลักฐานหลายชั้น เพราะแต่ละชั้นตอบคนละคำถาม\n\n## Contract tests\n\nUnit tests ตรวจการเลือก body ตามภาษา, fallback, Markdown safety, language links และ sitemap ผลที่คาดหวังต้องชัดเจน: คำแปลที่ยังไม่มีต้องไม่ถูกประกาศว่า index ได้ และฉบับที่เผยแพร่ครบคู่ต้องมี alternates กลับหากัน\n\n## Browser checks\n\nPlaywright เปิดหน้าโดยปิด JavaScript เพื่อตรวจว่าหัวข้อหลักและ navigation มองเห็นจริง อีกกรณีหนึ่งบันทึกภาษาใน localStorage ให้ขัดกับ URL แล้วตรวจว่าหน้าอังกฤษยังเป็นอังกฤษ ส่วน HTTP assertions ตรวจหน้าไม่พบและ search noindex\n\nการทดสอบโดยปิด JavaScript พบ loading boundary ที่ส่งเนื้อหาลงใน container ที่ซ่อนอยู่ หากตรวจเพียงว่า response มี H1 จะไม่พบอาการนี้\n\n## หลักฐานจาก Production\n\nCrawl ในเครื่องยังยืนยันไม่ได้ว่า CMS ที่ deploy มีข้อมูลถูกต้อง CDN เข้าถึงได้ หรือ Search Console index หน้าแล้ว จึงต้องแยก production crawl, browser inspection, CMS lifecycle และ Search Console ออกจากกัน\n\nผลวัด performance ต้องระบุ viewport, throttling และช่วงเวลาสังเกต ตัวอย่างสั้นในเครื่องไม่ใช่ field Core Web Vitals และการคลิก Contact ไม่ใช่หลักฐานว่าได้รับข้อเสนองาน\n\n[ผลงานทดสอบ](/th/projects/automate-test-pipeline) · [แม่แบบ UAT](/th/projects/uat-testkit) · [ติดต่อ](/th/contact)\n"
+    },
+    "excerpt": {
+      "en": "A build can validate imports and types while still producing pages with the wrong language, hidden content or stale metadata. The portfolio SEO upgrade uses several independent checks because each answers a different question.",
+      "th": "Build ตรวจ imports และ types ได้ แต่หน้าเว็บอาจยังแสดงภาษาผิด ซ่อนเนื้อหา หรือใช้ metadata เก่า งาน SEO ของพอร์ตนี้จึงใช้หลักฐานหลายชั้น เพราะแต่ละชั้นตอบคนละคำถาม"
+    },
+    "order": 23,
+    "rawName": "testing-seo-beyond-build.md",
+    "seo": {
+      "title": {
+        "en": "Testing SEO beyond a successful build",
+        "th": "ทดสอบ SEO ให้มากกว่าการ Build ผ่าน"
+      },
+      "description": null
+    }
+  }
+}

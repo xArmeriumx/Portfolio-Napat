@@ -1,0 +1,29 @@
+{
+  "status": "DRAFT_NOT_PUBLISHED",
+  "evidence": "Portfolio-Napat source and local tests in this SEO change; publication requires review and CMS preview.",
+  "payload": {
+    "slug": "nextjs-bilingual-seo-published-content",
+    "title": {
+      "en": "Bilingual SEO should follow published content",
+      "th": "SEO สองภาษาต้องอิงเนื้อหาที่เผยแพร่"
+    },
+    "bodyMarkdown": "# Bilingual SEO should follow published content\n\nA translated URL is not evidence of a translated article. In this portfolio, Notes originally exposed English and Thai routes while sharing one Markdown body. That makes it possible for metadata to promise a language that the reader does not receive.\n\n## One availability rule\n\nThe implementation now reads explicit locale bodies and titles to determine which language versions are ready. The requested body is selected before generating the article metadata. A missing translation remains readable through a labeled fallback, but does not enter the indexable sitemap or hreflang cluster.\n\nFor a complete pair, each page has a self canonical and the same reciprocal language links. For a single language, only that language is advertised. The English version is x-default when it exists. Locale-specific schema uses the same URL as the visible page.\n\n## Publish is the boundary\n\nDraft edits should not change a public article's modified date. Public metadata reads the published revision timestamp. Publishing or archiving expires the shared content cache and invalidates both locale trees and the sitemap. Restoring an old revision creates a draft; it does not silently publish it.\n\n## What to test\n\nCheck a complete pair, a missing translation, an archived article and a renamed slug. Inspect the returned HTML as well as the browser. A passing build cannot tell you whether a deployed database has all translations or whether Google selected the intended canonical.\n\nThis is an implementation note from the portfolio SEO upgrade, not a claim of measured ranking gains. See [developer notes](/notes) and [contact](/contact).\n",
+    "bodyMarkdownByLocale": {
+      "en": "# Bilingual SEO should follow published content\n\nA translated URL is not evidence of a translated article. In this portfolio, Notes originally exposed English and Thai routes while sharing one Markdown body. That makes it possible for metadata to promise a language that the reader does not receive.\n\n## One availability rule\n\nThe implementation now reads explicit locale bodies and titles to determine which language versions are ready. The requested body is selected before generating the article metadata. A missing translation remains readable through a labeled fallback, but does not enter the indexable sitemap or hreflang cluster.\n\nFor a complete pair, each page has a self canonical and the same reciprocal language links. For a single language, only that language is advertised. The English version is x-default when it exists. Locale-specific schema uses the same URL as the visible page.\n\n## Publish is the boundary\n\nDraft edits should not change a public article's modified date. Public metadata reads the published revision timestamp. Publishing or archiving expires the shared content cache and invalidates both locale trees and the sitemap. Restoring an old revision creates a draft; it does not silently publish it.\n\n## What to test\n\nCheck a complete pair, a missing translation, an archived article and a renamed slug. Inspect the returned HTML as well as the browser. A passing build cannot tell you whether a deployed database has all translations or whether Google selected the intended canonical.\n\nThis is an implementation note from the portfolio SEO upgrade, not a claim of measured ranking gains. See [developer notes](/notes) and [contact](/contact).\n",
+      "th": "# SEO สองภาษาต้องอิงเนื้อหาที่เผยแพร่\n\nการมี URL สองภาษาไม่ได้แปลว่ามีบทความสองฉบับ เดิม Notes ของพอร์ตนี้เปิดผ่าน URL อังกฤษและไทยได้ แต่ใช้ Markdown ชุดเดียว จึงอาจเกิดกรณีที่ metadata ระบุภาษาต่างจากเนื้อหาที่ผู้อ่านได้รับ\n\n## ใช้กติกาความพร้อมชุดเดียว\n\nระบบที่ปรับใหม่ตรวจ body และ title ของแต่ละภาษาอย่างชัดเจน แล้วเลือกเนื้อหาก่อนสร้าง metadata หากยังไม่มีคำแปล หน้าเว็บจะบอกว่ากำลังแสดงต้นฉบับ และไม่ใส่หน้านั้นใน sitemap หรือ hreflang สำหรับหน้าที่ index ได้\n\nเมื่อมีครบสองภาษา ทั้งคู่ใช้ canonical ของตัวเองและลิงก์ hreflang กลับหากัน หากมีเพียงภาษาเดียว จะประกาศเฉพาะภาษานั้น โดยใช้อังกฤษเป็น x-default เมื่อมีฉบับอังกฤษ URL ใน schema ต้องตรงกับหน้าที่เปิดด้วย\n\n## Publish เป็นจุดแบ่ง\n\nการแก้ Draft ไม่ควรเปลี่ยนวันที่แก้ไขบทความสาธารณะ จึงใช้เวลาของ revision ที่ Publish ส่วน Publish และ Archive จะหมดอายุ content cache และอัปเดตทั้งสองภาษา รวม sitemap การ Restore เป็นเพียง Draft ใหม่ ยังไม่เผยแพร่ทันที\n\n## สิ่งที่ต้องทดสอบ\n\nตรวจกรณีแปลครบ แปลไม่ครบ Archive และเปลี่ยน slug ทั้งจาก HTML และ browser การ build ผ่านยังยืนยันไม่ได้ว่าฐานข้อมูลที่ deploy มีคำแปลครบ หรือ Google เลือก canonical ตามที่ตั้งใจ\n\nบทความนี้บันทึกการปรับระบบ SEO ของพอร์ต ยังไม่มีข้ออ้างว่าอันดับเพิ่มขึ้นแล้ว [ดูโน้ตอื่น](/th/notes) · [ติดต่อ](/th/contact)\n"
+    },
+    "excerpt": {
+      "en": "A translated URL is not evidence of a translated article. In this portfolio, Notes originally exposed English and Thai routes while sharing one Markdown body. That makes it possible for metadata to promise a language that the reader does not receive.",
+      "th": "การมี URL สองภาษาไม่ได้แปลว่ามีบทความสองฉบับ เดิม Notes ของพอร์ตนี้เปิดผ่าน URL อังกฤษและไทยได้ แต่ใช้ Markdown ชุดเดียว จึงอาจเกิดกรณีที่ metadata ระบุภาษาต่างจากเนื้อหาที่ผู้อ่านได้รับ"
+    },
+    "order": 20,
+    "rawName": "nextjs-bilingual-seo-published-content.md",
+    "seo": {
+      "title": {
+        "en": "Bilingual SEO should follow published content",
+        "th": "SEO สองภาษาต้องอิงเนื้อหาที่เผยแพร่"
+      },
+      "description": null
+    }
+  }
+}
