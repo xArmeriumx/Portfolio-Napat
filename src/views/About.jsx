@@ -6,7 +6,6 @@ import { useTranslation } from "../context/LanguageContext.jsx";
 import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import AnimatedText from "../components/ui/AnimatedText.jsx";
-import { useScrollToNextPage } from "../hooks/useScrollToNextPage.js";
 import {
   MapPin,
   Mail,
@@ -19,7 +18,7 @@ import {
 function SectionLabel({ number, title }) {
   return (
     <div className="flex items-center gap-3 mb-5">
-      <span className="text-xs font-bold text-[#c43c3c] tracking-widest">
+      <span className="text-xs font-bold text-accent tracking-widest">
         {number}
       </span>
       <h2 className="text-lg font-bold text-gray-900">{title}</h2>
@@ -55,7 +54,7 @@ function CopyEmailRow({ email }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="group flex w-full items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50/80 px-4 py-3 text-left transition-all hover:border-[#c43c3c]/30 hover:bg-white"
+      className="group flex w-full items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50/80 px-4 py-3 text-left transition-all hover:border-accent/30 hover:bg-white"
     >
       <div className="flex items-center gap-3 min-w-0">
         <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white border border-gray-100">
@@ -65,7 +64,7 @@ function CopyEmailRow({ email }) {
           {email}
         </span>
       </div>
-      <span className="flex flex-shrink-0 items-center gap-1 text-xs font-bold text-[#c43c3c]">
+      <span className="flex flex-shrink-0 items-center gap-1 text-xs font-bold text-accent">
         {copied ? (
           <>
             <Check className="h-3.5 w-3.5" />
@@ -111,13 +110,12 @@ function SkillGroup({ category, skills }) {
 }
 
 export default function About({ profile }) {
-  const { getContent, isThai } = useTranslation();
+  const { getContent } = useTranslation();
 
   useEffect(() => {
     import("./ProjectList.jsx");
   }, []);
 
-  useScrollToNextPage(isThai ? "/th/projects" : "/projects");
 
   const aboutText = getContent(profile, "about");
   const educationLines = getContent(profile, "education");
@@ -126,7 +124,7 @@ export default function About({ profile }) {
   return (
     <>
       <PageTransition>
-        <div className="relative min-h-screen overflow-hidden bg-[#f9fafb] pt-28 pb-32">
+        <div className="relative min-h-screen overflow-hidden bg-canvas pt-28 pb-32">
           <div className="pointer-events-none absolute inset-0">
             <div
               className="absolute inset-0"
@@ -147,7 +145,7 @@ export default function About({ profile }) {
             <ScrollReveal width="100%">
               <header className="mb-12 flex flex-col items-center gap-6 md:mb-14 md:flex-row md:items-center md:gap-8">
                 <div className="relative flex-shrink-0">
-                  <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-[#c43c3c]/20 to-transparent blur-sm" />
+                  <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-accent/20 to-transparent blur-sm" />
                   <div className="relative flex h-24 w-24 items-center justify-center rounded-2xl border border-gray-200 bg-white p-3 shadow-[0_8px_24px_rgba(0,0,0,0.06)] md:h-28 md:w-28">
                     <Image
                       src="/favicon.png"
@@ -159,7 +157,7 @@ export default function About({ profile }) {
                   </div>
                 </div>
                 <div className="text-center md:text-left">
-                  <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-[#c43c3c]">
+                  <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-accent">
                     About
                   </p>
                   <h1 className="text-3xl font-black tracking-tight text-gray-900 md:text-4xl">
@@ -206,7 +204,7 @@ export default function About({ profile }) {
                 <BentoCard>
                   <SectionLabel number="02" title="Education" />
                   <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-red-50">
-                    <GraduationCap className="h-5 w-5 text-[#c43c3c]" />
+                    <GraduationCap className="h-5 w-5 text-accent" />
                   </div>
                   <ul className="space-y-3">
                     {educationLines.map((line, index) => (
@@ -214,7 +212,7 @@ export default function About({ profile }) {
                         key={index}
                         className={`flex items-start gap-2 text-sm font-medium leading-snug ${
                           index === educationLines.length - 1
-                            ? "text-[#c43c3c] font-bold"
+                            ? "text-accent font-bold"
                             : "text-gray-700"
                         }`}
                       >
@@ -273,7 +271,7 @@ export default function About({ profile }) {
                     <a
                       href="/resume.pdf"
                       download
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-[#c43c3c]"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-accent"
                     >
                       Download CV
                     </a>

@@ -28,7 +28,7 @@ function MetricChips({ metrics = [] }) {
       {metrics.map((metric) => (
         <span
           key={metric}
-          className="rounded-full border border-red-100 bg-red-50 px-3 py-1 text-xs font-bold text-[#c43c3c]"
+          className="rounded-full border border-red-100 bg-red-50 px-3 py-1 text-xs font-bold text-accent"
         >
           {metric}
         </span>
@@ -66,7 +66,7 @@ function ProjectActions({ slug, title, links, onLinkClick, localePrefix = "" }) 
       <Link
         href={`${localePrefix}/projects/${slug}`}
         onClick={onLinkClick}
-        className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-900 transition-colors hover:text-[#c43c3c]"
+        className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-900 transition-colors hover:text-accent"
       >
         View case study
         <ArrowRight className="h-4 w-4" />
@@ -89,7 +89,7 @@ function ProjectActions({ slug, title, links, onLinkClick, localePrefix = "" }) 
           target="_blank"
           rel="noreferrer"
           onClick={onLinkClick}
-          className="inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-[#c43c3c]"
+          className="inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-accent"
         >
           Live Demo
           <ExternalLink className="h-3.5 w-3.5" />
@@ -120,7 +120,7 @@ function FeaturedProjectCard({ project, localePrefix = "" }) {
       onClick={handleCardClick}
       className="group relative cursor-pointer overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.05)] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
     >
-      <div className="absolute left-5 top-5 z-20 rounded-full bg-[#c43c3c] px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+      <div className="absolute left-5 top-5 z-20 rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
         Featured
       </div>
 
@@ -160,7 +160,7 @@ function FeaturedProjectCard({ project, localePrefix = "" }) {
             ))}
           </div>
 
-          <h2 className="mb-3 text-2xl font-black tracking-tight text-gray-900 transition-colors group-hover:text-[#c43c3c] md:text-3xl">
+          <h2 className="mb-3 text-2xl font-black tracking-tight text-gray-900 transition-colors group-hover:text-accent md:text-3xl">
             <AnimatedText>{title}</AnimatedText>
           </h2>
 
@@ -179,7 +179,7 @@ function FeaturedProjectCard({ project, localePrefix = "" }) {
           <ul className="mb-6 space-y-2 text-sm font-medium text-gray-600">
             {highlights.map((h, i) => (
               <li key={i} className="flex items-start gap-2">
-                <span className="mt-2 h-1 w-1 flex-shrink-0 rounded-full bg-[#c43c3c]" />
+                <span className="mt-2 h-1 w-1 flex-shrink-0 rounded-full bg-accent" />
                 <AnimatedText>{h}</AnimatedText>
               </li>
             ))}
@@ -252,7 +252,7 @@ function ProjectCard({ project, index, localePrefix = "" }) {
           ))}
         </div>
 
-        <h3 className="mb-2 line-clamp-2 min-h-[3.5rem] text-xl font-bold tracking-tight text-gray-900 transition-colors group-hover:text-[#c43c3c] md:min-h-[4rem] md:text-2xl">
+        <h3 className="mb-2 line-clamp-2 min-h-[3.5rem] text-xl font-bold tracking-tight text-gray-900 transition-colors group-hover:text-accent md:min-h-[4rem] md:text-2xl">
           <AnimatedText>{title}</AnimatedText>
         </h3>
 
@@ -301,7 +301,7 @@ export default function ProjectList({ projects = [], locale = "en" }) {
   return (
     <>
       <PageTransition>
-        <div className="relative min-h-screen overflow-hidden bg-[#f9fafb] pb-24 pt-24 md:pt-28">
+        <div className="relative min-h-screen overflow-hidden bg-canvas pb-24 pt-24 md:pt-28">
           <div className="pointer-events-none absolute inset-0">
             <div
               className="absolute inset-0"
@@ -320,7 +320,7 @@ export default function ProjectList({ projects = [], locale = "en" }) {
           <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6">
             <ScrollReveal width="100%">
               <header className="mb-10 md:mb-14">
-                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#c43c3c]">
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-accent">
                   Portfolio
                 </p>
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
