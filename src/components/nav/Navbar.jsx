@@ -74,10 +74,15 @@ function MobileNavLink({ href, label, labelTh, exact, onClick }) {
   );
 }
 
-export default function Navbar() {
-  const { language, toggleLanguage } = useLanguage();
+export default function Navbar({ pageLocales = {} }) {
+  const { language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const targetLanguage = language === "en" ? "th" : "en";
+  const basePath = pathname.replace(/^\/th(?=\/|$)/, "") || "/";
+  const targetPath = pageLocales[basePath] && !pageLocales[basePath].includes(targetLanguage)
+    ? `/${basePath.split("/")[1]}` : basePath;
+  const languageHref = targetLanguage === "th" ? `/th${targetPath === "/" ? "" : targetPath}` : targetPath;
 
   // Close menu when route changes
   useEffect(() => {
@@ -145,8 +150,8 @@ export default function Navbar() {
             <DesktopNavLink key={item.href} {...item} />
           ))}
 
-          <button
-            onClick={toggleLanguage}
+          <Link
+            href={languageHref}
             className="group relative h-7 overflow-hidden text-sm font-bold uppercase tracking-wide border-b-2 border-transparent hover:border-gray-900 transition-colors"
             aria-label="Toggle language"
           >
@@ -158,7 +163,7 @@ export default function Navbar() {
               <span className="h-7 flex items-center text-gray-900">EN</span>
               <span className="h-7 flex items-center text-gray-900">TH</span>
             </div>
-          </button>
+          </Link>
         </nav>
 
         <div
@@ -191,8 +196,8 @@ export default function Navbar() {
             <div className="w-12 h-1 bg-gray-100 rounded-full my-2" />
 
             <div className="flex flex-col gap-6 items-start">
-              <button
-                onClick={toggleLanguage}
+              <Link
+                href={languageHref}
                 className="text-lg font-medium text-gray-500 hover:text-gray-900 flex items-center gap-2"
               >
                 <span className="uppercase tracking-wider">Language:</span>
@@ -207,7 +212,7 @@ export default function Navbar() {
                 >
                   TH
                 </span>
-              </button>
+              </Link>
             </div>
 
             <div className="mt-auto pt-8">

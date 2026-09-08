@@ -126,12 +126,24 @@ export function getRelatedNotes(
 export function getTopicHub(topic: NoteTopicKey, notes: PresentationNote[]): PresentationNote[] {
   const slugs = NOTE_TOPICS[topic].notes;
   const bySlug = new Map(notes.map((note) => [note.slug, note]));
-  return slugs.flatMap((slug) => {
-    const note = bySlug.get(slug);
-    return note ? [note] : [];
-  });
+  const configured = slugs.flatMap((slug) => bySlug.has(slug) ? [bySlug.get(slug)!] : []);
+  const additional = notes.filter((note) =>
+    !Object.values(NOTE_TOPICS).some((entry) => entry.notes.includes(note.slug)) && noteTokens(note).has(topic),
+  );
+  return [...configured, ...additional];
 }
 
 export function isNoteTopicKey(value: string): value is NoteTopicKey {
-  return Object.keys(NOTE_TOPICS).includes(value) && NOTE_TOPICS[value as NoteTopicKey].notes.length > 0;
+  return Object.prototype.hasOwnProperty.call(NOTE_TOPICS, value);
+}
+
+export function getLocalizedTopic(key: NoteTopicKey, locale: "en" | "th") {
+  const topic = NOTE_TOPICS[key];
+  const th = {
+    nextjs: { title: "คู่มือ Next.js จากงานพัฒนาเว็บ", description: "โน้ต Next.js เรื่อง App Router, Server Components และการจัดการข้อมูล พร้อมเชื่อมโยงกับผลงานพัฒนาเว็บ" },
+    typescript: { title: "คู่มือ TypeScript และการออกแบบชนิดข้อมูล", description: "โน้ต TypeScript เรื่อง types, generics และรูปแบบการเขียนโค้ดที่ใช้ในการพัฒนาเว็บ" },
+    sql: { title: "พื้นฐาน SQL และตัวอย่าง Query", description: "เรียนรู้การอ่านและจัดการข้อมูลด้วย SQL ผ่านตัวอย่าง query และผลลัพธ์" },
+    testing: { title: "การทดสอบซอฟต์แวร์และ QA Automation", description: "แนวทางตรวจสอบคุณภาพซอฟต์แวร์ ตั้งแต่ test cases และ UAT ไปจนถึงการทดสอบอัตโนมัติ" },
+  };
+  return locale === "th" ? { ...topic, ...th[key] } : { ...topic, description: topic.description.split(/ คู่มือ| เอกสาร| สรุป/)[0] };
 }

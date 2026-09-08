@@ -1,0 +1,29 @@
+{
+  "status": "DRAFT_NOT_PUBLISHED",
+  "evidence": "Portfolio-Napat source and local tests in this SEO change; publication requires review and CMS preview.",
+  "payload": {
+    "slug": "typescript-localized-content-contract",
+    "title": {
+      "en": "A backward-compatible TypeScript contract for translations",
+      "th": "ออกแบบข้อมูลคำแปลใน TypeScript ให้รองรับข้อมูลเก่า"
+    },
+    "bodyMarkdown": "# A backward-compatible TypeScript contract for translations\n\nChanging a CMS field is also a change to stored revisions, previews and backups. Replacing a string body with an object in one step would make older note payloads incompatible with the editor and rendering code.\n\n## Add, then migrate\n\nThe note model retains `bodyMarkdown: string` and adds `bodyMarkdownByLocale?: { en?: string; th?: string }`. Old revisions remain readable. New drafts can contain reviewed translations without rewriting their historical source.\n\nValidation applies the existing Markdown safety policy independently to each language. An unsafe link in the Thai body must fail even when the English body is valid. The presentation adapter returns the selected content, its known source language, available locales and whether fallback was used.\n\n## Avoid an array callback trap\n\nWhen a mapper gains a second locale argument, `notes.map(toPresentationNote)` becomes incorrect: Array.map supplies the index as its second argument. Use `notes.map(note => toPresentationNote(note, locale))`. This is a small interface change with a real runtime consequence.\n\n## Check compatibility explicitly\n\nTest a legacy payload, Thai-only body, complete pair, empty translation and unsafe Markdown in either locale. Preserve the original body in exported migration drafts and compare a content hash before applying them through the CMS.\n\nThe migration is complete only after draft preview, publication and production verification. The type checker alone cannot verify editorial language quality. [Portfolio projects](/projects) · [Contact](/contact)\n",
+    "bodyMarkdownByLocale": {
+      "en": "# A backward-compatible TypeScript contract for translations\n\nChanging a CMS field is also a change to stored revisions, previews and backups. Replacing a string body with an object in one step would make older note payloads incompatible with the editor and rendering code.\n\n## Add, then migrate\n\nThe note model retains `bodyMarkdown: string` and adds `bodyMarkdownByLocale?: { en?: string; th?: string }`. Old revisions remain readable. New drafts can contain reviewed translations without rewriting their historical source.\n\nValidation applies the existing Markdown safety policy independently to each language. An unsafe link in the Thai body must fail even when the English body is valid. The presentation adapter returns the selected content, its known source language, available locales and whether fallback was used.\n\n## Avoid an array callback trap\n\nWhen a mapper gains a second locale argument, `notes.map(toPresentationNote)` becomes incorrect: Array.map supplies the index as its second argument. Use `notes.map(note => toPresentationNote(note, locale))`. This is a small interface change with a real runtime consequence.\n\n## Check compatibility explicitly\n\nTest a legacy payload, Thai-only body, complete pair, empty translation and unsafe Markdown in either locale. Preserve the original body in exported migration drafts and compare a content hash before applying them through the CMS.\n\nThe migration is complete only after draft preview, publication and production verification. The type checker alone cannot verify editorial language quality. [Portfolio projects](/projects) · [Contact](/contact)\n",
+      "th": "# ออกแบบข้อมูลคำแปลใน TypeScript ให้รองรับข้อมูลเก่า\n\nการเปลี่ยนฟิลด์ใน CMS กระทบทั้ง revision, preview และ backup หากเปลี่ยน body จาก string เป็น object ทันที ข้อมูลเก่าอาจอ่านไม่ได้ใน editor และหน้าเว็บ\n\n## เพิ่มฟิลด์ก่อนย้ายข้อมูล\n\nโมเดล Notes จึงเก็บ `bodyMarkdown: string` ไว้ และเพิ่ม `bodyMarkdownByLocale?: { en?: string; th?: string }` ข้อมูลเก่ายังอ่านได้ ส่วน Draft ใหม่ใส่คำแปลที่ตรวจแล้วได้โดยไม่แก้ประวัติย้อนหลัง\n\nValidation ใช้นโยบาย Markdown safety กับทุกภาษา ลิงก์ที่ไม่ปลอดภัยใน body ไทยต้องไม่ผ่าน แม้ body อังกฤษจะถูกต้อง Presentation adapter ส่งกลับทั้งเนื้อหาที่เลือก ภาษาต้นฉบับที่ทราบ รายการภาษาที่มี และสถานะ fallback\n\n## ระวัง argument ของ Array.map\n\nเมื่อ mapper เพิ่ม locale เป็น argument ที่สอง การเขียน `notes.map(toPresentationNote)` จะไม่ถูกต้อง เพราะ Array.map ส่ง index เป็น argument ที่สอง ต้องใช้ `notes.map(note => toPresentationNote(note, locale))` แทน การเปลี่ยน interface เล็กน้อยจึงมีผลต่อ runtime ได้\n\n## ตรวจความเข้ากันได้\n\nทดสอบ payload เก่า, body ไทยอย่างเดียว, ฉบับครบคู่, คำแปลว่าง และ Markdown ไม่ปลอดภัยในแต่ละภาษา เก็บ body เดิมใน draft สำหรับ migration และเทียบ content hash ก่อนบันทึกผ่าน CMS\n\nงานย้ายข้อมูลยังต้องผ่าน Preview, Publish และตรวจ Production การผ่าน typecheck ไม่ได้ยืนยันคุณภาพคำแปล [ดูผลงาน](/th/projects) · [ติดต่อ](/th/contact)\n"
+    },
+    "excerpt": {
+      "en": "Changing a CMS field is also a change to stored revisions, previews and backups. Replacing a string body with an object in one step would make older note payloads incompatible with the editor and rendering code.",
+      "th": "การเปลี่ยนฟิลด์ใน CMS กระทบทั้ง revision, preview และ backup หากเปลี่ยน body จาก string เป็น object ทันที ข้อมูลเก่าอาจอ่านไม่ได้ใน editor และหน้าเว็บ"
+    },
+    "order": 21,
+    "rawName": "typescript-localized-content-contract.md",
+    "seo": {
+      "title": {
+        "en": "A backward-compatible TypeScript contract for translations",
+        "th": "ออกแบบข้อมูลคำแปลใน TypeScript ให้รองรับข้อมูลเก่า"
+      },
+      "description": null
+    }
+  }
+}

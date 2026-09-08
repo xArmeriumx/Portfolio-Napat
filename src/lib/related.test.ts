@@ -106,10 +106,15 @@ describe("topic hubs", () => {
     expect(getTopicHub("nextjs", notes).map((note) => note.slug)).toEqual(["nextjs-app-router-guide"]);
   });
 
-  it("only treats populated topics as hub keys", () => {
+  it("recognizes topic routes independently of published content availability", () => {
     expect(isNoteTopicKey("nextjs")).toBe(true);
-    expect(isNoteTopicKey("testing")).toBe(false);
+    expect(isNoteTopicKey("testing")).toBe(true);
     expect(isNoteTopicKey("nope")).toBe(false);
     expect(NOTE_TOPICS.testing.notes).toEqual([]);
   });
+});
+
+it("includes new published CMS testing notes without hardcoding their slugs", () => {
+  const note = makeNote({ slug: "testing-seo-beyond-build", name: "Testing SEO", displayTitle: "Testing SEO" });
+  expect(getTopicHub("testing", [note])).toEqual([note]);
 });

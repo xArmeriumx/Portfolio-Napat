@@ -1,11 +1,13 @@
 import { useState, useRef } from 'react';
+import { remarkSingleTitle } from '@/lib/markdown-headings';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import { Copy, Check, Pencil, Sparkles, X, RotateCcw, Save, Play } from 'lucide-react';
 import { reviewCode } from '../../services/aiService';
-import LiveRunner from './LiveRunner';
+import dynamic from 'next/dynamic';
+const LiveRunner = dynamic(() => import('./LiveRunner'), { loading: () => <p>Loading runner…</p>, ssr: false });
 import 'highlight.js/styles/github.css';
 
 // Helper to extract raw text from react-markdown AST
@@ -256,7 +258,7 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
                         [&_p]:break-words [&_li]:break-words [&_li>p]:my-0"
                     >
                       <ReactMarkdown 
-                        remarkPlugins={[remarkGfm]}
+                        remarkPlugins={[remarkGfm, remarkSingleTitle]}
                         rehypePlugins={[rehypeHighlight]}
                       >
                         {aiText}
@@ -370,10 +372,7 @@ const markdownComponents = {
   table: MarkdownTable
 };
 
-export default function NoteCard({ markdown }) {
-  // Extracting title assuming it's the first heading # Title
-  const titleMatch = markdown.match(/^#\s+(.+)$/m);
-  const title = titleMatch ? titleMatch[1] : 'Note';
+export default function NoteCard({ markdown, title = "Developer note" }) {
 
   return (
     <div className="break-inside-avoid mb-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all hover:shadow-md hover:border-red-200 group relative">
@@ -395,7 +394,7 @@ export default function NoteCard({ markdown }) {
           prose-summary:font-semibold prose-summary:cursor-pointer prose-summary:text-gray-800
       ">
         <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
+          remarkPlugins={[remarkGfm, [remarkSingleTitle, { title }]]}
           rehypePlugins={[rehypeSlug, rehypeHighlight]}
           components={markdownComponents}
         >

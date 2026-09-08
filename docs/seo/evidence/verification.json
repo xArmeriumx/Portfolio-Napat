@@ -1,0 +1,34 @@
+{
+  "capturedAt": "2026-09-08T04:22:56.777834+00:00",
+  "implementationCommit": "360616d9ca6b4e4c9c1255a64944e6a3c013ffe0",
+  "typecheck": "PASS",
+  "build": "PASS",
+  "lint": {
+    "errors": 0,
+    "warnings": 31
+  },
+  "vitest": {
+    "files": 22,
+    "passed": 81,
+    "realDatabaseIntegration": "portfolio_cms_dev, transaction rolled back; no test user remains"
+  },
+  "playwright": {
+    "passed": 7,
+    "skipped": 1,
+    "skipReason": "CMS_E2E_ADMIN_EMAIL/PASSWORD and mutation opt-in not configured",
+    "analytics": "fake ID G-SEO1234, remote Google runtime intercepted"
+  },
+  "productionDatabase": "read-only inventory and compiled-app reads only",
+  "productionDeployment": "NOT_PERFORMED",
+  "searchConsole": "NOT_CONFIGURED_OR_VERIFIED",
+  "ga4Account": "NO_VERIFIED_MEASUREMENT_ID",
+  "content": "3 bilingual case-study drafts and 4 bilingual article payloads; not published",
+  "releaseGates": [
+    "Back up and rehearse restore in an isolated database",
+    "Review and publish locale bodies for 4 legacy Notes; unknown locales are noindex",
+    "Update Thai profile fields through CMS draft/preview/publish",
+    "Run authenticated CMS browser UAT on Preview",
+    "Verify Search Console/DNS and real GA4 configuration",
+    "Validate deployed schema and run production crawl after deployment"
+  ]
+}

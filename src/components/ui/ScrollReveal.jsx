@@ -25,7 +25,7 @@ export default function ScrollReveal({
           hidden: { opacity: 0, y: 20 },
           visible: { opacity: 1, y: 0 },
         }}
-        initial="hidden"
+        initial="visible"
         animate={mainControls}
         transition={{ duration: 0.6, delay: delay, ease: "easeOut" }}
       >

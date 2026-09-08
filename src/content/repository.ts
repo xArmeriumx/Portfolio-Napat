@@ -34,7 +34,8 @@ export function getContentRepository(): Promise<ContentRepository> {
           import("@/server/db"),
         ]);
         assertPortfolioDatabaseTarget();
-        return new DatabaseContentRepository(prisma);
+        const { cachePublishedRepository } = await import("./cached-repository");
+        return cachePublishedRepository(new DatabaseContentRepository(prisma));
       }
       if (storage === "static") {
         const { StaticContentRepository } = await import("./static-adapter");

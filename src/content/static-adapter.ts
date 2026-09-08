@@ -32,16 +32,16 @@ function mapProfile(source: SourceProfile): ProfileContent {
     id: "profile",
     revision: publishedRevision,
     identity: {
-      name: toLocalizedText(source.name, source.name),
-      headline: toLocalizedText(source.headline, source.headline),
-      tagline: toLocalizedText(source.tagline, source.tagline),
+      name: toLocalizedText(source.name, source.name_th),
+      headline: toLocalizedText(source.headline, source.headline_th),
+      tagline: toLocalizedText(source.tagline, source.tagline_th),
     },
     biography: toLocalizedText(source.about, source.about_th),
     education: source.education.map((value, index) =>
       toLocalizedText(value, source.education_th[index]),
     ),
     contact: {
-      location: toLocalizedText(source.contact.location, source.contact.location),
+      location: toLocalizedText(source.contact.location, source.contact.location_th),
       phone: source.contact.phone,
       links: {
         email: source.links.email,

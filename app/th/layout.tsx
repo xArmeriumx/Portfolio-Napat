@@ -1,10 +1,13 @@
+// Read the published CMS snapshot at runtime, never deploy build-time fixture content.
+export const dynamic = "force-dynamic";
+
 import type { Metadata, Viewport } from "next";
 import AppShell from "@/components/layout/AppShell.jsx";
 import { getSiteSeoDefaults, getRealContentImage, normalizeMetaDescription, SITE_NAME, SITE_URL } from "@/config/seo.js";
 import { buildOgImageUrl } from "@/lib/metadata";
 import { fontVariables } from "@/lib/fonts";
 import { getContentRepository } from "@/content/repository";
-import { toPresentationProfile } from "@/content/presentation";
+import { getNoteLocales, getProjectLocales, toPresentationProfile } from "@/content/presentation";
 import "@/styles/globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -31,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: seo.description,
       locale: "th_TH",
       alternateLocale: ["en_US"],
-      images: [{ url: ogImage, width: 1200, height: 630, alt: `${profile.name} พอร์ตโฟลิโอ` }],
+      images: [{ url: ogImage, ...(getRealContentImage(seo.ogImage) ? {} : { width: 1200, height: 630 }), alt: `${profile.name} พอร์ตโฟลิโอ` }],
     },
     twitter: { card: "summary_large_image", title: seo.title, description: seo.description, images: [ogImage] },
     robots: {
@@ -49,11 +52,17 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function ThaiLocaleLayout({ children }: { children: React.ReactNode }) {
+export default async function ThaiLocaleLayout({ children }: { children: React.ReactNode }) {
+  const repository = await getContentRepository();
+  const [notes, projects] = await Promise.all([repository.listPublishedNotes(), repository.listPublishedProjects()]);
+  const pageLocales = Object.fromEntries([
+    ...notes.map(note => [`/notes/${note.slug}`, getNoteLocales(note)]),
+    ...projects.map(project => [`/projects/${project.slug}`, getProjectLocales(project)]),
+  ]);
   return (
     <html lang="th" className={fontVariables}>
       <body>
-        <AppShell locale="th">{children}</AppShell>
+        <AppShell locale="th" pageLocales={pageLocales}>{children}</AppShell>
       </body>
     </html>
   );

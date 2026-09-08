@@ -1,0 +1,35 @@
+{
+  "readOnly": true,
+  "capturedAt": "2026-09-08T01:14:54.028Z",
+  "schema": "portfolio_cms_prod",
+  "notes": [
+    {
+      "id": "NEXTJS_ARCHITECTURE",
+      "revisionId": "cmteot0pp000hpko1sepll6bw",
+      "slug": "NEXTJS_ARCHITECTURE",
+      "bodySha256": "246256331258f4f1fac2bfc3b8ad97dacf75f4fdb2cb11f379b81e4aee4034e9",
+      "hasLocalizedBody": false
+    },
+    {
+      "id": "sql_basics_with_examples_easy",
+      "revisionId": "cmteot0wq000jpko1ejl099bf",
+      "slug": "sql_basics_with_examples_easy",
+      "bodySha256": "1bf342ebc5dad3d3b8f3f49c557734ee67bd46561fe198bb4299be6a14bd60aa",
+      "hasLocalizedBody": false
+    },
+    {
+      "id": "sql_code_and_response_tables",
+      "revisionId": "cmteot11b000lpko180nrj89a",
+      "slug": "sql_code_and_response_tables",
+      "bodySha256": "7d92fc00f72334c49125ce18423bd2a85e25c975ca5bafa1016fcb7d09f99375",
+      "hasLocalizedBody": false
+    },
+    {
+      "id": "TYPESCRIPT_REFERENCE",
+      "revisionId": "cmteot15y000npko1ifr768dc",
+      "slug": "TYPESCRIPT_REFERENCE",
+      "bodySha256": "8305c09429b7c3ddd1a8ca47b2085fa6c6e841505360952577d57b041737f00e",
+      "hasLocalizedBody": false
+    }
+  ]
+}

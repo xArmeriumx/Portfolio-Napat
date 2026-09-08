@@ -52,7 +52,7 @@ export async function renderContactPage(locale: SiteLocale = "en") {
               name: `Contact / ติดต่อ — ${profile.name}`,
               alternateName: ["Contact", "ติดต่อ", `ติดต่อ ${profile.name}`],
               description: contactSeo.description,
-              inLanguage: ["en", "th"],
+              inLanguage: locale,
               isPartOf: { "@id": WEBSITE_ID },
               about: { "@id": PERSON_ID },
               mainEntity: {
@@ -93,11 +93,10 @@ export async function renderContactPage(locale: SiteLocale = "en") {
             Contact
           </p>
           <h1 className="text-3xl font-black tracking-tight text-gray-900 md:text-5xl">
-            Contact {profile.name}
+            {locale === "th" ? `ติดต่อ ${profile.name_th || profile.name}` : `Contact ${profile.name}`}
           </h1>
           <p className="mt-3 max-w-2xl text-base font-medium leading-relaxed text-gray-500 md:text-lg">
-            For web development, QA, automation testing, and software project inquiries.
-            ติดต่อสำหรับงานพัฒนาเว็บ QA งานทดสอบอัตโนมัติ และโปรเจคซอฟต์แวร์
+            {locale === "th" ? "ติดต่อเรื่องงานพัฒนาเว็บ QA การทดสอบอัตโนมัติ และโอกาสร่วมงาน" : "Get in touch about web development, QA, test automation and career opportunities."}
           </p>
 
           <div className="mt-10 grid gap-4 md:grid-cols-2">

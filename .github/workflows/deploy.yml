@@ -55,6 +55,9 @@ jobs:
 
       - name: Run Playwright Public Smoke
         run: npm run test:e2e
+        env:
+          # Fake ID for consent/event tests; the Google runtime is intercepted.
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: G-SEO1234
 
       - name: Build Summary
         run: |

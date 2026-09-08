@@ -134,6 +134,10 @@ export const noteContentSchema = z.object({
   slug: z.string().regex(/^[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)*$/),
   title: localizedTextSchema,
   bodyMarkdown: z.string().refine(isSafeMarkdown, MARKDOWN_SAFETY_MESSAGE),
+  bodyMarkdownByLocale: z.object({
+    en: z.string().refine(isSafeMarkdown, MARKDOWN_SAFETY_MESSAGE).optional(),
+    th: z.string().refine(isSafeMarkdown, MARKDOWN_SAFETY_MESSAGE).optional(),
+  }).optional(),
   excerpt: localizedTextSchema,
   order: z.number().int().nonnegative(),
   rawName: z.string().min(1),

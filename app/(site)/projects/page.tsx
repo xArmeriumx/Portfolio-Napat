@@ -46,6 +46,7 @@ export async function renderProjectsPage(locale: SiteLocale = "en") {
         data={getProjectsCollectionSchema(
           projects.map((project) => ({ slug: project.slug, name: project.title, name_th: project.title_th })),
           profile,
+          locale,
         )}
       />
       <ProjectList projects={projects} locale={locale} />

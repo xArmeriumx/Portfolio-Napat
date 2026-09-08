@@ -95,7 +95,7 @@ export function getSiteSeoDefaults(profile, locale = "en") {
       : `${profile.name} — Web Developer & Software Tester in Bangkok`;
   const defaultDescription =
     locale === "th"
-      ? `พอร์ตโฟลิโอของ ${profile.name} (ณภัทร ภมรสูตร) นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ในกรุงเทพฯ เชี่ยวชาญ Next.js TypeScript ฟูลสแต็กและการทดสอบอัตโนมัติ ${profile.name} is a Bangkok-based Web Developer & Software Tester.`
+      ? `พอร์ตโฟลิโอของ ${profile.name} (ณภัทร ภมรสูตร) นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ในกรุงเทพฯ เชี่ยวชาญ Next.js TypeScript ฟูลสแต็กและการทดสอบอัตโนมัติ`
       : `${profile.name} is a Web Developer and Software Tester based in Bangkok, Thailand, specializing in Next.js, TypeScript, full-stack development and automated testing. พอร์ตโฟลิโอของ ณภัทร ภมรสูตร นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์`;
   const profileTitle = getLocalizedSeoValue(profile.seo?.title, locale);
   const profileDescription = getLocalizedSeoValue(profile.seo?.description, locale);
@@ -118,8 +118,8 @@ export function getRealContentImage(image) {
 }
 
 function getLocalizedSeoValue(value, locale = "en") {
-  if (locale === "th") return value?.th?.trim() || value?.en?.trim() || "";
-  return value?.en?.trim() || value?.th?.trim() || "";
+  if (locale === "th") return value?.th?.trim() || "";
+  return value?.en?.trim() || "";
 }
 
 export function absoluteUrl(path = "") {
@@ -145,12 +145,11 @@ export function normalizeMetaDescription(text, maxLength = 160) {
 export function getAboutSeoMeta(profile, locale = "en") {
   const th = locale === "th";
   return {
-    title: getLocalizedSeoValue(profile.seo?.title, locale) || (th ? `เกี่ยวกับ ${profile.name}` : `About ${profile.name}`),
+    title: th ? `เกี่ยวกับ ${profile.name_th || profile.name}` : `About ${profile.name}`,
     description: normalizeMetaDescription(
-      getLocalizedSeoValue(profile.seo?.description, locale) ||
-        (th
-          ? `${profile.about_th} ${profile.about} อยู่ใน${profile.contact.location_th || profile.contact.location}`
-          : `${profile.headline}. ${profile.about} ${profile.about_th} Based in ${profile.contact.location}.`),
+      (th
+          ? `${profile.about_th} อยู่ใน${profile.contact.location_th || profile.contact.location}`
+          : `${profile.headline}. ${profile.about} Based in ${profile.contact.location}.`),
       180,
     ),
     ogImage: getRealContentImage(profile.seo?.image),
@@ -170,15 +169,15 @@ export function getProjectSeoMeta(project, getContent, profile, locale = "en") {
   const description = normalizeMetaDescription(
     getLocalizedSeoValue(project.seo?.description, locale) ||
       (th
-        ? `${project.description_th || ""} ${getContent(project, "description")}`
-        : `${getContent(project, "description")} ${project.description_th || ""}`),
+        ? project.description_th || getContent(project, "description")
+        : getContent(project, "description")),
     180,
   );
   const image = getRealContentImage(project.seo?.image || project.images?.[0] || project.image);
   const technologies = (project.technologies || []).slice(0, 6).join(", ");
 
   return {
-    title: `${title} — Case Study`,
+    title: `${title} — ${th ? "กรณีศึกษา" : "Case Study"}`,
     description,
     ogTitle: `${title} | Napat Pamornsut`,
     ogDescription: normalizeMetaDescription(
@@ -205,8 +204,8 @@ export function getProjectsListSeoMeta(profile, locale = "en") {
     title: th ? `โปรเจคพัฒนาเว็บและทดสอบซอฟต์แวร์` : `Web Development & Software Testing Projects`,
     description: normalizeMetaDescription(
       th
-        ? "รวมผลงานโปรเจคเว็บ ระบบ POS/ERP IoT Dashboard และงานทดสอบซอฟต์แวร์ของ ณภัทร ภมรสูตร ด้วย Next.js TypeScript Prisma Playwright Explore full-stack and testing projects by Napat Pamornsut"
-        : "Explore full-stack web development, ERP/POS systems, IoT dashboards and software testing projects by Napat Pamornsut using Next.js, TypeScript, Prisma, Playwright and modern web technologies. รวมผลงานโปรเจคเว็บ ระบบ POS/ERP IoT Dashboard และงานทดสอบซอฟต์แวร์",
+        ? "รวมผลงานโปรเจคเว็บ ระบบ POS/ERP IoT Dashboard และงานทดสอบซอฟต์แวร์ของ ณภัทร ภมรสูตร ด้วย Next.js TypeScript Prisma Playwright"
+        : "Explore full-stack web development, ERP/POS systems, IoT dashboards and software testing projects by Napat Pamornsut using Next.js, TypeScript, Prisma, Playwright and modern web technologies.",
       180,
     ),
     ogImage: getRealContentImage(profile.seo?.image),
@@ -224,8 +223,8 @@ export function getNotesListSeoMeta(profile, locale = "en") {
     title: th ? `โน้ตความรู้และชีทสรุปสำหรับนักพัฒนา` : `Developer Notes & Cheatsheets`,
     description: normalizeMetaDescription(
       th
-        ? `โน้ตความรู้และชีทสรุปด้านเทคนิคโดย ณภัทร ภมรสูตร Developer notes and technical cheatsheets by ${profile.name}`
-        : `Developer notes and technical cheatsheets by ${profile.name}. โน้ตความรู้และชีทสรุปด้านเทคนิคโดย ณภัทร ภมรสูตร`,
+        ? `โน้ตความรู้และชีทสรุปด้านเทคนิคโดย ณภัทร ภมรสูตร`
+        : `Developer notes and technical cheatsheets by ${profile.name}`,
       180,
     ),
     ogImage: getRealContentImage(profile.seo?.image),
@@ -243,8 +242,8 @@ export function getContactSeoMeta(profile, locale = "en") {
     title: th ? `ติดต่อ ${profile.name}` : `Contact ${profile.name}`,
     description: normalizeMetaDescription(
       th
-        ? `ติดต่อ ${profile.name} สำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์ใน${profile.contact.location_th || profile.contact.location} Contact for web development, QA and automation testing inquiries`
-        : `Contact ${profile.name} for web development, QA, automation testing, and software project inquiries in ${profile.contact.location}. ติดต่อ ณภัทร ภมรสูตร สำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์`,
+        ? `ติดต่อ ${profile.name} สำหรับงานพัฒนาเว็บ QA และทดสอบซอฟต์แวร์ใน${profile.contact.location_th || profile.contact.location}`
+        : `Contact ${profile.name} for web development, QA, automation testing, and software project inquiries in ${profile.contact.location}`,
       180,
     ),
     ogImage: getRealContentImage(profile.seo?.image),
@@ -262,8 +261,8 @@ export function getSearchSeoMeta(locale = "en") {
     title: th ? `ค้นหาในเว็บ` : `Site Search`,
     description: normalizeMetaDescription(
       th
-        ? "ค้นหาข้อมูลพอร์ตโฟลิโอ โปรเจค และโน้ตความรู้ของ ณภัทร ภมรสูตร Search portfolio pages, projects and developer notes"
-        : "Search Napatdev portfolio pages, contact information, projects, case studies, and developer notes. ค้นหาข้อมูลพอร์ตโฟลิโอ โปรเจค และโน้ตความรู้ของ ณภัทร ภมรสูตร",
+        ? "ค้นหาข้อมูลพอร์ตโฟลิโอ โปรเจค และโน้ตความรู้ของ ณภัทร ภมรสูตร"
+        : "Search Napatdev portfolio pages, contact information, projects, case studies, and developer notes",
       180,
     ),
     path: th ? "/th/search" : "/search",
@@ -378,7 +377,7 @@ export function getWebSiteSchema(profile, overrides = {}) {
     url: `${SITE_URL}/`,
     description: `${SITE_DESCRIPTION_EN} ${SITE_DESCRIPTION_TH}`,
     inLanguage: ["en", "th"],
-    publisher: { "@id": ORGANIZATION_ID },
+    publisher: { "@id": PERSON_ID },
     author: { "@id": PERSON_ID },
     about: { "@id": PERSON_ID },
     hasPart: NAVIGATION_ITEMS.map((item) => ({
@@ -403,7 +402,7 @@ export function getWebSiteSchema(profile, overrides = {}) {
 }
 
 export function getCoreSiteSchemas(profile) {
-  return [getPersonSchema(profile), getOrganizationSchema(profile), getWebSiteSchema(profile)];
+  return [getPersonSchema(profile), getWebSiteSchema(profile)];
 }
 
 export function getHomeGraphSchema(profile, locale = "en") {
@@ -414,25 +413,25 @@ export function getHomeGraphSchema(profile, locale = "en") {
       ...getCoreSiteSchemas(profile),
       {
         "@type": "ProfilePage",
-        "@id": `${SITE_URL}/#profilepage`,
-        url: `${SITE_URL}/`,
-        name: `${profile.name} — Portfolio / พอร์ตโฟลิโอ`,
+        "@id": `${absoluteUrl(locale === "th" ? "/th" : "/")}#profilepage`,
+        url: absoluteUrl(locale === "th" ? "/th" : "/"),
+        name: getSiteSeoDefaults(profile, locale).title,
         alternateName: [`${profile.name} Portfolio`, `พอร์ตโฟลิโอ ${profile.name}`, "พอร์ตโฟลิโอ ณภัทร ภมรสูตร"],
         description: seoDefaults.description,
-        inLanguage: ["en", "th"],
+        inLanguage: locale,
         isPartOf: { "@id": WEBSITE_ID },
         mainEntity: { "@id": PERSON_ID },
         about: { "@id": PERSON_ID },
       },
       {
         "@type": "BreadcrumbList",
-        "@id": `${SITE_URL}/#breadcrumb`,
+        "@id": `${absoluteUrl(locale === "th" ? "/th" : "/")}#breadcrumb`,
         itemListElement: [
           {
             "@type": "ListItem",
             position: 1,
             name: "Home / หน้าแรก",
-            item: `${SITE_URL}/`,
+            item: absoluteUrl(locale === "th" ? "/th" : "/"),
           },
         ],
       },
@@ -440,8 +439,8 @@ export function getHomeGraphSchema(profile, locale = "en") {
   };
 }
 
-export function getAboutPageSchema(profile) {
-  const aboutUrl = absoluteUrl("/about");
+export function getAboutPageSchema(profile, locale = "en") {
+  const aboutUrl = absoluteUrl(locale === "th" ? "/th/about" : "/about");
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -450,10 +449,10 @@ export function getAboutPageSchema(profile) {
         "@type": "ProfilePage",
         "@id": `${aboutUrl}#profilepage`,
         url: aboutUrl,
-        name: `About Me / เกี่ยวกับฉัน — ${profile.name} (ณภัทร ภมรสูตร)`,
+        name: getAboutSeoMeta(profile, locale).title,
         alternateName: ["About Me", "เกี่ยวกับฉัน", `ประวัติ ${profile.name}`],
-        description: `${profile.about} ${profile.about_th}`,
-        inLanguage: ["en", "th"],
+        description: locale === "th" ? profile.about_th : profile.about,
+        inLanguage: locale,
         isPartOf: { "@id": WEBSITE_ID },
         mainEntity: { "@id": PERSON_ID },
         about: { "@id": PERSON_ID },
@@ -467,9 +466,9 @@ export function getAboutPageSchema(profile) {
         "@type": "AboutPage",
         "@id": `${aboutUrl}#aboutpage`,
         url: aboutUrl,
-        name: `About Me / เกี่ยวกับฉัน — ${profile.name}`,
+        name: getAboutSeoMeta(profile, locale).title,
         alternateName: ["About Me", "เกี่ยวกับฉัน"],
-        description: `${profile.about} ${profile.about_th}`,
+        description: locale === "th" ? profile.about_th : profile.about,
         isPartOf: { "@id": WEBSITE_ID },
         mainEntity: { "@id": PERSON_ID },
       },
@@ -481,7 +480,7 @@ export function getAboutPageSchema(profile) {
             "@type": "ListItem",
             position: 1,
             name: "Home / หน้าแรก",
-            item: `${SITE_URL}/`,
+            item: absoluteUrl(locale === "th" ? "/th" : "/"),
           },
           {
             "@type": "ListItem",
@@ -495,41 +494,41 @@ export function getAboutPageSchema(profile) {
   };
 }
 
-export function getProjectsCollectionSchema(projectItems, profile) {
+export function getProjectsCollectionSchema(projectItems, profile, locale = "en") {
   return {
     "@context": "https://schema.org",
     "@graph": [
       ...getCoreSiteSchemas(profile),
       {
         "@type": "CollectionPage",
-        "@id": `${SITE_URL}/projects#collection`,
-        url: absoluteUrl("/projects"),
-        name: "Projects / โปรเจค",
+        "@id": `${SITE_URL}${locale === "th" ? "/th" : ""}/projects#collection`,
+        url: absoluteUrl(locale === "th" ? "/th/projects" : "/projects"),
+        name: locale === "th" ? "ผลงาน" : "Projects",
         alternateName: ["Projects", "โปรเจค", "ผลงาน"],
         description:
           "Portfolio projects by Napat Pamornsut — web development, system design, and software testing. รวมผลงานโปรเจคเว็บและงานทดสอบซอฟต์แวร์ของ ณภัทร ภมรสูตร",
-        inLanguage: ["en", "th"],
+        inLanguage: locale,
         isPartOf: { "@id": WEBSITE_ID },
         author: { "@id": PERSON_ID },
         mainEntity: {
           "@type": "ItemList",
-          name: "Portfolio Projects / ผลงานโปรเจค",
+          name: locale === "th" ? "ผลงาน" : "Portfolio Projects",
           numberOfItems: projectItems.length,
           itemListElement: projectItems.map((project, index) => ({
             "@type": "ListItem",
             position: index + 1,
-            url: absoluteUrl(`/projects/${project.slug}`),
-            name: project.name,
+            url: absoluteUrl(`${locale === "th" ? "/th" : ""}/projects/${project.slug}`),
+            name: locale === "th" ? project.name_th || project.name : project.name,
             alternateName: project.name_th ? [project.name, project.name_th] : undefined,
           })),
         },
       },
       {
         "@type": "BreadcrumbList",
-        "@id": `${SITE_URL}/projects#breadcrumb`,
+        "@id": `${SITE_URL}${locale === "th" ? "/th" : ""}/projects#breadcrumb`,
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home / หน้าแรก", item: `${SITE_URL}/` },
-          { "@type": "ListItem", position: 2, name: "Projects / โปรเจค", item: absoluteUrl("/projects") },
+          { "@type": "ListItem", position: 1, name: "Home / หน้าแรก", item: absoluteUrl(locale === "th" ? "/th" : "/") },
+          { "@type": "ListItem", position: 2, name: locale === "th" ? "ผลงาน" : "Projects", item: absoluteUrl(locale === "th" ? "/th/projects" : "/projects") },
         ],
       },
     ],
@@ -548,11 +547,12 @@ export function getProjectSchema({
   stack = undefined,
   links = {},
   seo = null,
+  locale = "en",
   profile,
 }) {
-  const projectUrl = absoluteUrl(`/projects/${slug}`);
-  const schemaTitle = getLocalizedSeoValue(seo?.title) || title;
-  const schemaDescription = getLocalizedSeoValue(seo?.description) || description;
+  const projectUrl = absoluteUrl(`${locale === "th" ? "/th" : ""}/projects/${slug}`);
+  const schemaTitle = getLocalizedSeoValue(seo?.title, locale) || title;
+  const schemaDescription = getLocalizedSeoValue(seo?.description, locale) || description;
   const imageUrl = toAbsoluteImageUrl(seo?.image || image);
   const metaDescription = normalizeMetaDescription(schemaDescription, 300);
   const languages = stack
@@ -560,32 +560,27 @@ export function getProjectSchema({
     : technologies;
 
   const softwareApp = {
-    "@type": "SoftwareApplication",
+    "@type": "CreativeWork",
     "@id": `${projectUrl}#software`,
     name: schemaTitle,
     alternateName: titleTh ? [schemaTitle, titleTh] : undefined,
     description: metaDescription,
     url: projectUrl,
     image: imageUrl,
-    applicationCategory: "WebApplication",
-    applicationSubCategory: role.join(", "),
-    operatingSystem: "Web Browser",
-    featureList: keyFeatures,
+    genre: "Software development case study",
+    keywords: [...role, ...keyFeatures, ...languages].join(", "),
     author: { "@id": PERSON_ID },
     creator: { "@id": PERSON_ID },
     isPartOf: { "@id": WEBSITE_ID },
   };
 
-  if (languages.length > 0) {
-    softwareApp.programmingLanguage = languages;
-  }
 
   if (links.demo) {
     softwareApp.sameAs = [links.demo];
   }
 
   if (links.repo) {
-    softwareApp.codeRepository = links.repo;
+    softwareApp.relatedLink = links.repo;
   }
 
   return {
@@ -599,7 +594,7 @@ export function getProjectSchema({
         name: schemaTitle,
         alternateName: titleTh ? [schemaTitle, titleTh] : undefined,
         description: metaDescription,
-        inLanguage: ["en", "th"],
+        inLanguage: locale,
         isPartOf: { "@id": WEBSITE_ID },
         about: { "@id": `${projectUrl}#software` },
         primaryImageOfPage: { "@id": `${projectUrl}#primaryimage` },
@@ -621,13 +616,13 @@ export function getProjectSchema({
             "@type": "ListItem",
             position: 1,
             name: "Home / หน้าแรก",
-            item: `${SITE_URL}/`,
+            item: absoluteUrl(locale === "th" ? "/th" : "/"),
           },
           {
             "@type": "ListItem",
             position: 2,
-            name: "Projects / โปรเจค",
-            item: absoluteUrl("/projects"),
+            name: locale === "th" ? "ผลงาน" : "Projects",
+            item: absoluteUrl(locale === "th" ? "/th/projects" : "/projects"),
           },
           {
             "@type": "ListItem",

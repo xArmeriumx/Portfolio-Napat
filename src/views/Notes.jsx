@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import NoteCard from '../components/notes/NoteCard';
 import CmdKModal from '../components/notes/CmdKModal';
@@ -187,12 +188,8 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
           <ul className="space-y-0.5 relative before:absolute before:inset-y-0 before:left-3.5 before:w-px before:bg-gray-100 ml-4 pb-8">
             {notes.map((note) => (
               <li key={note.path} className="relative group">
-                <button
-                  onClick={() => {
-                    router.push(`${localePrefix}/notes/${note.slug}`);
-                    // Desktop: handled by the activeNote useEffect above (mainRef.scrollTo)
-                    if (window.innerWidth < 768) window.scrollTo(0, 0);
-                  }}
+                <Link
+                  href={`${localePrefix}/notes/${note.slug}`}
                   className={`w-full flex items-center gap-2.5 px-3 py-1.5 text-sm rounded-md transition-all text-left relative z-10 ${activeNote?.slug === note.slug
                     ? 'bg-red-50 text-red-700 font-semibold before:absolute before:left-[-17px] before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-4 before:bg-red-600 before:rounded-r'
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
@@ -212,7 +209,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
                     <FileText size={14} className={activeNote?.slug === note.slug ? 'text-red-500' : 'text-gray-400 group-hover:text-gray-600'} />
                   )}
                   <span className="truncate flex-1">{note.displayTitle || note.name}</span>
-                </button>
+                </Link>
               </li>
             ))}
             {notes.length === 0 && (
@@ -275,33 +272,33 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
                   </>
                 )}
 
-                <NoteCard markdown={activeNote.content} />
+                <NoteCard markdown={activeNote.content} title={activeNote.displayTitle || activeNote.name} />
               </div>
 
               {/* Document Navigation (Prev / Next) */}
               <div className="mt-16 pt-8 border-t border-gray-200 flex flex-col sm:flex-row gap-4 justify-between items-center text-sm">
                 {prevNote ? (
-                  <button
-                    onClick={() => router.push(`${localePrefix}/notes/${prevNote.slug}`)}
+                  <Link
+                    href={`${localePrefix}/notes/${prevNote.slug}`}
                     className="flex flex-col items-start p-4 border border-gray-200 rounded-lg hover:border-red-400 hover:shadow-sm focus:ring-1 focus:ring-red-400 transition-all w-full sm:w-[48%] bg-white group"
                   >
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
                       <ArrowLeft size={12} /> Previous
                     </span>
                     <span className="font-medium text-gray-800 truncate w-full text-left">{prevNote.displayTitle || prevNote.name}</span>
-                  </button>
+                  </Link>
                 ) : <div className="hidden sm:block sm:w-[48%]"></div>}
 
                 {nextNote ? (
-                  <button
-                    onClick={() => router.push(`${localePrefix}/notes/${nextNote.slug}`)}
+                  <Link
+                    href={`${localePrefix}/notes/${nextNote.slug}`}
                     className="flex flex-col items-end p-4 border border-gray-200 rounded-lg hover:border-red-400 hover:shadow-sm focus:ring-1 focus:ring-red-400 transition-all w-full sm:w-[48%] bg-white group text-right"
                   >
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
                       Next <ArrowRight size={12} />
                     </span>
                     <span className="font-medium text-gray-800 truncate w-full">{nextNote.displayTitle || nextNote.name}</span>
-                  </button>
+                  </Link>
                 ) : <div className="hidden sm:block sm:w-[48%]"></div>}
               </div>
 

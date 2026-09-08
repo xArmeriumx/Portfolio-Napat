@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePublishedContent } from "@/content/revalidate";
 import { NextResponse } from "next/server";
 import { publishDraft } from "@/content/admin-service";
 import { requireAdminApi } from "@/server/auth-guard";
@@ -15,9 +15,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   try {
     const id = (await params).id;
     const result = await publishDraft(prisma, { contentType: "NOTE", documentId: id, actorId: admin.user.id, revisionId: (await request.json().catch(() => ({})))?.revisionId });
-    for (const path of ["/notes", "/search", "/sitemap.xml"]) revalidatePath(path);
-    if (result.slug) revalidatePath(`/notes/${result.slug}`);
-    if (result.previousSlug) revalidatePath(`/notes/${result.previousSlug}`);
+    revalidatePublishedContent();
     return NextResponse.json(result);
   } catch (error) {
     return adminErrorResponse(error);

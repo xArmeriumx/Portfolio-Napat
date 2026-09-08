@@ -1,31 +1,16 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext } from "react";
 
 const LanguageContext = createContext();
 
 export function LanguageProvider({ children, initialLanguage = "en" }) {
-  // URL locale wins on first paint (SSR + crawler correctness);
-  // the saved preference only restores on the default locale tree.
-  const [language, setLanguage] = useState(initialLanguage);
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem("language");
-    if (saved && initialLanguage === "en") setLanguage(saved);
-  }, [initialLanguage]);
-
-  useEffect(() => {
-    window.localStorage.setItem("language", language);
-    // Optional: Add/remove 'th' class to body for specific global styling if needed
-    if (language === "th") {
-      document.documentElement.lang = "th";
-    } else {
-      document.documentElement.lang = "en";
-    }
-  }, [language]);
+  // URL is authoritative; a saved preference must not change crawler-visible language.
+  const language = initialLanguage;
 
   const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "en" ? "th" : "en"));
+    const base = window.location.pathname.replace(/^\/th(?=\/|$)/, "") || "/";
+    window.location.assign(language === "en" ? `/th${base === "/" ? "" : base}` : base);
   };
 
   return (

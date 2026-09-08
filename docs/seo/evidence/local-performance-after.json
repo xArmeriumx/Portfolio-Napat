@@ -1,0 +1,223 @@
+{
+  "date": "2026-09-08T01:09:05.815Z",
+  "base": "http://localhost:3100",
+  "method": "Single lab sample per route, Chromium, fresh page, no CPU/network throttle, 1s after load. Viewport simulation only; no INP interaction sample. CLS accumulated in this observation window. Not Lighthouse or CrUX.",
+  "rows": [
+    {
+      "route": "/",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 220,
+      "cls": 0,
+      "ttfb": 92.60000000149012,
+      "scriptTransferBytes": 913151
+    },
+    {
+      "route": "/th",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 80,
+      "cls": 0,
+      "ttfb": 33.70000000111759,
+      "scriptTransferBytes": 8940
+    },
+    {
+      "route": "/about",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 348,
+      "cls": 0,
+      "ttfb": 38,
+      "scriptTransferBytes": 27918
+    },
+    {
+      "route": "/th/about",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 188,
+      "cls": 0,
+      "ttfb": 39.40000000037253,
+      "scriptTransferBytes": 7796
+    },
+    {
+      "route": "/projects",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 412,
+      "cls": 0,
+      "ttfb": 49.90000000037253,
+      "scriptTransferBytes": 18191
+    },
+    {
+      "route": "/th/projects",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 104,
+      "cls": 0,
+      "ttfb": 42.899999998509884,
+      "scriptTransferBytes": 6841
+    },
+    {
+      "route": "/projects/shop-inventory-management",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 284,
+      "cls": 0,
+      "ttfb": 74.70000000111759,
+      "scriptTransferBytes": 126945
+    },
+    {
+      "route": "/th/projects/shop-inventory-management",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 216,
+      "cls": 0,
+      "ttfb": 72.19999999925494,
+      "scriptTransferBytes": 8207
+    },
+    {
+      "route": "/notes",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 64,
+      "cls": 0,
+      "ttfb": 30.40000000037253,
+      "scriptTransferBytes": 6212
+    },
+    {
+      "route": "/th/notes",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 68,
+      "cls": 0,
+      "ttfb": 32.40000000037253,
+      "scriptTransferBytes": 6212
+    },
+    {
+      "route": "/notes/nextjs-app-router-guide",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 500,
+      "cls": 0,
+      "ttfb": 180.80000000074506,
+      "scriptTransferBytes": 344912
+    },
+    {
+      "route": "/th/notes/nextjs-app-router-guide",
+      "device": "mobile viewport",
+      "status": 200,
+      "lcp": 260,
+      "cls": 0,
+      "ttfb": 143.30000000074506,
+      "scriptTransferBytes": 8045
+    },
+    {
+      "route": "/",
+      "device": "desktop viewport",
+      "status": 200,
+      "lcp": 88,
+      "cls": 0,
+      "ttfb": 27.200000001117587,
+      "scriptTransferBytes": 913151
+    },
+    {
+      "route": "/th",
+      "device": "desktop viewport",
+      "status": 200,
+      "lcp": 80,
+      "cls": 0,
+      "ttfb": 30.40000000037253,
+      "scriptTransferBytes": 8940
+    },
+    {
+      "route": "/about",
+      "device": "desktop viewport",
+      "status": 200,
+      "lcp": 172,
+      "cls": 0,
+      "ttfb": 33.69999999925494,
+      "scriptTransferBytes": 27918
+    },
+    {
+      "route": "/th/about",
+      "device": "desktop viewport",
+      "status": 200,
+      "lcp": 196,
+      "cls": 0,
+      "ttfb": 36.59999999962747,
+      "scriptTransferBytes": 7796
+    },
+    {
+      "route": "/projects",
+      "device": "desktop viewport",
+      "status": 200,
+      "lcp": 396,
+      "cls": 0,
+      "ttfb": 41.59999999962747,
+      "scriptTransferBytes": 18191
+    },
+    {
+      "route": "/th/projects",
+      "device": "desktop viewport",
+      "status": 200,
+      "lcp": 100,
+      "cls": 0,
+      "ttfb": 35.40000000037253,
+      "scriptTransferBytes": 6841
+    },
+    {
+      "route": "/projects/shop-inventory-management",
+      "device": "desktop viewport",
+      "status": 200,
+      "lcp": 576,
+      "cls": 0,
+      "ttfb": 55.70000000111759,
+      "scriptTransferBytes": 126945
+    },
+    {
+      "route": "/th/projects/shop-inventory-management",
+      "device": "desktop viewport",
+      "status": 200,
+      "lcp": 132,
+      "cls": 0,
+      "ttfb": 64.29999999888241,
+      "scriptTransferBytes": 8207
+    },
+    {
+      "route": "/notes",
+      "device": "desktop viewport",
+      "status": 200,
+      "lcp": 68,
+      "cls": 0,
+      "ttfb": 25.299999998882413,
+      "scriptTransferBytes": 6212
+    },
+    {
+      "route": "/th/notes",
+      "device": "desktop viewport",
+      "status": 200,
+      "lcp": 72,
+      "cls": 0,
+      "ttfb": 27.09999999962747,
+      "scriptTransferBytes": 6212
+    },
+    {
+      "route": "/notes/nextjs-app-router-guide",
+      "device": "desktop viewport",
+      "status": 200,
+      "lcp": 420,
+      "cls": 0,
+      "ttfb": 140,
+      "scriptTransferBytes": 344912
+    },
+    {
+      "route": "/th/notes/nextjs-app-router-guide",
+      "device": "desktop viewport",
+      "status": 200,
+      "lcp": 376,
+      "cls": 0,
+      "ttfb": 132.5,
+      "scriptTransferBytes": 8045
+    }
+  ]
+}
