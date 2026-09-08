@@ -288,6 +288,8 @@ export async function publishDraft(
       data: { publishedRevisionId: revision.id, draftRevisionId: null, status: "PUBLISHED", slug: nextSlug },
     });
     if (document.slug && nextSlug && document.slug !== nextSlug) {
+      // Restoring a previous slug must remove its own outgoing alias first.
+      await tx.slugRedirect.deleteMany({ where: { contentType: input.contentType, fromSlug: nextSlug, documentId: document.id } });
       await tx.slugRedirect.upsert({
         where: { contentType_fromSlug: { contentType: input.contentType, fromSlug: document.slug } },
         create: { contentType: input.contentType, fromSlug: document.slug, toSlug: nextSlug, documentId: document.id },

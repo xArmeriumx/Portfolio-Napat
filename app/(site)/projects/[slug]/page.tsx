@@ -7,7 +7,7 @@ import { buildPageMetadata } from "@/lib/metadata";
 import { getRelatedNotes } from "@/lib/related";
 import type { SiteLocale } from "../../page";
 import { getContentRepository } from "@/content/repository";
-import { toPresentationNote, toPresentationProfile, toPresentationProject } from "@/content/presentation";
+import { getProjectLocales, toPresentationNote, toPresentationProfile, toPresentationProject } from "@/content/presentation";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -53,6 +53,7 @@ export async function metadataProjectPage(slug: string, locale: SiteLocale = "en
   const projectSeo = getProjectSeoMeta(project, getLocalizedContent(locale), profile, locale);
 
   return buildPageMetadata({
+    availableLocales: getProjectLocales(rawProject),
     title: projectSeo.title,
     description: projectSeo.description,
     ogTitle: projectSeo.ogTitle,
@@ -95,15 +96,15 @@ export async function renderProjectPage(slug: string, locale: SiteLocale = "en")
 
   const profile = toPresentationProfile(rawProfile);
   const project = toPresentationProject(rawProject);
-  const relatedNotes = getRelatedNotes(project, rawNotes.map(toPresentationNote));
+  const relatedNotes = getRelatedNotes(project, rawNotes.map((note) => toPresentationNote(note, locale)));
 
-  const title = project.title;
-  const description = `${project.description} ${project.description_th || ""}`;
+  const title = getLocalizedContent(locale)(project, "title");
+  const description = getLocalizedContent(locale)(project, "description");
   const projectImages = project.images;
 
   return (
     <>
-      <JsonLd
+      {getProjectLocales(rawProject).includes(locale) && <JsonLd
         data={getProjectSchema({
           slug,
           title,
@@ -116,8 +117,9 @@ export async function renderProjectPage(slug: string, locale: SiteLocale = "en")
           links: project.links || {},
           seo: project.seo,
           profile,
+          locale,
         })}
-      />
+      />}
       <ProjectDetail slug={slug} project={project} relatedNotes={relatedNotes} locale={locale} />
     </>
   );

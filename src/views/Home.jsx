@@ -6,7 +6,7 @@ import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 import { useScrollToNextPage } from "../hooks/useScrollToNextPage.js";
 
-function ProfileIde({ profile }) {
+function ProfileIde({ profile, locale }) {
   const lines = [
     <><span className="text-[#a23b3b]">const</span> <span className="text-[#73508f]">profile</span> <span className="text-gray-500">= &#123;</span></>,
     <><span className="text-[#73508f]">  name</span><span className="text-gray-500">: </span><span className="text-[#477b55]">&quot;{profile.name}&quot;</span><span className="text-gray-500">,</span></>,
@@ -52,16 +52,18 @@ function ProfileIde({ profile }) {
         </div>
       </div>
       <div className="mt-4 flex items-center justify-end gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-gray-400">
-        <span>Read the full profile</span>
+        <Link href={locale === "th" ? "/th/about" : "/about"}>{locale === "th" ? "อ่านประวัติและทักษะ" : "Read the full profile"}</Link>
         <ArrowUpRight className="h-3.5 w-3.5 text-[#c43c3c]" />
       </div>
     </div>
   );
 }
 
-export default function Home({ profile }) {
+export default function Home({ profile, locale = "en" }) {
   // Scroll ถึงก้นหน้า → navigate ไป About (ผ่าน overlay)
-  useScrollToNextPage("/about");
+  const th = locale === "th";
+  const prefix = th ? "/th" : "";
+  useScrollToNextPage(`${prefix}/about`);
 
   return (
     <PageTransition>
@@ -77,42 +79,42 @@ export default function Home({ profile }) {
                 </p>
 
             <h1 className="max-w-4xl text-[clamp(3rem,8.5vw,6.25rem)] font-black leading-[0.92] tracking-[-0.07em] text-gray-950">
-              {profile.name}
+              {th ? profile.name_th || profile.name : profile.name}
               <span className="sr-only"> (ณภัทร ภมรสูตร)</span>
             </h1>
 
             <p className="mt-6 max-w-3xl text-2xl font-black tracking-[-0.04em] text-gray-800 md:text-4xl">
-              Web Developer / Software Tester
+              {th ? "นักพัฒนาเว็บ / นักทดสอบซอฟต์แวร์" : "Web Developer / Software Tester"}
             </p>
 
             <p className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-gray-500 md:text-lg">
-              {profile.tagline}
+              {th ? profile.tagline_th : profile.tagline}
             </p>
 
             <p className="mt-4 text-sm font-bold uppercase tracking-[0.18em] text-gray-400">
-              {profile.contact.location}
+              {th ? profile.contact.location_th : profile.contact.location}
             </p>
 
                 <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 className="inline-flex items-center justify-center rounded-full bg-[#c43c3c] px-7 py-3.5 text-sm font-black text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#a83232] hover:shadow-lg"
-                href="/projects"
+                href={`${prefix}/projects`}
               >
-                View Projects
+                {th ? "ดูผลงาน" : "View Projects"}
               </Link>
 
               <Link
                 className="inline-flex items-center justify-center rounded-full border border-gray-300 bg-white px-7 py-3.5 text-sm font-black text-gray-800 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gray-900 hover:shadow-md"
-                href="/about"
+                href={`${prefix}/about`}
               >
-                About Me
+                {th ? "เกี่ยวกับฉัน" : "About Me"}
               </Link>
 
               <Link
                 className="inline-flex items-center justify-center rounded-full border border-gray-300 bg-white px-7 py-3.5 text-sm font-black text-gray-800 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gray-900 hover:shadow-md"
-                href="/contact"
+                href={`${prefix}/contact`}
               >
-                Contact Me
+                {th ? "ติดต่อเรื่องงาน" : "Contact Me"}
               </Link>
                 </div>
               </div>
@@ -122,7 +124,7 @@ export default function Home({ profile }) {
                   <span>About me</span>
                   <span className="font-mono text-gray-300">01 / 01</span>
                 </div>
-                <ProfileIde profile={profile} />
+                <ProfileIde profile={profile} locale={locale} />
               </div>
             </div>
           </ScrollReveal>

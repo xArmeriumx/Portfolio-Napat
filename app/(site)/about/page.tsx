@@ -31,13 +31,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return metadataAboutPage("en");
 }
 
-export async function renderAboutPage() {
+export async function renderAboutPage(locale: SiteLocale = "en") {
   const repository = await getContentRepository();
   const profile = toPresentationProfile(await repository.getPublishedProfile());
 
   return (
     <>
-      <JsonLd data={getAboutPageSchema(profile)} />
+      <JsonLd data={getAboutPageSchema(profile, locale)} />
       <About profile={profile} />
     </>
   );

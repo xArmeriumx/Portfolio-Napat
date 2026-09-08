@@ -36,7 +36,7 @@ export async function renderHomePage(locale: SiteLocale = "en") {
   return (
     <>
       <JsonLd data={getHomeGraphSchema(profile, locale)} />
-      <Home profile={profile} />
+      <Home profile={profile} locale={locale} />
     </>
   );
 }

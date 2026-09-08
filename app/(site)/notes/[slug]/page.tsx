@@ -5,11 +5,11 @@ import JsonLd from "@/components/utils/JsonLd";
 import TopicHub from "@/components/notes/TopicHub.jsx";
 import { buildPageMetadata } from "@/lib/metadata";
 import { getNoteSchema, getNoteSeoMeta } from "@/lib/notes";
-import { NOTE_TOPICS, getRelatedProjects, getTopicHub, isNoteTopicKey } from "@/lib/related";
+import { NOTE_TOPICS, getLocalizedTopic, getRelatedProjects, getTopicHub, isNoteTopicKey } from "@/lib/related";
 import { SITE_URL, WEBSITE_ID, absoluteUrl, getCoreSiteSchemas } from "@/config/seo.js";
 import type { SiteLocale } from "../../page";
 import { getContentRepository } from "@/content/repository";
-import { toPresentationNote, toPresentationProfile, toPresentationProject } from "@/content/presentation";
+import { getNoteLocales, toPresentationNote, toPresentationProfile, toPresentationProject } from "@/content/presentation";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -33,8 +33,14 @@ function notesBase(locale: SiteLocale) {
 
 export async function metadataNotePage(slug: string, locale: SiteLocale = "en"): Promise<Metadata> {
   if (isNoteTopicKey(slug)) {
-    const topic = NOTE_TOPICS[slug];
+    const topic = getLocalizedTopic(slug, locale);
+    const repository = await getContentRepository();
+    const rawNotes = await repository.listPublishedNotes();
+    const availableLocales = (["en", "th"] as const).filter((language) =>
+      getTopicHub(slug, rawNotes.filter((note) => getNoteLocales(note).includes(language)).map((note) => toPresentationNote(note, language))).length > 0,
+    );
     return buildPageMetadata({
+      availableLocales,
       title: topic.title,
       description: topic.description,
       ogTitle: topic.title,
@@ -52,7 +58,7 @@ export async function metadataNotePage(slug: string, locale: SiteLocale = "en"):
     const redirectedSlug = await repository.getPublishedSlugRedirect("NOTE", slug);
     if (redirectedSlug) rawNote = await repository.getPublishedNoteBySlug(redirectedSlug);
   }
-  const note = rawNote ? toPresentationNote(rawNote) : null;
+  const note = rawNote ? toPresentationNote(rawNote, locale) : null;
 
   if (!note) {
     return buildPageMetadata({
@@ -66,6 +72,7 @@ export async function metadataNotePage(slug: string, locale: SiteLocale = "en"):
 
   const noteSeo = getNoteSeoMeta(note, locale);
   return buildPageMetadata({
+    availableLocales: note.availableLocales,
     title: noteSeo.title,
     description: noteSeo.description,
     ogTitle: noteSeo.ogTitle,
@@ -97,8 +104,8 @@ export async function renderNotePage(slug: string, locale: SiteLocale = "en") {
       repository.listPublishedNotes(),
     ]);
     const profile = toPresentationProfile(rawProfile);
-    const hubNotes = getTopicHub(slug, rawNotes.map(toPresentationNote));
-    const topic = NOTE_TOPICS[slug];
+    const hubNotes = getTopicHub(slug, rawNotes.filter((note) => getNoteLocales(note).includes(locale)).map((note) => toPresentationNote(note, locale)));
+    const topic = getLocalizedTopic(slug, locale);
     const hubUrl = absoluteUrl(`${base}/${slug}`);
     const notesIndexUrl = absoluteUrl(base);
     return (
@@ -114,7 +121,7 @@ export async function renderNotePage(slug: string, locale: SiteLocale = "en") {
                 url: hubUrl,
                 name: topic.title,
                 description: topic.description,
-                inLanguage: ["en", "th"],
+                inLanguage: locale,
                 isPartOf: { "@id": WEBSITE_ID },
                 mainEntity: {
                   "@type": "ItemList",
@@ -158,13 +165,22 @@ export async function renderNotePage(slug: string, locale: SiteLocale = "en") {
   }
 
   const profile = toPresentationProfile(rawProfile);
-  const note = toPresentationNote(rawNote);
-  const notes = rawNotes.map(toPresentationNote);
+  const note = toPresentationNote(rawNote, locale);
+  const notes = rawNotes.map((note) => toPresentationNote(note, locale));
   const relatedProjects = getRelatedProjects(note, rawProjects.map(toPresentationProject));
 
   return (
     <>
-      <JsonLd data={getNoteSchema(note, profile)} />
+      {!note.isFallback && <JsonLd data={getNoteSchema(note, profile, locale)} />}
+      <div className="relative z-10 mx-auto max-w-5xl px-4 pt-24">
+        {note.isFallback && <p role="status" className="rounded border border-amber-200 bg-amber-50 p-3 text-sm">
+          {locale === "th" ? "ยังไม่มีฉบับภาษาไทย เนื้อหาที่แสดงเป็นฉบับต้นฉบับ" : "This translation is not available. Showing the original content."}
+          {note.contentLocale ? ` (${note.contentLocale.toUpperCase()})` : " — language review pending"}
+        </p>}
+        <nav aria-label="Article languages" className="flex gap-4 py-2">
+          {note.availableLocales.map((language) => <a key={language} href={`${notesBase(language)}/${note.slug}`} hrefLang={language}>{language.toUpperCase()}</a>)}
+        </nav>
+      </div>
       <Notes initialNotes={notes} slug={slug} relatedProjects={relatedProjects} locale={locale} />
     </>
   );

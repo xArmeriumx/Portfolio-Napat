@@ -111,17 +111,17 @@ function SkillGroup({ category, skills }) {
 }
 
 export default function About({ profile }) {
-  const { getContent } = useTranslation();
+  const { getContent, isThai } = useTranslation();
 
   useEffect(() => {
     import("./ProjectList.jsx");
   }, []);
 
-  useScrollToNextPage("/projects");
+  useScrollToNextPage(isThai ? "/th/projects" : "/projects");
 
   const aboutText = getContent(profile, "about");
   const educationLines = getContent(profile, "education");
-  const roles = profile.headline.split(" | ");
+  const roles = getContent(profile, "headline").split(" | ");
 
   return (
     <>
@@ -163,10 +163,10 @@ export default function About({ profile }) {
                     About
                   </p>
                   <h1 className="text-3xl font-black tracking-tight text-gray-900 md:text-4xl">
-                    {profile.name}
+                    {getContent(profile, "name")}
                   </h1>
                   <p className="mt-2 text-base font-semibold text-gray-600 md:text-lg">
-                    {profile.headline}
+                    {getContent(profile, "headline")}
                   </p>
                   <div className="mt-4 flex flex-wrap justify-center gap-2 md:justify-start">
                     {roles.map((role) => (

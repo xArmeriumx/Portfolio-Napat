@@ -9,6 +9,15 @@ import {
 } from "./schema";
 import type { ContentRepository } from "./repository";
 
+// URLs already exposed by older fixture-based builds. Resolve only when the
+// counterpart actually exists in the published database; never redirect to 404.
+const noteSlugPairs: Record<string, string> = {
+  "nextjs-app-router-guide": "NEXTJS_ARCHITECTURE",
+  "typescript-reference-guide": "TYPESCRIPT_REFERENCE",
+  "sql-basics": "sql_basics_with_examples_easy",
+  "sql-query-examples": "sql_code_and_response_tables",
+};
+
 type PublishedDocument = {
   id: string;
   publishedRevision: ContentRevision | null;
@@ -23,14 +32,14 @@ function payloadRecord(revision: ContentRevision) {
   return revision.payload as Record<string, unknown>;
 }
 
-function publishedRevision(revision: ContentRevision, documentUpdatedAt: Date) {
+function publishedRevision(revision: ContentRevision) {
   if (revision.status !== "PUBLISHED") throw new Error("Selected revision is not published");
   return {
     revisionId: revision.id,
     revisionNumber: revision.revisionNumber,
     status: "PUBLISHED" as const,
     publishedAt: revision.publishedAt?.toISOString() || null,
-    updatedAt: documentUpdatedAt?.toISOString() ?? null,
+    updatedAt: revision.publishedAt?.toISOString() ?? null,
   };
 }
 
@@ -39,7 +48,7 @@ function mapProfile(document: PublishedDocument): ProfileContent {
   return profileContentSchema.parse({
     ...payloadRecord(document.publishedRevision),
     id: document.id,
-    revision: publishedRevision(document.publishedRevision, document.updatedAt),
+    revision: publishedRevision(document.publishedRevision),
   });
 }
 
@@ -48,7 +57,7 @@ function mapProject(document: PublishedDocument): ProjectContent {
   return projectContentSchema.parse({
     ...payloadRecord(document.publishedRevision),
     id: document.id,
-    revision: publishedRevision(document.publishedRevision, document.updatedAt),
+    revision: publishedRevision(document.publishedRevision),
   });
 }
 
@@ -57,7 +66,7 @@ function mapNote(document: PublishedDocument): NoteContent {
   return noteContentSchema.parse({
     ...payloadRecord(document.publishedRevision),
     id: document.id,
-    revision: publishedRevision(document.publishedRevision, document.updatedAt),
+    revision: publishedRevision(document.publishedRevision),
   });
 }
 
@@ -102,7 +111,20 @@ export class DatabaseContentRepository implements ContentRepository {
         where: { contentType, fromSlug: currentSlug, document: { status: "PUBLISHED", publishedRevisionId: { not: null } } },
         select: { toSlug: true },
       });
-      if (!redirect) return currentSlug === slug ? null : currentSlug;
+      if (!redirect) {
+        if (currentSlug !== slug) return currentSlug;
+        if (contentType === "NOTE") {
+          const counterpart = noteSlugPairs[slug] || Object.entries(noteSlugPairs).find(([, legacy]) => legacy === slug)?.[0];
+          if (counterpart) {
+            const published = await this.db.contentDocument.findFirst({
+              where: { contentType, slug: counterpart, status: "PUBLISHED", publishedRevisionId: { not: null } },
+              select: { slug: true },
+            });
+            if (published) return counterpart;
+          }
+        }
+        return null;
+      }
       currentSlug = redirect.toSlug;
     }
     return currentSlug === slug ? null : currentSlug;

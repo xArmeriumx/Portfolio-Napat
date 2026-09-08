@@ -86,3 +86,13 @@ describe("DatabaseContentRepository contract", () => {
     await expect(repository.getPublishedProfile()).rejects.toThrow("Selected revision is not published");
   });
 });
+
+it("redirects fixture-era URLs only to an existing published database counterpart", async () => {
+  const db = {
+    slugRedirect: { findFirst: async () => null },
+    contentDocument: { findFirst: async ({ where }) => where.slug === "NEXTJS_ARCHITECTURE" ? { slug: where.slug } : null },
+  };
+  const repository = new DatabaseContentRepository(db as never);
+  expect(await repository.getPublishedSlugRedirect("NOTE", "nextjs-app-router-guide")).toBe("NEXTJS_ARCHITECTURE");
+  expect(await repository.getPublishedSlugRedirect("NOTE", "sql-basics")).toBeNull();
+});

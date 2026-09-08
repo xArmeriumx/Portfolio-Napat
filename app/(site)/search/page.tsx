@@ -61,7 +61,7 @@ export async function renderSearchPage(locale: SiteLocale = "en", searchParams?:
     repository.listPublishedNotes(),
   ]);
   const profile = toPresentationProfile(rawProfile);
-  const notes = rawNotes.map(toPresentationNote);
+  const notes = rawNotes.map((note) => toPresentationNote(note, locale));
   const projects = rawProjects.map(toPresentationProject);
   const noteLinks = notes.map((note) => ({
     title: note.displayTitle,

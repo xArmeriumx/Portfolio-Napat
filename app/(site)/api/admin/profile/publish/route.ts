@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePublishedContent } from "@/content/revalidate";
 import { NextResponse } from "next/server";
 import { publishDraft } from "@/content/admin-service";
 import { requireAdminApi } from "@/server/auth-guard";
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
       actorId: admin.user.id,
       revisionId: body?.revisionId,
     });
-    for (const path of ["/", "/about", "/contact", "/search", "/sitemap.xml"]) revalidatePath(path);
+    revalidatePublishedContent();
     return NextResponse.json(result);
   } catch (error) {
     return adminErrorResponse(error);

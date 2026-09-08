@@ -1,0 +1,45 @@
+import { test, expect } from "@playwright/test";
+
+test.describe("public SEO", () => {
+  test("Thai homepage keeps its URL language and main content is visible without JavaScript", async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto(`${baseURL}/th`);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'th');
+    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'ดูผลงาน', exact: true })).toHaveAttribute('href', '/th/projects');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://napatdev.com/th');
+    await context.close();
+  });
+  test("stored language cannot override an English URL", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('language', 'th'));
+    await page.goto('/about');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://napatdev.com/about');
+  });
+  test("404 and search do not advertise indexable alternate pages", async ({ request }) => {
+    for (const path of ['/seo-test-not-a-page', '/th/seo-test-not-a-page']) {
+      const response = await request.get(path);
+      expect(response.status()).toBe(404);
+      expect(await response.text()).toContain('noindex');
+    }
+    const search = await request.get('/search?q=secret');
+    const html = await search.text();
+    expect(html).toContain('noindex');
+    expect(html).not.toMatch(/<link[^>]+hreflang=/);
+  });
+  test("legacy note remains readable, has one H1 and crawlable navigation", async ({ page }) => {
+    await page.goto('/notes/sql-query-examples');
+    await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+    await expect(page.getByRole('status')).toContainText('translation');
+    expect(await page.locator('a[href^="/notes/"]').count()).toBeGreaterThan(0);
+  });
+  test("public graph on Thai about uses Thai page URL and one stable person entity", async ({ page }) => {
+    await page.goto('/th/about');
+    const data = await page.locator('script[type="application/ld+json"]').allTextContents();
+    const nodes = data.flatMap(text => JSON.parse(text)['@graph']);
+    expect(nodes.find(n => n['@type'] === 'ProfilePage').url).toBe('https://napatdev.com/th/about');
+    expect(nodes.find(n => n['@type'] === 'Person')['@id']).toBe('https://napatdev.com/#person');
+  });
+});

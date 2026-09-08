@@ -40,14 +40,14 @@ function profilePayload() {
   return {
     id: "profile",
     identity: {
-      name: localized(profile.name, profile.name),
-      headline: localized(profile.headline, profile.headline),
-      tagline: localized(profile.tagline, profile.tagline),
+      name: localized(profile.name, profile.name_th),
+      headline: localized(profile.headline, profile.headline_th),
+      tagline: localized(profile.tagline, profile.tagline_th),
     },
     biography: localized(profile.about, profile.about_th),
     education: profile.education.map((value, index) => localized(value, profile.education_th[index])),
     contact: {
-      location: localized(profile.contact.location, profile.contact.location),
+      location: localized(profile.contact.location, profile.contact.location_th),
       phone: profile.contact.phone,
       links: {
         email: profile.links.email,

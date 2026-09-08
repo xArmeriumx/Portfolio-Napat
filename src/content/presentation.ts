@@ -46,6 +46,9 @@ export type PresentationProject = {
 };
 
 export type PresentationNote = {
+  availableLocales?: Array<"en" | "th">;
+  contentLocale?: "en" | "th";
+  isFallback?: boolean;
   path: string;
   slug: string;
   content: string;
@@ -130,16 +133,33 @@ export function extractMarkdownH1(markdown: string): string | null {
   return match[1].replace(/[#*`_[\]()]/g, "").replace(/\s+/g, " ").trim() || null;
 }
 
-export function toPresentationNote(note: NoteContent): PresentationNote {
+export function toPresentationNote(note: NoteContent, locale: "en" | "th" = "en"): PresentationNote {
+  const availableLocales = getNoteLocales(note);
+  const contentLocale = availableLocales.includes(locale) ? locale : availableLocales[0];
+  const content = (contentLocale && note.bodyMarkdownByLocale?.[contentLocale]) || note.bodyMarkdown;
   return {
     path: `/src/data/notes/${note.rawName}`,
     slug: note.slug,
-    content: note.bodyMarkdown,
-    name: note.title.en,
-    displayTitle: extractMarkdownH1(note.bodyMarkdown) ?? note.title.en,
+    content,
+    availableLocales,
+    contentLocale,
+    isFallback: !availableLocales.includes(locale),
+    name: note.title[contentLocale || locale] || note.title.en,
+    displayTitle: extractMarkdownH1(content) ?? (note.title[contentLocale || locale] || note.title.en),
     rawName: note.rawName,
     publishedAt: note.revision.publishedAt,
     updatedAt: note.revision.updatedAt ?? null,
     seo: note.seo,
   };
+}
+
+// Explicit translations only: legacy mixed-language bodies need editorial inventory.
+export function getNoteLocales(note: Pick<NoteContent, "bodyMarkdownByLocale" | "title">): Array<"en" | "th"> {
+  return (["en", "th"] as const).filter((locale) =>
+    Boolean(note.bodyMarkdownByLocale?.[locale]?.trim() && note.title[locale]?.trim()),
+  );
+}
+
+export function getProjectLocales(project: Pick<ProjectContent, "title" | "description">): Array<"en" | "th"> {
+  return (["en", "th"] as const).filter(locale => Boolean(project.title[locale]?.trim() && project.description[locale]?.trim()));
 }

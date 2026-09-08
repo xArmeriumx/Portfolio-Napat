@@ -11,11 +11,12 @@ import { verifyPreviewToken } from "@/server/preview-token";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Private Note Preview", robots: { index: false, follow: false, googleBot: { index: false, follow: false } } };
 
-type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ token?: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ token?: string; locale?: string }> };
 
 export default async function NotePreviewPage({ params, searchParams }: Props) {
   const { id } = await params;
-  const { token } = await searchParams;
+  const { token, locale: requestedLocale } = await searchParams;
+  const locale = requestedLocale === "th" ? "th" : "en";
   const claims = token ? verifyPreviewToken(token) : null;
   if (!claims || claims.contentType !== "NOTE" || claims.documentId !== id) notFound();
 
@@ -30,8 +31,8 @@ export default async function NotePreviewPage({ params, searchParams }: Props) {
         id,
         revision: { revisionId: revision.revisionId, revisionNumber: revision.revisionNumber, status: "DRAFT", publishedAt: null },
         ...payload,
-      });
-      const notes = rawNotes.filter((item) => item.slug !== note.slug).map(toPresentationNote);
+      }, locale);
+      const notes = rawNotes.filter((item) => item.slug !== note.slug).map((note) => toPresentationNote(note, locale));
       notes.splice(Math.min(payload.order, notes.length), 0, note);
       return { revisionNumber: revision.revisionNumber, notes, slug: note.slug };
     } catch {
@@ -40,5 +41,5 @@ export default async function NotePreviewPage({ params, searchParams }: Props) {
   })();
   if (!preview) notFound();
 
-  return <><div className="fixed left-0 right-0 top-16 z-40 bg-amber-500 px-4 py-2 text-center text-xs font-bold text-amber-950">PRIVATE DRAFT PREVIEW · Revision {preview.revisionNumber} · ไม่แสดงต่อ Search Engine</div><Notes initialNotes={preview.notes} slug={preview.slug} /></>;
+  return <><div className="fixed left-0 right-0 top-16 z-40 bg-amber-500 px-4 py-2 text-center text-xs font-bold text-amber-950">PRIVATE DRAFT PREVIEW · Revision {preview.revisionNumber} · ไม่แสดงต่อ Search Engine</div><Notes initialNotes={preview.notes} slug={preview.slug} locale={locale} /></>;
 }

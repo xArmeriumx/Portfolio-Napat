@@ -1,6 +1,9 @@
 export const profile = {
   name: "Napat Pamornsut",
+  name_th: "ณภัทร ภมรสูตร",
   headline: "Web Developer | Software Tester",
+  headline_th: "นักพัฒนาเว็บ | นักทดสอบซอฟต์แวร์",
+  tagline_th: "พัฒนาเว็บแอปพลิเคชันโดยให้ความสำคัญกับคุณภาพและการทดสอบ เปลี่ยนความต้องการให้เป็นระบบที่ใช้งานได้และตรวจสอบได้",
   tagline:
     "Building reliable web applications with a focus on quality and testing. Turning requirements into practical, testable solutions.",
   links: {
@@ -11,6 +14,7 @@ export const profile = {
   },
   contact: {
     location: "Bangkok, Thailand",
+    location_th: "กรุงเทพฯ ประเทศไทย",
     phone: "",
   },
   about:

@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePublishedContent } from "@/content/revalidate";
 import { NextResponse } from "next/server";
 import { archiveContent } from "@/content/admin-service";
 import { requireAdminApi } from "@/server/auth-guard";
@@ -15,10 +15,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (!(await hasExplicitConfirmation(request))) return confirmationRequiredResponse();
   try {
     const result = await archiveContent(prisma, { contentType: "NOTE", documentId: (await params).id, actorId: admin.user.id });
-    revalidatePath("/notes");
-    revalidatePath("/search");
-    revalidatePath("/sitemap.xml");
-    if (result.slug) revalidatePath(`/notes/${result.slug}`);
+    revalidatePublishedContent();
     return NextResponse.json(result);
   } catch (error) {
     return adminErrorResponse(error);

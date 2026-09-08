@@ -28,6 +28,7 @@ type SeoInput = {
   locale?: "en" | "th";
   path?: string;
   noindex?: boolean;
+  availableLocales?: Array<"en" | "th">;
   keywords?: string[];
 };
 
@@ -46,8 +47,8 @@ function isRealContentImage(image?: string) {
 
 type ResolvedOgImage = {
   url: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
 };
 
 function resolveOgImage({
@@ -68,8 +69,8 @@ function resolveOgImage({
   if (isRealContentImage(ogImage)) {
     return {
       url: toAbsoluteImageUrl(ogImage),
-      width: width || OG_IMAGE_WIDTH,
-      height: height || OG_IMAGE_HEIGHT,
+      ...(width ? { width } : {}),
+      ...(height ? { height } : {}),
     };
   }
   return {
@@ -96,9 +97,11 @@ export function buildPageMetadata({
   modifiedTime,
   path = "",
   noindex,
+  availableLocales = ["en", "th"],
   locale = "en",
   keywords = SEO_DEFAULTS.keywords,
 }: SeoInput): Metadata {
+  noindex = noindex || !availableLocales.includes(locale);
   const isThai = locale === "th";
   // `path` may already carry the /th prefix (th helpers return prefixed
   // paths); normalize so en/th alternates are always a reciprocal pair.
@@ -160,9 +163,9 @@ export function buildPageMetadata({
     alternates: noindex ? undefined : {
       canonical,
       languages: {
-        en: enUrl,
-        th: thUrl,
-        "x-default": enUrl,
+        ...(availableLocales.includes("en") ? { en: enUrl } : {}),
+        ...(availableLocales.includes("th") ? { th: thUrl } : {}),
+        "x-default": availableLocales.includes("en") ? enUrl : thUrl,
       },
     },
     robots: noindex

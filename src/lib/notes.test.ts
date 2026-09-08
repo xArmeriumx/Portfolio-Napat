@@ -101,3 +101,13 @@ describe("getNotesCollectionSchema", () => {
     expect(collection.mainEntity.itemListElement[0].url).toBe("https://napatdev.com/notes/example-note");
   });
 });
+
+it("uses Thai URLs and language consistently in the article and breadcrumb", () => {
+  const schema = getNoteSchema(makeNote({ displayTitle: "ทดสอบ" }), profile, "th");
+  const article = schema["@graph"].find(node => node["@type"] === "TechArticle") as Record<string, any>;
+  const breadcrumb = schema["@graph"].find(node => node["@type"] === "BreadcrumbList") as Record<string, any>;
+  expect(article.url).toBe("https://napatdev.com/th/notes/example-note");
+  expect(article.inLanguage).toBe("th");
+  expect(article.publisher["@id"]).toBe("https://napatdev.com/#person");
+  expect(breadcrumb.itemListElement.every(item => item.item.startsWith("https://napatdev.com/th"))).toBe(true);
+});
