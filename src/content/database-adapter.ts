@@ -18,6 +18,16 @@ const noteSlugPairs: Record<string, string> = {
   "sql-query-examples": "sql_code_and_response_tables",
 };
 
+function canonicalNoteSlug(slug: string) {
+  if (noteSlugPairs[slug]) return slug;
+  return Object.entries(noteSlugPairs).find(([, legacySlug]) => legacySlug === slug)?.[0] ?? slug;
+}
+
+function normalizeNoteSlug(note: NoteContent): NoteContent {
+  const slug = canonicalNoteSlug(note.slug);
+  return slug === note.slug ? note : { ...note, slug };
+}
+
 type PublishedDocument = {
   id: string;
   publishedRevision: ContentRevision | null;
@@ -104,30 +114,39 @@ export class DatabaseContentRepository implements ContentRepository {
   async getPublishedSlugRedirect(contentType: "PROJECT" | "NOTE", slug: string) {
     let currentSlug = slug;
     const visited = new Set<string>();
+
     for (let step = 0; step < 10; step += 1) {
       if (visited.has(currentSlug)) return null;
       visited.add(currentSlug);
+
       const redirect = await this.db.slugRedirect.findFirst({
-        where: { contentType, fromSlug: currentSlug, document: { status: "PUBLISHED", publishedRevisionId: { not: null } } },
+        where: {
+          contentType,
+          fromSlug: currentSlug,
+          document: { status: "PUBLISHED", publishedRevisionId: { not: null } },
+        },
         select: { toSlug: true },
       });
-      if (!redirect) {
-        if (currentSlug !== slug) return currentSlug;
-        if (contentType === "NOTE") {
-          const counterpart = noteSlugPairs[slug] || Object.entries(noteSlugPairs).find(([, legacy]) => legacy === slug)?.[0];
-          if (counterpart) {
-            const published = await this.db.contentDocument.findFirst({
-              where: { contentType, slug: counterpart, status: "PUBLISHED", publishedRevisionId: { not: null } },
-              select: { slug: true },
-            });
-            if (published) return counterpart;
-          }
-        }
-        return null;
+
+      if (redirect) {
+        currentSlug = redirect.toSlug;
+        continue;
       }
-      currentSlug = redirect.toSlug;
+
+      const finalSlug = contentType === "NOTE" ? canonicalNoteSlug(currentSlug) : currentSlug;
+      if (finalSlug === slug) return null;
+
+      if (contentType === "NOTE") {
+        // Legacy fixture-era slugs are storage aliases only. Public redirects
+        // always point toward the canonical slug, never back toward storage.
+        return (await this.getPublishedNoteBySlug(finalSlug)) ? finalSlug : null;
+      }
+
+      return finalSlug;
     }
-    return currentSlug === slug ? null : currentSlug;
+
+    const finalSlug = contentType === "NOTE" ? canonicalNoteSlug(currentSlug) : currentSlug;
+    return finalSlug === slug ? null : finalSlug;
   }
 
   async listPublishedNotes() {
@@ -136,14 +155,38 @@ export class DatabaseContentRepository implements ContentRepository {
       orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }],
       include: publishedRevisionInclude,
     });
-    return documents.map(mapNote);
+    return documents.map((document) => normalizeNoteSlug(mapNote(document)));
   }
 
   async getPublishedNoteBySlug(slug: string) {
-    const document = await this.db.contentDocument.findFirst({
-      where: { contentType: "NOTE", slug, status: "PUBLISHED", publishedRevisionId: { not: null } },
+    const canonicalSlug = canonicalNoteSlug(slug);
+    const legacySlug = noteSlugPairs[canonicalSlug];
+
+    let document = await this.db.contentDocument.findFirst({
+      where: {
+        contentType: "NOTE",
+        slug: canonicalSlug,
+        status: "PUBLISHED",
+        publishedRevisionId: { not: null },
+      },
       include: publishedRevisionInclude,
     });
-    return document ? mapNote(document) : null;
+
+    if (!document && legacySlug) {
+      document = await this.db.contentDocument.findFirst({
+        where: {
+          contentType: "NOTE",
+          slug: legacySlug,
+          status: "PUBLISHED",
+          publishedRevisionId: { not: null },
+        },
+        include: publishedRevisionInclude,
+      });
+    }
+
+    if (!document) return null;
+
+    const note = normalizeNoteSlug(mapNote(document));
+    return note.slug === canonicalSlug ? note : { ...note, slug: canonicalSlug };
   }
 }

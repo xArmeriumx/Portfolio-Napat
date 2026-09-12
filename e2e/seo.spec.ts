@@ -47,6 +47,24 @@ test.describe("public SEO", () => {
     expect(response.headers().location).toBe("/notes/nextjs-app-router-guide");
   });
 
+  test("canonical Next.js note loads without starting AI challenges in the background", async ({ page }) => {
+    const backgroundAiRequests: string[] = [];
+
+    page.on("request", (request) => {
+      const url = request.url();
+      if (url.includes("challenges.cloudflare.com/turnstile") || url.includes("/api/summary")) {
+        backgroundAiRequests.push(url);
+      }
+    });
+
+    await page.goto("/notes/nextjs-app-router-guide");
+    await expect(page.getByRole("heading", { level: 1, name: /Next\.js Mastery/i })).toBeVisible();
+
+    // The previous implementation started AI/Turnstile automatically after 3.5s.
+    await page.waitForTimeout(3900);
+    expect(backgroundAiRequests).toEqual([]);
+  });
+
   test("homepage expertise content is rendered without JavaScript", async ({ browser, baseURL }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
