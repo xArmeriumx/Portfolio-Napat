@@ -107,6 +107,7 @@ function FeaturedProjectCard({ project, localePrefix = "" }) {
   const description = getContent(project, "description").trim();
   const highlights = getContent(project, "highlights").slice(0, 2);
   const coverImage = images?.[0] || image;
+  const coverAlt = (localePrefix ? project.media?.[0]?.alt_th : project.media?.[0]?.alt) || title;
 
   const handleCardClick = (e) => {
     if (e.target.closest("a") || e.target.closest("button")) return;
@@ -118,7 +119,7 @@ function FeaturedProjectCard({ project, localePrefix = "" }) {
   return (
     <article
       onClick={handleCardClick}
-      className="group relative cursor-pointer overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.05)] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
+      className="group relative cursor-pointer overflow-hidden rounded-[22px] border border-gray-200 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.05)] transition-[box-shadow] duration-300 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] motion-reduce:transition-none sm:rounded-[28px]"
     >
       <div className="absolute left-5 top-5 z-20 rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
         Featured
@@ -133,11 +134,11 @@ function FeaturedProjectCard({ project, localePrefix = "" }) {
         >
           <Image
             src={coverImage}
-            alt={title}
+            alt={coverAlt}
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-contain p-6 transition-transform duration-700 group-hover:scale-105"
+            className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none sm:p-6"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
           <div className="absolute bottom-5 left-5 right-5 translate-y-2 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
@@ -208,6 +209,7 @@ function ProjectCard({ project, index, localePrefix = "" }) {
   const description = getContent(project, "description").trim();
   const highlights = getContent(project, "highlights").slice(0, 2);
   const coverImage = images?.[0] || image;
+  const coverAlt = (localePrefix ? project.media?.[0]?.alt_th : project.media?.[0]?.alt) || title;
 
   const handleCardClick = (e) => {
     if (e.target.closest("a") || e.target.closest("button")) return;
@@ -219,7 +221,7 @@ function ProjectCard({ project, index, localePrefix = "" }) {
   return (
     <article
       onClick={handleCardClick}
-      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)]"
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-[20px] border border-gray-200 bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] motion-reduce:transform-none motion-reduce:transition-none sm:rounded-[24px]"
     >
       <Link
         href={`${localePrefix}/projects/${slug}`}
@@ -232,10 +234,10 @@ function ProjectCard({ project, index, localePrefix = "" }) {
         </span>
         <Image
           src={coverImage}
-          alt={title}
+          alt={coverAlt}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-contain p-4 transition-transform duration-700 group-hover:scale-105"
+          className="object-contain p-3 transition-transform duration-500 group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none sm:p-4"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/35 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </Link>

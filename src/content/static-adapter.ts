@@ -107,7 +107,10 @@ function mapProject(source: SourceProject, order: number): ProjectContent {
         : "image/png",
       width: null,
       height: null,
-      alt: toLocalizedText(`${title} ${mediaOrder + 1}`, `${source.title_th || title} ${mediaOrder + 1}`),
+      alt: toLocalizedText(
+        `${title} project interface — screenshot ${mediaOrder + 1}`,
+        `ภาพหน้าจอ ${mediaOrder + 1} ของโปรเจค ${source.title_th || title}`,
+      ),
       caption: null,
       order: mediaOrder,
     })),

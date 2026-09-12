@@ -21,16 +21,17 @@ const Lightbox = dynamic(() => import("yet-another-react-lightbox"), {
 /* ========================================
    ImageGallery Component
 ======================================== */
-function ImageGallery({ images, title, locale }) {
+function ImageGallery({ images, imageAlts = [], title, locale }) {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const th = locale === "th";
   if (!images.length) return null;
-  const slides = images.map((src, i) => ({ src, alt: `${title} — ${i + 1}` }));
+  const getImageAlt = (i) => imageAlts[i] || `${title} — project screenshot ${i + 1}`;
+  const slides = images.map((src, i) => ({ src, alt: getImageAlt(i) }));
   return (
     <figure aria-label={th ? "ภาพผลงาน" : "Project gallery"}>
       <button type="button" onClick={() => setOpen(true)} aria-label={th ? "ขยายภาพผลงาน" : "Expand project image"} className="relative block aspect-video w-full cursor-zoom-in overflow-hidden rounded-xl bg-surface-muted">
-        <Image src={images[index]} alt={`${title} — ${index + 1}`} fill priority={index === 0} sizes="(max-width: 1024px) 100vw, 1024px" className="object-contain p-3 md:p-6" />
+        <Image src={images[index]} alt={getImageAlt(index)} fill priority={index === 0} sizes="(max-width: 1024px) 100vw, 1024px" className="object-contain p-3 md:p-6" />
       </button>
       <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
         <span aria-live="polite">{th ? "ภาพ" : "Image"} {index + 1} / {images.length}</span>
@@ -118,6 +119,9 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
   const stack = project.stack;
   const technologies = project.technologies || [];
   const projectImages = (project.images?.length ? project.images : [project.image]).filter(Boolean);
+  const projectImageAlts = (project.media || []).map((media) =>
+    locale === "th" ? media.alt_th || media.alt : media.alt,
+  );
   const links = project.links;
 
   const keyFeatures = getContent(project, "keyFeatures") || [];
@@ -209,7 +213,7 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
 
               {/* HERO IMAGE GALLERY - Immersive & Clean */}
               <div className="mb-16 md:mb-24">
-                <ImageGallery images={projectImages} title={title} locale={locale} />
+                <ImageGallery images={projectImages} imageAlts={projectImageAlts} title={title} locale={locale} />
               </div>
 
               {/* CONTENT NARRATIVE */}

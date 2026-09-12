@@ -65,7 +65,7 @@ export default function Home({ profile, selectedProjects = [], locale = "en" }) 
 
   return (
     <PageTransition>
-      <section className="relative flex min-h-screen items-center overflow-hidden bg-canvas px-4 pb-16 pt-24 md:px-6 md:pt-28">
+      <section className="relative flex min-h-[min(100svh,920px)] items-center overflow-hidden bg-canvas px-4 pb-14 pt-24 sm:pb-16 md:min-h-screen md:px-6 md:pt-28">
         <div className="hero-grid" aria-hidden="true" />
         <div className="relative mx-auto w-full max-w-7xl">
           <ScrollReveal width="100%">
@@ -125,6 +125,51 @@ export default function Home({ profile, selectedProjects = [], locale = "en" }) 
           </ScrollReveal>
         </div>
       </section>
+      {profile.skillCategories?.length > 0 && (
+        <section aria-labelledby="technical-expertise-title" className="responsive-section bg-canvas py-14 md:py-20">
+          <div className="mx-auto max-w-7xl">
+            <ScrollReveal width="100%">
+              <div className="grid gap-8 border-y border-line py-10 md:py-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-accent">
+                    {th ? "ทักษะหลัก" : "Technical expertise"}
+                  </p>
+                  <h2 id="technical-expertise-title" className="mt-3 max-w-xl text-3xl font-bold tracking-tight text-ink md:text-4xl">
+                    {th ? "เทคโนโลยีที่ใช้สร้างและทดสอบซอฟต์แวร์" : "Technologies for building and testing reliable software"}
+                  </h2>
+                  <p className="mt-4 max-w-xl text-sm font-medium leading-relaxed text-muted md:text-base">
+                    {th
+                      ? "ครอบคลุมงานพัฒนาเว็บแบบ Full-stack, ฐานข้อมูล, การทดสอบอัตโนมัติ และเครื่องมือที่ใช้ส่งมอบระบบจริง"
+                      : "Full-stack development, databases, automated testing, and delivery tooling used across real projects."}
+                  </p>
+                  <div className="mt-6 flex flex-wrap gap-4 text-sm font-semibold">
+                    <Link href={`${prefix}/about`} className="inline-flex items-center gap-1.5 text-accent">
+                      {th ? "ดูทักษะทั้งหมด" : "View full skill set"} <ArrowUpRight size={16} />
+                    </Link>
+                    <Link href={`${prefix}/notes`} className="inline-flex items-center gap-1.5 text-gray-700 hover:text-accent">
+                      {th ? "อ่าน Developer Notes" : "Read developer notes"} <ArrowUpRight size={16} />
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="responsive-stack" data-columns="2">
+                  {profile.skillCategories.slice(0, 4).map((category) => (
+                    <div key={category.category} className="rounded-2xl border border-line bg-white p-5 transition-transform duration-300 motion-reduce:transition-none md:p-6">
+                      <h3 className="text-sm font-black uppercase tracking-[0.14em] text-gray-500">
+                        {th ? category.category_th || category.category : category.category}
+                      </h3>
+                      <p className="mt-3 text-sm font-medium leading-7 text-gray-700">
+                        {category.skills.slice(0, 6).map((skill) => th ? skill.name_th || skill.name : skill.name).join(" · ")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+        </section>
+      )}
+
       {selectedProjects.length > 0 && (
         <section aria-labelledby="selected-work-title" className="selected-work bg-canvas px-4 md:px-6">
           <div className="mx-auto max-w-7xl">
@@ -136,7 +181,7 @@ export default function Home({ profile, selectedProjects = [], locale = "en" }) 
               const title = th ? project.title_th || project.title : project.title;
               return <article key={project.slug} className="selected-work-row">
                 <Link href={`${prefix}/projects/${project.slug}`} className="selected-work-image block" aria-label={title}>
-                  {project.images[0] && <Image src={project.images[0]} alt={title} fill sizes="(max-width: 767px) 100vw, 55vw" className="object-contain p-3 md:p-6" />}
+                  {project.images[0] && <Image src={project.images[0]} alt={(th ? project.media?.[0]?.alt_th : project.media?.[0]?.alt) || title} fill sizes="(max-width: 767px) 100vw, 55vw" className="object-contain p-3 md:p-6" />}
                 </Link>
                 <div>
                   <p className="mb-3 text-sm text-muted">{project.role.join(" / ")}</p>

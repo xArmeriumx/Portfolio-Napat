@@ -12,6 +12,16 @@ import { FEATURES } from '../config/features';
 import AiSummaryPanel from '../components/notes/AiSummaryPanel';
 import AiSelectionTooltip from '../components/notes/AiSelectionTooltip';
 
+function formatArticleDate(value, locale) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+
+  return new Intl.DateTimeFormat(locale === "th" ? "th-TH" : "en-US", {
+    dateStyle: "medium",
+  }).format(date);
+}
+
 export default function Notes({ initialNotes = [], slug, relatedProjects = [], locale = "en" }) {
   const localePrefix = locale === "th" ? "/th" : "";
   const router = useRouter();
@@ -46,6 +56,9 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
   const currentIndex = notes.findIndex(n => n.slug === activeNote?.slug);
   const prevNote = currentIndex > 0 ? notes[currentIndex - 1] : null;
   const nextNote = currentIndex < notes.length - 1 ? notes[currentIndex + 1] : null;
+  const publishedDate = formatArticleDate(activeNote?.publishedAt, locale);
+  const updatedDate = formatArticleDate(activeNote?.updatedAt, locale);
+  const showUpdatedDate = updatedDate && updatedDate !== publishedDate;
 
   // Auto-scroll on initial load if URL has a #hash
   useEffect(() => {
@@ -219,7 +232,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
 
         <div className="flex-1 flex justify-center pb-24">
           {activeNote ? (
-            <div className="w-full min-w-0 max-w-3xl px-5 py-8 md:px-10 shrink pb-16">
+            <article className="w-full min-w-0 max-w-3xl px-4 py-7 sm:px-6 md:px-10 md:py-8 shrink pb-16">
 
               <div className="mb-8 flex flex-wrap gap-4 text-sm lg:hidden">
                 <Link href={`${localePrefix}/notes`} className="py-2 text-accent">{locale === "th" ? "บทความทั้งหมด" : "All notes"}</Link>
@@ -229,6 +242,25 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
                   <ul className="mt-3 space-y-3">{headings.map((heading, i) => <li key={`${heading.id}-${i}`}><a className="block py-1 text-muted" href={`#${heading.id}`} onClick={e => scrollToHeading(e, heading.id, heading.text)}>{heading.text}</a></li>)}</ul>
                 </details>}
               </div>
+              <div className="mb-8 flex flex-wrap items-center gap-x-2 gap-y-1 border-y border-line py-4 text-sm text-gray-500">
+                <span>{locale === "th" ? "เขียนโดย" : "Written by"}</span>
+                <Link href={`${localePrefix}/about`} className="font-semibold text-gray-900 transition-colors hover:text-accent">
+                  Napat Pamornsut
+                </Link>
+                {publishedDate && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span>{locale === "th" ? `เผยแพร่ ${publishedDate}` : `Published ${publishedDate}`}</span>
+                  </>
+                )}
+                {showUpdatedDate && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span>{locale === "th" ? `อัปเดต ${updatedDate}` : `Updated ${updatedDate}`}</span>
+                  </>
+                )}
+              </div>
+
               {/* The Core Cheatsheet Content */}
               <div className="min-w-0">
                 {/* AI Summary Injection */}
@@ -313,7 +345,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
                 </div>
               )}
 
-            </div>
+            </article>
           ) : (
             <div className="flex flex-col items-center justify-center w-full min-h-[50vh] text-gray-400 opacity-50 space-y-4">
               <BookOpen size={64} />
