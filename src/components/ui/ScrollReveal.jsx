@@ -1,5 +1,7 @@
-import { motion, useAnimation, useInView } from "framer-motion";
-import { useEffect, useRef } from "react";
+"use client";
+
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import { useRef } from "react";
 
 export default function ScrollReveal({
   children,
@@ -8,26 +10,27 @@ export default function ScrollReveal({
   className = "",
 }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "0px 0px -50px 0px" });
-  const mainControls = useAnimation();
-
-  useEffect(() => {
-    if (isInView) {
-      mainControls.start("visible");
-    }
-  }, [isInView, mainControls]);
+  const isInView = useInView(ref, { once: true, margin: "0px 0px -8% 0px" });
+  const reduceMotion = useReducedMotion();
 
   return (
     <div ref={ref} style={{ width }} className={className}>
       <motion.div
         className={className}
-        variants={{
-          hidden: { opacity: 0, y: 20 },
-          visible: { opacity: 1, y: 0 },
+        initial={false}
+        animate={
+          reduceMotion
+            ? { transform: "none" }
+            : {
+                transform: isInView ? "translate3d(0, 0, 0)" : "translate3d(0, 14px, 0)",
+              }
+        }
+        transition={{
+          duration: 0.45,
+          delay: isInView ? delay : 0,
+          ease: [0.22, 1, 0.36, 1],
         }}
-        initial="visible"
-        animate={mainControls}
-        transition={{ duration: 0.6, delay: delay, ease: "easeOut" }}
+        style={{ willChange: reduceMotion ? "auto" : "transform" }}
       >
         {children}
       </motion.div>
