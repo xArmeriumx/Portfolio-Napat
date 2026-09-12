@@ -87,12 +87,52 @@ describe("DatabaseContentRepository contract", () => {
   });
 });
 
-it("redirects fixture-era URLs only to an existing published database counterpart", async () => {
+it("serves a canonical note URL from a legacy database slug without redirecting backwards", async () => {
+  const source = new StaticContentRepository();
+  const canonicalNote = (await source.listPublishedNotes()).find((note) => note.slug === "nextjs-app-router-guide");
+  expect(canonicalNote).toBeTruthy();
+
+  const legacyPayload = { ...canonicalNote, slug: "NEXTJS_ARCHITECTURE" };
   const db = {
     slugRedirect: { findFirst: async () => null },
-    contentDocument: { findFirst: async ({ where }) => where.slug === "NEXTJS_ARCHITECTURE" ? { slug: where.slug } : null },
+    contentDocument: {
+      findFirst: async ({ where }: { where: { slug: string } }) =>
+        where.slug === "NEXTJS_ARCHITECTURE"
+          ? {
+              id: canonicalNote!.id,
+              displayOrder: 0,
+              publishedRevision: revision(legacyPayload, "legacy-next-revision"),
+            }
+          : null,
+    },
   };
+
   const repository = new DatabaseContentRepository(db as never);
-  expect(await repository.getPublishedSlugRedirect("NOTE", "nextjs-app-router-guide")).toBe("NEXTJS_ARCHITECTURE");
-  expect(await repository.getPublishedSlugRedirect("NOTE", "sql-basics")).toBeNull();
+  const note = await repository.getPublishedNoteBySlug("nextjs-app-router-guide");
+
+  expect(note?.slug).toBe("nextjs-app-router-guide");
+  expect(await repository.getPublishedSlugRedirect("NOTE", "nextjs-app-router-guide")).toBeNull();
+  expect(await repository.getPublishedSlugRedirect("NOTE", "NEXTJS_ARCHITECTURE")).toBe("nextjs-app-router-guide");
+});
+
+it("canonicalizes legacy note slugs returned by the published notes list", async () => {
+  const source = new StaticContentRepository();
+  const canonicalNote = (await source.listPublishedNotes()).find((note) => note.slug === "nextjs-app-router-guide");
+  expect(canonicalNote).toBeTruthy();
+
+  const legacyPayload = { ...canonicalNote, slug: "NEXTJS_ARCHITECTURE" };
+  const db = {
+    contentDocument: {
+      findMany: async () => [
+        {
+          id: canonicalNote!.id,
+          displayOrder: 0,
+          publishedRevision: revision(legacyPayload, "legacy-next-revision"),
+        },
+      ],
+    },
+  };
+
+  const repository = new DatabaseContentRepository(db as never);
+  expect((await repository.listPublishedNotes())[0].slug).toBe("nextjs-app-router-guide");
 });
