@@ -1,7 +1,7 @@
 export const SITE_URL = "https://napatdev.com";
 export const SITE_NAME = "Napatdev";
 export const SITE_DESCRIPTION_EN =
-  "Napatdev is the portfolio of Napat Pamornsut, a Web Developer and Software Tester in Bangkok, Thailand, featuring web development, QA, automation testing, and technical notes.";
+  "Napatdev is the portfolio of Napat Pamornsut (ณภัทร ภมรสูตร), a Web Developer and Software Tester in Bangkok, Thailand, featuring web development, QA, automation testing, and technical notes.";
 export const SITE_DESCRIPTION_TH =
   "Napatdev พอร์ตโฟลิโอของ Napat Pamornsut (ณภัทร ภมรสูตร) นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ในกรุงเทพฯ รวมผลงานเว็บ QA การทดสอบอัตโนมัติ และโน้ตเทคนิค";
 
@@ -105,12 +105,12 @@ export function getBrandedTitle(title, locale = "en") {
 export function getSiteSeoDefaults(profile, locale = "en") {
   const defaultTitle =
     locale === "th"
-      ? "นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ กรุงเทพฯ"
+      ? `${profile.name_th || "ณภัทร ภมรสูตร"} — นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์`
       : `${profile.name} — Web Developer & Software Tester`;
   const defaultDescription =
     locale === "th"
       ? `Napatdev พอร์ตโฟลิโอของ ${profile.name} (ณภัทร ภมรสูตร) นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ในกรุงเทพฯ เชี่ยวชาญ Next.js, TypeScript และการทดสอบอัตโนมัติ`
-      : `Napatdev is the portfolio of ${profile.name}, a Bangkok-based Web Developer and Software Tester focused on Next.js, TypeScript, full-stack development, and automated testing.`;
+      : `Napatdev is the portfolio of ${profile.name} (ณภัทร ภมรสูตร), a Bangkok-based Web Developer and Software Tester focused on Next.js, TypeScript, full-stack development, and automated testing.`;
   const profileTitle = stripSiteBrand(getLocalizedSeoValue(profile.seo?.title, locale));
   const profileDescription = getLocalizedSeoValue(profile.seo?.description, locale);
 
@@ -300,7 +300,7 @@ export function getPersonSchema(profile, overrides = {}) {
     "@type": "Person",
     "@id": PERSON_ID,
     name: profile.name,
-    alternateName: ["ณภัทร ภมรสูตร", "Napat Dev", "napatdev"],
+    alternateName: [profile.name_th || "ณภัทร ภมรสูตร", "Napat Pamornsut", "Napatdev"],
     url: `${SITE_URL}/`,
     image: {
       "@type": "ImageObject",
@@ -387,7 +387,13 @@ export function getWebSiteSchema(profile, overrides = {}) {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
     name: SITE_NAME,
-    alternateName: [profile.name, "ณภัทร ภมรสูตร", "Napat Dev", "napatdev"],
+    alternateName: [
+      `${profile.name} Portfolio`,
+      `พอร์ตโฟลิโอ ${profile.name_th || "ณภัทร ภมรสูตร"}`,
+      profile.name,
+      profile.name_th || "ณภัทร ภมรสูตร",
+      "napatdev",
+    ],
     url: `${SITE_URL}/`,
     description: `${SITE_DESCRIPTION_EN} ${SITE_DESCRIPTION_TH}`,
     inLanguage: ["en", "th"],
