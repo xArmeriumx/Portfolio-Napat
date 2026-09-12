@@ -11,6 +11,14 @@ test.describe("public SEO", () => {
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://napatdev.com/th');
     await context.close();
   });
+  test("home titles reinforce Napatdev and the localized personal name", async ({ page }) => {
+    await page.goto("/");
+    await expect(page).toHaveTitle(/Napat Pamornsut.*Napatdev/);
+
+    await page.goto("/th");
+    await expect(page).toHaveTitle(/Napatdev.*ณภัทร ภมรสูตร/);
+  });
+
   test("stored language cannot override an English URL", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('language', 'th'));
     await page.goto('/about');
