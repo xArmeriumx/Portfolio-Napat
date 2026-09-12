@@ -10,7 +10,7 @@ export default function AnimatedText({
   return (
     <Component
       key={language}
-      className={`animate-blur-in inline-block ${className}`}
+      className={`animate-text-enter inline-block ${className}`}
     >
       {children}
     </Component>
