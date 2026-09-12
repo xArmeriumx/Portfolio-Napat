@@ -73,9 +73,15 @@ export default function Home({ profile, selectedProjects = [], locale = "en" }) 
               <div>
 
 
+            <p className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-accent">
+              Napatdev <span aria-hidden="true">·</span> {th ? "พอร์ตโฟลิโอ" : "Portfolio"}
+            </p>
+
             <h1 className="max-w-4xl text-[clamp(3rem,8.5vw,6rem)] font-black leading-[0.92] tracking-[-0.04em] text-gray-950">
-              {th ? profile.name_th || profile.name : profile.name}
-              <span className="sr-only"> (ณภัทร ภมรสูตร)</span>
+              {th ? profile.name_th || "ณภัทร ภมรสูตร" : profile.name}
+              <span className="sr-only">
+                {th ? ` (Napat Pamornsut)` : ` (${profile.name_th || "ณภัทร ภมรสูตร"})`}
+              </span>
             </h1>
 
             <p className="mt-6 max-w-3xl text-2xl font-black tracking-[-0.04em] text-gray-800 md:text-4xl">

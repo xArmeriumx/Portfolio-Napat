@@ -19,7 +19,7 @@ const KIND_LABELS = {
   search: "Site Search",
 };
 
-const DEFAULT_TITLE = "Napat Pamornsut — Web Developer & Software Tester";
+const DEFAULT_TITLE = "Napat Pamornsut — Web Developer & Software Tester | Napatdev";
 
 // Fonts are read from disk once per server instance, not per request.
 let cachedFonts: Promise<Awaited<ReturnType<typeof readPromptFonts>>> | undefined;
@@ -111,7 +111,7 @@ export async function GET(request) {
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", fontSize: 26, color: "#9ca3af" }}>
-            Napat Pamornsut — Web Developer & Software Tester
+            Napat Pamornsut · ณภัทร ภมรสูตร
           </div>
           <div style={{ display: "flex", width: 22, height: 22, backgroundColor: BRAND_ACCENT, borderRadius: 6 }} />
         </div>

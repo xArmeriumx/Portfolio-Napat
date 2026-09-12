@@ -3,8 +3,8 @@ export const dynamic = "force-dynamic";
 
 import type { Metadata, Viewport } from "next";
 import AppShell from "@/components/layout/AppShell.jsx";
-import { getSiteSeoDefaults, getRealContentImage, normalizeMetaDescription, SITE_NAME, SITE_URL } from "@/config/seo.js";
-import { buildOgImageUrl } from "@/lib/metadata";
+import { getBrandedTitle, getSiteSeoDefaults, getRealContentImage, normalizeMetaDescription, SITE_NAME, SITE_URL } from "@/config/seo.js";
+import { buildOgImageUrl, getSearchEngineVerificationMeta } from "@/lib/metadata";
 import { fontVariables } from "@/lib/fonts";
 import { getContentRepository } from "@/content/repository";
 import { getNoteLocales, getProjectLocales, toPresentationProfile } from "@/content/presentation";
@@ -14,13 +14,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const repository = await getContentRepository();
   const profile = toPresentationProfile(await repository.getPublishedProfile());
   const seo = getSiteSeoDefaults(profile, "en");
+  const brandedTitle = getBrandedTitle(seo.title, "en");
   const ogImage = getRealContentImage(seo.ogImage)
-    || buildOgImageUrl("site", seo.title, profile.headline);
+    || buildOgImageUrl("site", brandedTitle, profile.headline);
 
   return {
     metadataBase: new URL(SITE_URL),
     applicationName: SITE_NAME,
-    title: { default: seo.title, template: `%s | ${SITE_NAME}` },
+    title: brandedTitle,
     description: normalizeMetaDescription(seo.description, 160),
     authors: [{ name: profile.name, url: SITE_URL }],
     creator: profile.name,
@@ -30,19 +31,29 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       url: SITE_URL,
       siteName: SITE_NAME,
-      title: seo.title,
+      title: brandedTitle,
       description: seo.description,
       locale: seo.locale,
       alternateLocale: [seo.alternateLocale],
       images: [{ url: ogImage, ...(getRealContentImage(seo.ogImage) ? {} : { width: 1200, height: 630 }), alt: `${profile.name} Portfolio` }],
     },
-    twitter: { card: "summary_large_image", title: seo.title, description: seo.description, images: [ogImage] },
+    twitter: { card: "summary_large_image", title: brandedTitle, description: seo.description, images: [ogImage] },
     robots: {
       index: true,
       follow: true,
-      googleBot: { index: true, follow: true, "max-image-preview": "large" },
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
     },
-    other: { "geo.region": "TH-10", "geo.placename": "Bangkok" },
+    other: {
+      "geo.region": "TH-10",
+      "geo.placename": "Bangkok",
+      ...getSearchEngineVerificationMeta(),
+    },
   };
 }
 

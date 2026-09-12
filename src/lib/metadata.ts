@@ -3,12 +3,29 @@ import {
   SEO_DEFAULTS,
   SITE_NAME,
   absoluteUrl,
+  getBrandedTitle,
   normalizeMetaDescription,
   toAbsoluteImageUrl,
 } from "@/config/seo.js";
 
 const OG_IMAGE_WIDTH = 1200;
 const OG_IMAGE_HEIGHT = 630;
+
+const SEARCH_ENGINE_VERIFICATION_ENV = {
+  "google-site-verification": "GOOGLE_SITE_VERIFICATION",
+  "msvalidate.01": "BING_SITE_VERIFICATION",
+  "yandex-verification": "YANDEX_SITE_VERIFICATION",
+  "baidu-site-verification": "BAIDU_SITE_VERIFICATION",
+  "naver-site-verification": "NAVER_SITE_VERIFICATION",
+} as const;
+
+export function getSearchEngineVerificationMeta() {
+  return Object.fromEntries(
+    Object.entries(SEARCH_ENGINE_VERIFICATION_ENV)
+      .map(([metaName, envName]) => [metaName, process.env[envName]?.trim()])
+      .filter((entry): entry is [string, string] => Boolean(entry[1])),
+  );
+}
 
 type SeoInput = {
   title: string;
@@ -112,7 +129,8 @@ export function buildPageMetadata({
   const ogLocale = isThai ? "th_TH" : SEO_DEFAULTS.locale;
   const ogAlternateLocale = isThai ? SEO_DEFAULTS.locale : SEO_DEFAULTS.alternateLocale;
   const pageDescription = normalizeMetaDescription(description, 160);
-  const effectiveTitle = ogTitle || title;
+  const brandedTitle = getBrandedTitle(title, locale);
+  const effectiveTitle = getBrandedTitle(ogTitle || title, locale);
   const effectiveDescription = normalizeMetaDescription(
     ogDescription || description,
     ogType === "article" ? 200 : 160,
@@ -153,7 +171,7 @@ export function buildPageMetadata({
   }
 
   return {
-    title,
+    title: brandedTitle,
     description: pageDescription,
     authors: [{ name: "Napat Pamornsut", url: absoluteUrl("/") }],
     creator: "Napat Pamornsut",
@@ -177,6 +195,8 @@ export function buildPageMetadata({
             index: true,
             follow: true,
             "max-image-preview": "large",
+            "max-snippet": -1,
+            "max-video-preview": -1,
           },
         },
     openGraph: openGraph as Metadata["openGraph"],
@@ -189,6 +209,7 @@ export function buildPageMetadata({
     other: {
       "geo.region": "TH-10",
       "geo.placename": "Bangkok",
+      ...getSearchEngineVerificationMeta(),
     },
   };
 }

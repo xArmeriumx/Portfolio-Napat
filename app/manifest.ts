@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Napat Pamornsut (ณภัทร ภมรสูตร) | Napatdev",
+    name: "Napatdev — Napat Pamornsut (ณภัทร ภมรสูตร)",
     short_name: "Napatdev",
     description:
-      "Web Developer and Software Tester based in Bangkok, Thailand. Portfolio of React, Next.js, Node.js, Playwright projects, and technical notes. พอร์ตโฟลิโอของ ณภัทร ภมรสูตร รวมโปรเจคและโน้ตความรู้ด้านเทคนิค",
+      "Napatdev portfolio of Napat Pamornsut (ณภัทร ภมรสูตร), a Web Developer and Software Tester in Bangkok, with Next.js, TypeScript, QA automation projects, and technical notes.",
     start_url: "/",
     id: "/",
     lang: "en",

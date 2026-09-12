@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildOgImageUrl, buildPageMetadata } from "./metadata";
+import { buildOgImageUrl, buildPageMetadata, getSearchEngineVerificationMeta } from "./metadata";
 
 describe("buildOgImageUrl", () => {
   it("encodes kind, title, and subtitle into the /api/og endpoint", () => {
@@ -99,5 +99,46 @@ describe("buildPageMetadata social image resolution", () => {
     expect(th.alternates?.canonical).toBe("https://napatdev.com/th/about");
     expect(th.alternates?.languages).toEqual(en.alternates?.languages);
     expect((th.openGraph as Record<string, unknown>).locale).toBe("th_TH");
+  });
+});
+
+describe("bilingual brand metadata", () => {
+  it("brands English titles at the end and Thai titles at the beginning", () => {
+    const en = buildPageMetadata({
+      title: "Napat Pamornsut — Web Developer & Software Tester",
+      description: "English profile",
+      path: "/",
+      locale: "en",
+    });
+    const th = buildPageMetadata({
+      title: "ณภัทร ภมรสูตร — นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์",
+      description: "โปรไฟล์ภาษาไทย",
+      path: "/th",
+      locale: "th",
+    });
+
+    expect(en.title).toBe("Napat Pamornsut — Web Developer & Software Tester | Napatdev");
+    expect(th.title).toBe("Napatdev | ณภัทร ภมรสูตร — นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์");
+    expect((en.openGraph as Record<string, unknown>).siteName).toBe("Napatdev");
+    expect((th.openGraph as Record<string, unknown>).siteName).toBe("Napatdev");
+  });
+
+  it("emits webmaster verification tags only when configured", () => {
+    const previous = {
+      google: process.env.GOOGLE_SITE_VERIFICATION,
+      bing: process.env.BING_SITE_VERIFICATION,
+    };
+    process.env.GOOGLE_SITE_VERIFICATION = "google-token";
+    process.env.BING_SITE_VERIFICATION = "bing-token";
+
+    expect(getSearchEngineVerificationMeta()).toMatchObject({
+      "google-site-verification": "google-token",
+      "msvalidate.01": "bing-token",
+    });
+
+    if (previous.google === undefined) delete process.env.GOOGLE_SITE_VERIFICATION;
+    else process.env.GOOGLE_SITE_VERIFICATION = previous.google;
+    if (previous.bing === undefined) delete process.env.BING_SITE_VERIFICATION;
+    else process.env.BING_SITE_VERIFICATION = previous.bing;
   });
 });

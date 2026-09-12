@@ -1,9 +1,9 @@
 export const SITE_URL = "https://napatdev.com";
 export const SITE_NAME = "Napatdev";
 export const SITE_DESCRIPTION_EN =
-  "Portfolio of Napat Pamornsut, a Web Developer and Software Tester in Bangkok, Thailand, featuring web applications, QA work, automation testing, and technical notes.";
+  "Napatdev is the portfolio of Napat Pamornsut (ณภัทร ภมรสูตร), a Web Developer and Software Tester in Bangkok, Thailand, featuring web development, QA, automation testing, and technical notes.";
 export const SITE_DESCRIPTION_TH =
-  "พอร์ตโฟลิโอของ ณภัทร ภมรสูตร นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ รวมผลงานเว็บ งาน QA ระบบอัตโนมัติ และโน้ตความรู้ด้านเทคนิค";
+  "Napatdev พอร์ตโฟลิโอของ Napat Pamornsut (ณภัทร ภมรสูตร) นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ในกรุงเทพฯ รวมผลงานเว็บ QA การทดสอบอัตโนมัติ และโน้ตเทคนิค";
 
 export const PERSON_ID = `${SITE_URL}/#person`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
@@ -73,7 +73,7 @@ export const NAVIGATION_ITEMS = [
 ];
 
 export const SEO_DEFAULTS = {
-  title: `${SITE_NAME} | Portfolio`,
+  title: "Portfolio",
   description: `${SITE_DESCRIPTION_EN} ${SITE_DESCRIPTION_TH}`,
   ogImage: `${SITE_URL}/favicon.png`,
   locale: "en_US",
@@ -88,16 +88,30 @@ export const SEO_DEFAULTS = {
   ],
 };
 
+export function stripSiteBrand(title = "") {
+  return String(title)
+    .replace(/^\s*Napatdev\s*[|—–:-]\s*/i, "")
+    .replace(/\s*[|—–:-]\s*Napatdev\s*$/i, "")
+    .trim();
+}
+
+export function getBrandedTitle(title, locale = "en") {
+  const cleanTitle = stripSiteBrand(title) || "Portfolio";
+  return locale === "th"
+    ? `${SITE_NAME} | ${cleanTitle}`
+    : `${cleanTitle} | ${SITE_NAME}`;
+}
+
 export function getSiteSeoDefaults(profile, locale = "en") {
   const defaultTitle =
     locale === "th"
-      ? `${profile.name} — นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ กรุงเทพฯ`
-      : `${profile.name} — Web Developer & Software Tester in Bangkok`;
+      ? `${profile.name_th || "ณภัทร ภมรสูตร"} — นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์`
+      : `${profile.name} — Web Developer & Software Tester`;
   const defaultDescription =
     locale === "th"
-      ? `พอร์ตโฟลิโอของ ${profile.name} (ณภัทร ภมรสูตร) นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ในกรุงเทพฯ เชี่ยวชาญ Next.js TypeScript ฟูลสแต็กและการทดสอบอัตโนมัติ`
-      : `${profile.name} is a Web Developer and Software Tester based in Bangkok, Thailand, specializing in Next.js, TypeScript, full-stack development and automated testing. พอร์ตโฟลิโอของ ณภัทร ภมรสูตร นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์`;
-  const profileTitle = getLocalizedSeoValue(profile.seo?.title, locale);
+      ? `Napatdev พอร์ตโฟลิโอของ ${profile.name} (ณภัทร ภมรสูตร) นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์ในกรุงเทพฯ เชี่ยวชาญ Next.js, TypeScript และการทดสอบอัตโนมัติ`
+      : `Napatdev is the portfolio of ${profile.name} (ณภัทร ภมรสูตร), a Bangkok-based Web Developer and Software Tester focused on Next.js, TypeScript, full-stack development, and automated testing.`;
+  const profileTitle = stripSiteBrand(getLocalizedSeoValue(profile.seo?.title, locale));
   const profileDescription = getLocalizedSeoValue(profile.seo?.description, locale);
 
   return {
@@ -286,7 +300,7 @@ export function getPersonSchema(profile, overrides = {}) {
     "@type": "Person",
     "@id": PERSON_ID,
     name: profile.name,
-    alternateName: ["ณภัทร ภมรสูตร", "Napat Dev", "napatdev"],
+    alternateName: [profile.name_th || "ณภัทร ภมรสูตร", "Napat Pamornsut", "Napatdev"],
     url: `${SITE_URL}/`,
     image: {
       "@type": "ImageObject",
@@ -372,8 +386,14 @@ export function getWebSiteSchema(profile, overrides = {}) {
   return {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
-    name: `${profile.name} | ${SITE_NAME}`,
-    alternateName: ["ณภัทร ภมรสูตร", "Napat Dev", "napatdev", "พอร์ตโฟลิโอ ณภัทร"],
+    name: SITE_NAME,
+    alternateName: [
+      `${profile.name} Portfolio`,
+      `พอร์ตโฟลิโอ ${profile.name_th || "ณภัทร ภมรสูตร"}`,
+      profile.name,
+      profile.name_th || "ณภัทร ภมรสูตร",
+      "napatdev",
+    ],
     url: `${SITE_URL}/`,
     description: `${SITE_DESCRIPTION_EN} ${SITE_DESCRIPTION_TH}`,
     inLanguage: ["en", "th"],
@@ -415,7 +435,7 @@ export function getHomeGraphSchema(profile, locale = "en") {
         "@type": "ProfilePage",
         "@id": `${absoluteUrl(locale === "th" ? "/th" : "/")}#profilepage`,
         url: absoluteUrl(locale === "th" ? "/th" : "/"),
-        name: getSiteSeoDefaults(profile, locale).title,
+        name: getBrandedTitle(seoDefaults.title, locale),
         alternateName: [`${profile.name} Portfolio`, `พอร์ตโฟลิโอ ${profile.name}`, "พอร์ตโฟลิโอ ณภัทร ภมรสูตร"],
         description: seoDefaults.description,
         inLanguage: locale,
