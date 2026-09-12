@@ -5,7 +5,6 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import { Copy, Check, Pencil, Sparkles, X, RotateCcw, Save, Play } from 'lucide-react';
-import { reviewCode } from '../../services/aiService';
 import dynamic from 'next/dynamic';
 const LiveRunner = dynamic(() => import('./LiveRunner'), { loading: () => <p>Loading runner…</p>, ssr: false });
 import 'highlight.js/styles/github.css';
@@ -76,14 +75,17 @@ const CodeBlock = ({ node, inline, className, children, ...props }) => {
   const handleReview = async () => {
     setReviewLoading(true);
     setReviewResult(null);
-    
-    await reviewCode(editedCode, language, (chunk) => {
-       setReviewLoading(false); // Stop skeleton as soon as data arrives
-       setReviewResult({ explanation: chunk, isStreaming: true });
-    });
-    
-    setReviewResult(prev => ({ ...prev, isStreaming: false })); // stream finished
-    setReviewLoading(false); // in case cache hit returned instantly
+
+    try {
+      const { reviewCode } = await import('../../services/aiService');
+      await reviewCode(editedCode, language, (chunk) => {
+        setReviewLoading(false);
+        setReviewResult({ explanation: chunk, isStreaming: true });
+      });
+      setReviewResult((prev) => prev ? { ...prev, isStreaming: false } : prev);
+    } finally {
+      setReviewLoading(false);
+    }
   };
 
   if (!inline && match) {
