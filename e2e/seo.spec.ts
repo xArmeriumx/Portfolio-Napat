@@ -41,5 +41,20 @@ test.describe("public SEO", () => {
     const nodes = data.flatMap(text => JSON.parse(text)['@graph']);
     expect(nodes.find(n => n['@type'] === 'ProfilePage').url).toBe('https://napatdev.com/th/about');
     expect(nodes.find(n => n['@type'] === 'Person')['@id']).toBe('https://napatdev.com/#person');
+  });  test("legacy note slugs permanently redirect to clean lowercase URLs", async ({ request }) => {
+    const response = await request.get("/notes/NEXTJS_ARCHITECTURE", { maxRedirects: 0 });
+    expect([301, 308]).toContain(response.status());
+    expect(response.headers().location).toBe("/notes/nextjs-app-router-guide");
   });
+
+  test("homepage expertise content is rendered without JavaScript", async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto(baseURL || "/");
+    await expect(page.getByRole("heading", { name: "Technologies for building and testing reliable software" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Read developer notes/i })).toHaveAttribute("href", "/notes");
+    await context.close();
+  });
+
+
 });
