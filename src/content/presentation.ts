@@ -27,7 +27,7 @@ export type PresentationProject = {
   title: string;
   title_th: string;
   images: string[];
-  media: Array<{ src: string; alt: string; alt_th: string }>;
+  media?: Array<{ src: string; alt: string; alt_th: string }>;
   role: string[];
   description: string;
   description_th: string;
