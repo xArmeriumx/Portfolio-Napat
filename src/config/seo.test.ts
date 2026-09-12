@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getNotesListSeoMeta, getProjectSeoMeta, getSiteSeoDefaults } from "./seo.js";
+import { getBrandedTitle, getNotesListSeoMeta, getProjectSeoMeta, getSiteSeoDefaults } from "./seo.js";
 import { getNoteSeoMeta } from "@/lib/notes";
 
 describe("CMS SEO overrides", () => {
@@ -24,9 +24,19 @@ describe("CMS SEO overrides", () => {
       seo: { title: null, description: null, image: null },
     });
 
-    expect(seo.title).toBe("Napat Pamornsut — Web Developer & Software Tester in Bangkok");
+    expect(seo.title).toBe("Napat Pamornsut — Web Developer & Software Tester");
     expect(seo.title.length).toBeLessThanOrEqual(60);
+    expect(seo.description).toContain("Napat Pamornsut");
     expect(seo.description).toContain("ณภัทร ภมรสูตร");
+  });
+
+  it("builds consistent bilingual brand titles without duplicating Napatdev", () => {
+    expect(getBrandedTitle("Napat Pamornsut — Web Developer & Software Tester", "en"))
+      .toBe("Napat Pamornsut — Web Developer & Software Tester | Napatdev");
+    expect(getBrandedTitle("ณภัทร ภมรสูตร — นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์", "th"))
+      .toBe("Napatdev | ณภัทร ภมรสูตร — นักพัฒนาเว็บและนักทดสอบซอฟต์แวร์");
+    expect(getBrandedTitle("Napatdev | ณภัทร ภมรสูตร — นักพัฒนาเว็บ", "th"))
+      .toBe("Napatdev | ณภัทร ภมรสูตร — นักพัฒนาเว็บ");
   });
 
   it("uses Project and Note SEO overrides for derived metadata", () => {
