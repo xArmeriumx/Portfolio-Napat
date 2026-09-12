@@ -95,19 +95,24 @@ export default function AiSummaryPanel({ noteContent, noteId }) {
     setCopied(false);
   }
 
-  // 1. Proactive Cache-Warming (Kairos/Daemon effect)
+  // Load optional prompt suggestions only after the user starts interacting.
+  // Never call AI automatically during article page load.
   useEffect(() => {
-    if (!noteContent || !noteId) return;
-    const timer = setTimeout(() => {
-      generatePrompts(noteContent.substring(0, 1500))
-        .then(chips => { if (Array.isArray(chips)) setSuggestedPrompts(chips); })
-        .catch(() => {});
-      summarizeContent(noteContent).catch(() => {});
-    }, 3500);
-    return () => clearTimeout(timer);
-  }, [noteContent, noteId]);
+    if (!query.trim() || !noteContent || !noteId || suggestedPrompts.length > 0) return;
 
-  // 1.5 Typeahead Ghost Text effect
+    let cancelled = false;
+    generatePrompts(noteContent.substring(0, 1500))
+      .then((chips) => {
+        if (!cancelled && Array.isArray(chips)) setSuggestedPrompts(chips);
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [query, noteContent, noteId, suggestedPrompts.length]);
+
+  // Typeahead Ghost Text effect
   useEffect(() => {
     if (!query) {
       setTypeahead('');
