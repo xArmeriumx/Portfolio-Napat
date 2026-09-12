@@ -27,6 +27,7 @@ export type PresentationProject = {
   title: string;
   title_th: string;
   images: string[];
+  media: Array<{ src: string; alt: string; alt_th: string }>;
   role: string[];
   description: string;
   description_th: string;
@@ -100,11 +101,18 @@ export function toPresentationProfile(profile: ProfileContent): PresentationProf
 }
 
 export function toPresentationProject(project: ProjectContent): PresentationProject {
+  const media = project.media.slice().sort((a, b) => a.order - b.order);
+
   return {
     slug: project.slug,
     title: project.title.en,
     title_th: project.title.th,
-    images: project.media.slice().sort((a, b) => a.order - b.order).map((media) => media.url),
+    images: media.map((item) => item.url),
+    media: media.map((item) => ({
+      src: item.url,
+      alt: item.alt.en,
+      alt_th: item.alt.th,
+    })),
     role: project.role,
     description: project.description.en,
     description_th: project.description.th,
