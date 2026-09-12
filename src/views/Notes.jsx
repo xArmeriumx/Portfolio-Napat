@@ -3,14 +3,16 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import NoteCard from '../components/notes/NoteCard';
-import CmdKModal from '../components/notes/CmdKModal';
 import GithubSlugger from 'github-slugger';
 import { BookOpen, FileText, ChevronRight, Hash, FolderTree, Search, ArrowLeft, ArrowRight, List } from 'lucide-react';
 
 import { FEATURES } from '../config/features';
-import AiSummaryPanel from '../components/notes/AiSummaryPanel';
-import AiSelectionTooltip from '../components/notes/AiSelectionTooltip';
+
+const CmdKModal = dynamic(() => import('../components/notes/CmdKModal'), { ssr: false });
+const AiSummaryPanel = dynamic(() => import('../components/notes/AiSummaryPanel'), { ssr: false });
+const AiSelectionTooltip = dynamic(() => import('../components/notes/AiSelectionTooltip'), { ssr: false });
 
 function formatArticleDate(value, locale) {
   if (!value) return null;
@@ -91,21 +93,43 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
     return items;
   }, [activeNote]);
 
-  // Use the page's scroll position on desktop and mobile alike.
+  // Use one animation-frame update per scroll burst. This avoids repeated
+  // layout reads while a long article is scrolling on mobile browsers.
   useEffect(() => {
-    const handleScroll = () => {
+    let frameId = null;
+
+    const updateReadingState = () => {
+      frameId = null;
       const article = mainRef.current;
       if (!article) return;
+
       const start = article.getBoundingClientRect().top + window.scrollY;
       const total = article.offsetHeight - window.innerHeight;
-      setReadingProgress(total > 0 ? Math.max(0, Math.min(100, Math.round((window.scrollY - start) / total * 100))) : 100);
-      const visible = [...article.querySelectorAll('h1[id], h2[id], h3[id]')].filter(heading => heading.getBoundingClientRect().top <= 150);
+      setReadingProgress(
+        total > 0
+          ? Math.max(0, Math.min(100, Math.round(((window.scrollY - start) / total) * 100)))
+          : 100,
+      );
+
+      const visible = [...article.querySelectorAll('h1[id], h2[id], h3[id]')]
+        .filter((heading) => heading.getBoundingClientRect().top <= 150);
       setActiveHeadingId(visible.at(-1)?.id || null);
     };
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll);
-    return () => { window.removeEventListener('scroll', handleScroll); window.removeEventListener('resize', handleScroll); };
+
+    const scheduleUpdate = () => {
+      if (frameId !== null) return;
+      frameId = window.requestAnimationFrame(updateReadingState);
+    };
+
+    scheduleUpdate();
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
+    window.addEventListener('resize', scheduleUpdate);
+
+    return () => {
+      window.removeEventListener('scroll', scheduleUpdate);
+      window.removeEventListener('resize', scheduleUpdate);
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+    };
   }, [activeNote]);
 
   const scrollToHeading = (e, id, headingText) => {
@@ -389,16 +413,18 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
         </div>
       </main>
 
-      {/* 4) Modal */}
-      <CmdKModal
-        notes={notes}
-        isOpen={isCmdKOpen}
-        onClose={() => setIsCmdKOpen(false)}
-        onSelectNote={(note) => {
-          router.push(`${localePrefix}/notes/${note.slug}`);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-      />
+      {/* 4) Search is loaded only when requested, keeping the reading route light. */}
+      {isCmdKOpen && (
+        <CmdKModal
+          notes={notes}
+          isOpen
+          onClose={() => setIsCmdKOpen(false)}
+          onSelectNote={(note) => {
+            router.push(`${localePrefix}/notes/${note.slug}`);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />
+      )}
     </div>
   );
 }
