@@ -160,7 +160,6 @@ export function clearAiMemory() {
 // ============================================================
 // AI is optional. A blocked third-party challenge must never leave an
 // unbounded polling loop running in the page (especially on Mobile Safari).
-let turnstileInjected = false;
 let turnstileLoadPromise = null;
 let turnstileRequestId = 0;
 
@@ -190,9 +189,6 @@ function waitForTurnstile(timeoutMs = 8000) {
       script.dataset.portfolioTurnstile = 'true';
       script.addEventListener('error', () => finish(false), { once: true });
       document.head.appendChild(script);
-      turnstileInjected = true;
-    } else {
-      turnstileInjected = true;
     }
 
     const check = () => {
