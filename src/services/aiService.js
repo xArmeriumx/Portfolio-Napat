@@ -156,45 +156,111 @@ export function clearAiMemory() {
 
 
 // ============================================================
-// 🧊 Turnstile — Latched injection (Sheet Part 4 §1)
+// 🧊 Turnstile — bounded, on-demand loading
 // ============================================================
-// Latch: inject script ครั้งเดียว ไม่ flip state กลาง session
+// AI is optional. A blocked third-party challenge must never leave an
+// unbounded polling loop running in the page (especially on Mobile Safari).
 let turnstileInjected = false;
+let turnstileLoadPromise = null;
+let turnstileRequestId = 0;
 
-function getTurnstileToken() {
-  return new Promise((resolve) => {
-    if (!turnstileInjected) {
-      const script = document.createElement('script');
+function waitForTurnstile(timeoutMs = 8000) {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return Promise.resolve(false);
+  }
+  if (window.turnstile) return Promise.resolve(true);
+  if (turnstileLoadPromise) return turnstileLoadPromise;
+
+  turnstileLoadPromise = new Promise((resolve) => {
+    const startedAt = Date.now();
+    let settled = false;
+
+    const finish = (ready) => {
+      if (settled) return;
+      settled = true;
+      resolve(Boolean(ready && window.turnstile));
+    };
+
+    let script = document.querySelector('script[data-portfolio-turnstile="true"]');
+    if (!script) {
+      script = document.createElement('script');
       script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
       script.async = true;
       script.defer = true;
+      script.dataset.portfolioTurnstile = 'true';
+      script.addEventListener('error', () => finish(false), { once: true });
       document.head.appendChild(script);
-      turnstileInjected = true; // latched — one-way, never revert
+      turnstileInjected = true;
+    } else {
+      turnstileInjected = true;
     }
 
-    if (!document.getElementById('cf-turnstile-container')) {
-      const div = document.createElement('div');
-      div.id = 'cf-turnstile-container';
-      document.body.appendChild(div);
-    }
-
-    const checkAndRender = () => {
+    const check = () => {
       if (window.turnstile) {
-        const widgetId = window.turnstile.render('#cf-turnstile-container', {
-          sitekey: '0x4AAAAAACy5u8zujWObefIl',
-          callback: function (token) {
-            resolve(token);
-            setTimeout(() => window.turnstile.remove(widgetId), 100);
-          },
-          "error-callback": function () {
-            resolve('');
-          }
-        });
-      } else {
-        setTimeout(checkAndRender, 100);
+        finish(true);
+        return;
       }
+      if (Date.now() - startedAt >= timeoutMs) {
+        finish(false);
+        return;
+      }
+      window.setTimeout(check, 100);
     };
-    checkAndRender();
+
+    check();
+  }).finally(() => {
+    if (!window.turnstile) turnstileLoadPromise = null;
+  });
+
+  return turnstileLoadPromise;
+}
+
+async function getTurnstileToken() {
+  const ready = await waitForTurnstile();
+  if (!ready || !window.turnstile) return '';
+
+  const requestId = ++turnstileRequestId;
+  const container = document.createElement('div');
+  container.id = `cf-turnstile-container-${requestId}`;
+  container.style.position = 'fixed';
+  container.style.width = '1px';
+  container.style.height = '1px';
+  container.style.overflow = 'hidden';
+  container.style.pointerEvents = 'none';
+  container.style.opacity = '0';
+  document.body.appendChild(container);
+
+  return new Promise((resolve) => {
+    let settled = false;
+    let widgetId;
+    const timeoutId = window.setTimeout(() => finish(''), 8000);
+
+    const cleanup = () => {
+      window.clearTimeout(timeoutId);
+      try {
+        if (widgetId !== undefined) window.turnstile?.remove(widgetId);
+      } catch (_) {}
+      container.remove();
+    };
+
+    const finish = (token) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(token || '');
+    };
+
+    try {
+      widgetId = window.turnstile.render(container, {
+        sitekey: '0x4AAAAAACy5u8zujWObefIl',
+        callback: (token) => finish(token),
+        'error-callback': () => finish(''),
+        'expired-callback': () => finish(''),
+        'timeout-callback': () => finish(''),
+      });
+    } catch (_) {
+      finish('');
+    }
   });
 }
 
