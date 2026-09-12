@@ -107,6 +107,7 @@ function FeaturedProjectCard({ project, localePrefix = "" }) {
   const description = getContent(project, "description").trim();
   const highlights = getContent(project, "highlights").slice(0, 2);
   const coverImage = images?.[0] || image;
+  const coverAlt = (localePrefix ? project.media?.[0]?.alt_th : project.media?.[0]?.alt) || title;
 
   const handleCardClick = (e) => {
     if (e.target.closest("a") || e.target.closest("button")) return;
@@ -133,7 +134,7 @@ function FeaturedProjectCard({ project, localePrefix = "" }) {
         >
           <Image
             src={coverImage}
-            alt={title}
+            alt={coverAlt}
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 50vw"
@@ -219,7 +220,7 @@ function ProjectCard({ project, index, localePrefix = "" }) {
   return (
     <article
       onClick={handleCardClick}
-      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)]"
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-[20px] border border-gray-200 bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] motion-reduce:transform-none motion-reduce:transition-none sm:rounded-[24px]"
     >
       <Link
         href={`${localePrefix}/projects/${slug}`}
@@ -235,7 +236,7 @@ function ProjectCard({ project, index, localePrefix = "" }) {
           alt={title}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-contain p-4 transition-transform duration-700 group-hover:scale-105"
+          className="object-contain p-3 transition-transform duration-500 group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none sm:p-4"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/35 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </Link>
