@@ -11,6 +11,22 @@ import {
 const OG_IMAGE_WIDTH = 1200;
 const OG_IMAGE_HEIGHT = 630;
 
+const SEARCH_ENGINE_VERIFICATION_ENV = {
+  "google-site-verification": "GOOGLE_SITE_VERIFICATION",
+  "msvalidate.01": "BING_SITE_VERIFICATION",
+  "yandex-verification": "YANDEX_SITE_VERIFICATION",
+  "baidu-site-verification": "BAIDU_SITE_VERIFICATION",
+  "naver-site-verification": "NAVER_SITE_VERIFICATION",
+} as const;
+
+export function getSearchEngineVerificationMeta() {
+  return Object.fromEntries(
+    Object.entries(SEARCH_ENGINE_VERIFICATION_ENV)
+      .map(([metaName, envName]) => [metaName, process.env[envName]?.trim()])
+      .filter((entry): entry is [string, string] => Boolean(entry[1])),
+  );
+}
+
 type SeoInput = {
   title: string;
   description: string;
@@ -193,6 +209,7 @@ export function buildPageMetadata({
     other: {
       "geo.region": "TH-10",
       "geo.placename": "Bangkok",
+      ...getSearchEngineVerificationMeta(),
     },
   };
 }
