@@ -3,6 +3,7 @@ import {
   SEO_DEFAULTS,
   SITE_NAME,
   absoluteUrl,
+  getBrandedTitle,
   normalizeMetaDescription,
   toAbsoluteImageUrl,
 } from "@/config/seo.js";
@@ -112,7 +113,8 @@ export function buildPageMetadata({
   const ogLocale = isThai ? "th_TH" : SEO_DEFAULTS.locale;
   const ogAlternateLocale = isThai ? SEO_DEFAULTS.locale : SEO_DEFAULTS.alternateLocale;
   const pageDescription = normalizeMetaDescription(description, 160);
-  const effectiveTitle = ogTitle || title;
+  const brandedTitle = getBrandedTitle(title, locale);
+  const effectiveTitle = getBrandedTitle(ogTitle || title, locale);
   const effectiveDescription = normalizeMetaDescription(
     ogDescription || description,
     ogType === "article" ? 200 : 160,
@@ -153,7 +155,7 @@ export function buildPageMetadata({
   }
 
   return {
-    title,
+    title: brandedTitle,
     description: pageDescription,
     authors: [{ name: "Napat Pamornsut", url: absoluteUrl("/") }],
     creator: "Napat Pamornsut",
@@ -177,6 +179,8 @@ export function buildPageMetadata({
             index: true,
             follow: true,
             "max-image-preview": "large",
+            "max-snippet": -1,
+            "max-video-preview": -1,
           },
         },
     openGraph: openGraph as Metadata["openGraph"],
