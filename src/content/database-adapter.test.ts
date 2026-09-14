@@ -136,3 +136,34 @@ it("canonicalizes legacy note slugs returned by the published notes list", async
   const repository = new DatabaseContentRepository(db as never);
   expect((await repository.listPublishedNotes())[0].slug).toBe("nextjs-app-router-guide");
 });
+
+
+it("hydrates a known legacy database note with its declared source locale", async () => {
+  const source = new StaticContentRepository();
+  const canonicalNote = (await source.listPublishedNotes()).find(
+    (note) => note.slug === "sql-query-examples",
+  );
+  expect(canonicalNote).toBeTruthy();
+
+  const legacyPayload = {
+    ...canonicalNote,
+    bodyMarkdownByLocale: undefined,
+  };
+  const db = {
+    contentDocument: {
+      findMany: async () => [
+        {
+          id: canonicalNote!.id,
+          displayOrder: 0,
+          publishedRevision: revision(legacyPayload, "legacy-locale-revision"),
+        },
+      ],
+    },
+  };
+
+  const repository = new DatabaseContentRepository(db as never);
+  const note = (await repository.listPublishedNotes())[0];
+
+  expect(note.bodyMarkdownByLocale?.th).toBe(note.bodyMarkdown);
+  expect(note.bodyMarkdownByLocale?.en).toBeUndefined();
+});
