@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/prepare-content-release.mjs && next build",
     "cms:inventory": "node scripts/inventory-portfolio.mjs",
     "cms:backup": "node scripts/backup-portfolio.mjs",
     "cms:import": "node scripts/import-content.mjs",
@@ -18,7 +18,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "start": "next start",
-    "preview": "next start"
+    "preview": "next start",
+    "cms:prepare-release": "node scripts/prepare-content-release.mjs"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.0",
