@@ -167,3 +167,69 @@ it("hydrates a known legacy database note with its declared source locale", asyn
   expect(note.bodyMarkdownByLocale?.th).toBe(note.bodyMarkdown);
   expect(note.bodyMarkdownByLocale?.en).toBeUndefined();
 });
+
+
+it("restores the catalog source locale even when a legacy mirrored locale exists", async () => {
+  const source = new StaticContentRepository();
+  const canonicalNote = (await source.listPublishedNotes()).find(
+    (note) => note.slug === "sql-query-examples",
+  );
+  expect(canonicalNote).toBeTruthy();
+
+  const legacyPayload = {
+    ...canonicalNote,
+    bodyMarkdownByLocale: {
+      en: canonicalNote!.bodyMarkdown,
+    },
+  };
+  const db = {
+    contentDocument: {
+      findMany: async () => [
+        {
+          id: canonicalNote!.id,
+          displayOrder: 0,
+          publishedRevision: revision(legacyPayload, "mirrored-locale-revision"),
+        },
+      ],
+    },
+  };
+
+  const repository = new DatabaseContentRepository(db as never);
+  const note = (await repository.listPublishedNotes())[0];
+
+  expect(note.bodyMarkdownByLocale?.th).toBe(note.bodyMarkdown);
+  expect(note.bodyMarkdownByLocale?.en).toBeUndefined();
+});
+
+it("preserves a genuine reviewed translation while restoring the source locale", async () => {
+  const source = new StaticContentRepository();
+  const canonicalNote = (await source.listPublishedNotes()).find(
+    (note) => note.slug === "sql-query-examples",
+  );
+  expect(canonicalNote).toBeTruthy();
+
+  const englishTranslation = "# SQL Query Examples\n\nReviewed English translation.";
+  const legacyPayload = {
+    ...canonicalNote,
+    bodyMarkdownByLocale: {
+      en: englishTranslation,
+    },
+  };
+  const db = {
+    contentDocument: {
+      findMany: async () => [
+        {
+          id: canonicalNote!.id,
+          displayOrder: 0,
+          publishedRevision: revision(legacyPayload, "translated-locale-revision"),
+        },
+      ],
+    },
+  };
+
+  const repository = new DatabaseContentRepository(db as never);
+  const note = (await repository.listPublishedNotes())[0];
+
+  expect(note.bodyMarkdownByLocale?.th).toBe(note.bodyMarkdown);
+  expect(note.bodyMarkdownByLocale?.en).toBe(englishTranslation);
+});
