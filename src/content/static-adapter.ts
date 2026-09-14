@@ -170,7 +170,7 @@ function readStaticNotes(): NoteContent[] {
         ? {
             ...publishedRevision,
             publishedAt: catalog.publishedAt,
-            updatedAt: catalog.updatedAt || catalog.publishedAt,
+            updatedAt: catalog.publishedAt,
           }
         : publishedRevision;
       return noteContentSchema.parse({
