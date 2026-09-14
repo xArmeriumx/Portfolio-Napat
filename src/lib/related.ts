@@ -7,9 +7,11 @@ const TECH_ALIASES: Record<string, string[]> = {
   typescript: ["typescript"],
   sql: ["sql", "postgresql", "postgres", "prisma", "mysql"],
   testing: ["playwright", "vitest", "qa", "testing", "test", "uat", "automation", "testcase", "test-case"],
+  odoo: ["odoo", "qweb", "safe_eval", "erp"],
+  prisma: ["prisma", "orm", "transaction", "concurrency"],
 };
 
-export type NoteTopicKey = "nextjs" | "typescript" | "sql" | "testing";
+export type NoteTopicKey = "nextjs" | "typescript" | "sql" | "testing" | "odoo" | "prisma";
 
 export const NOTE_TOPICS: Record<
   NoteTopicKey,
@@ -20,7 +22,7 @@ export const NOTE_TOPICS: Record<
     title: "Next.js Guides & Cheatsheets",
     description:
       "Practical Next.js guides by Napat Pamornsut — App Router, Server Components, routing, Server Actions and data fetching. คู่มือ Next.js ฉบับใช้งานจริง",
-    notes: ["nextjs-app-router-guide"],
+    notes: ["nextjs-app-router-guide", "nextjs-server-actions-security", "nextjs-server-actions-revalidation"],
   },
   typescript: {
     label: "TypeScript",
@@ -41,7 +43,32 @@ export const NOTE_TOPICS: Record<
     title: "Software Testing Guides",
     description:
       "Software testing guides by Napat Pamornsut — Playwright automation, UAT and QA practices. คู่มือทดสอบซอฟต์แวร์",
-    notes: [],
+    notes: [
+      "playwright-thai-guide",
+      "playwright-page-object-model",
+      "playwright-authentication",
+      "playwright-locators-best-practices",
+    ],
+  },
+  odoo: {
+    label: "Odoo",
+    title: "Odoo Technical Guides",
+    description:
+      "Practical Odoo guides by Napat Pamornsut — Automated Actions, safe_eval, QWeb PDF reports and Odoo 19 certification. คู่มือ Odoo ภาษาไทยจากงานใช้งานจริง",
+    notes: [
+      "odoo-automated-action-store-attr",
+      "odoo-automated-action-import-name",
+      "odoo-qweb-page-break",
+      "odoo-qweb-table-border",
+      "odoo-19-certification-guide",
+    ],
+  },
+  prisma: {
+    label: "Prisma",
+    title: "Prisma ORM Production Guides",
+    description:
+      "Practical Prisma ORM guides by Napat Pamornsut — transactions, concurrency and production data patterns for Next.js applications. คู่มือ Prisma ภาษาไทย",
+    notes: ["prisma-transaction-nextjs", "prisma-optimistic-concurrency"],
   },
 };
 
@@ -143,7 +170,9 @@ export function getLocalizedTopic(key: NoteTopicKey, locale: "en" | "th") {
     nextjs: { title: "คู่มือ Next.js จากงานพัฒนาเว็บ", description: "โน้ต Next.js เรื่อง App Router, Server Components และการจัดการข้อมูล พร้อมเชื่อมโยงกับผลงานพัฒนาเว็บ" },
     typescript: { title: "คู่มือ TypeScript และการออกแบบชนิดข้อมูล", description: "โน้ต TypeScript เรื่อง types, generics และรูปแบบการเขียนโค้ดที่ใช้ในการพัฒนาเว็บ" },
     sql: { title: "พื้นฐาน SQL และตัวอย่าง Query", description: "เรียนรู้การอ่านและจัดการข้อมูลด้วย SQL ผ่านตัวอย่าง query และผลลัพธ์" },
-    testing: { title: "การทดสอบซอฟต์แวร์และ QA Automation", description: "แนวทางตรวจสอบคุณภาพซอฟต์แวร์ ตั้งแต่ test cases และ UAT ไปจนถึงการทดสอบอัตโนมัติ" },
+    testing: { title: "Playwright และการทดสอบซอฟต์แวร์", description: "คู่มือ E2E testing ด้วย Playwright ตั้งแต่ locator, authentication, Page Object Model ไปจนถึงแนวทางลด flaky test" },
+    odoo: { title: "คู่มือ Odoo Technical ภาษาไทย", description: "รวมแนวทางแก้ปัญหา Odoo Automated Actions, safe_eval, QWeb PDF และการเตรียมสอบ Odoo 19 Certification" },
+    prisma: { title: "Prisma ORM สำหรับงาน Production", description: "แนวทางใช้ Prisma transaction และ optimistic concurrency กับ Next.js เพื่อรักษาความถูกต้องของข้อมูลเมื่อมีหลาย mutation" },
   };
   return locale === "th" ? { ...topic, ...th[key] } : { ...topic, description: topic.description.split(/ คู่มือ| เอกสาร| สรุป/)[0] };
 }
