@@ -105,5 +105,7 @@ describe("StaticContentRepository contract", () => {
     const repository = await getContentRepository();
 
     expect(repository).toBeInstanceOf(StaticContentRepository);
+    vi.stubEnv("VERCEL_GIT_COMMIT_SHA", "release-test");
+    expect(getPublishedContentCacheVersion()).toBe("release-test");
   });
 });
