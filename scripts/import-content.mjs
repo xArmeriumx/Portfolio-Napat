@@ -224,7 +224,38 @@ async function main() {
     return imported;
   });
 
-  console.log(JSON.stringify({ schema, imported: results.filter((item) => item.status === "imported").length, skipped: results.filter((item) => item.status === "skipped").length, total: results.length }));
+  const expectedNoteSlugs = noteFiles.map((file) => file.replace(/\.md$/, ""));
+  const publishedNotes = await prisma.contentDocument.findMany({
+    where: {
+      contentType: "NOTE",
+      status: "PUBLISHED",
+      publishedRevisionId: { not: null },
+    },
+    select: { slug: true },
+  });
+  const publishedCanonicalSlugs = new Set(
+    publishedNotes
+      .map((document) => canonicalNoteSlug(document.slug || ""))
+      .filter(Boolean),
+  );
+  const missingPublishedNotes = expectedNoteSlugs.filter(
+    (slug) => !publishedCanonicalSlugs.has(slug),
+  );
+
+  if (missingPublishedNotes.length) {
+    throw new Error(
+      `Baseline Note verification failed: ${missingPublishedNotes.join(", ")}`,
+    );
+  }
+
+  console.log(JSON.stringify({
+    schema,
+    imported: results.filter((item) => item.status === "imported").length,
+    skipped: results.filter((item) => item.status === "skipped").length,
+    total: results.length,
+    expectedPublishedNotes: expectedNoteSlugs.length,
+    verifiedPublishedNotes: expectedNoteSlugs.length,
+  }));
 }
 
 main().catch((error) => {
