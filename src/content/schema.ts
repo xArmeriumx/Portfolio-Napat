@@ -144,6 +144,7 @@ export const noteContentSchema = z.object({
   seo: z.object({
     title: localizedTextSchema.nullable(),
     description: localizedTextSchema.nullable(),
+    keywords: z.array(z.string().min(1)).optional(),
   }),
 });
 

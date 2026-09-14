@@ -109,8 +109,12 @@ describe("topic hubs", () => {
   it("recognizes topic routes independently of published content availability", () => {
     expect(isNoteTopicKey("nextjs")).toBe(true);
     expect(isNoteTopicKey("testing")).toBe(true);
+    expect(isNoteTopicKey("odoo")).toBe(true);
+    expect(isNoteTopicKey("prisma")).toBe(true);
     expect(isNoteTopicKey("nope")).toBe(false);
-    expect(NOTE_TOPICS.testing.notes).toEqual([]);
+    expect(NOTE_TOPICS.testing.notes).toContain("playwright-thai-guide");
+    expect(NOTE_TOPICS.odoo.notes).toContain("odoo-automated-action-store-attr");
+    expect(NOTE_TOPICS.prisma.notes).toContain("prisma-transaction-nextjs");
   });
 });
 

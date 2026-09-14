@@ -31,6 +31,31 @@ PORTFOLIO_INVENTORY_OUTPUT=artifacts/portfolio-supabase-inventory.json \
 node scripts/inventory-portfolio.mjs
 ```
 
+## SEO Notes rollout
+
+ไฟล์ Markdown ใต้ `src/data/notes` เป็น source-controlled baseline แต่ Production runtime ใช้
+`CONTENT_STORAGE=database` เป็น SSOT ดังนั้นการเพิ่มบทความ SEO ใหม่ต้อง import เข้าสู่
+target schema ก่อนจึงจะปรากฏบน public runtime
+
+metadata ของ note ที่ถูกจัดการใน `src/data/note-catalog.js` ระบุ source locale อย่างชัดเจน
+เพื่อป้องกันการสร้าง hreflang/canonical ให้กับภาษาที่ยังไม่มี translation จริง:
+
+- source locale ที่มีเนื้อหาจริง: indexable + อยู่ใน sitemap
+- locale ที่ยังไม่มี translation: อ่าน fallback ได้เมื่อเข้าตรง แต่เป็น `noindex`
+- เมื่อมี translation ที่ผ่าน editorial review ให้ publish `bodyMarkdownByLocale` ของภาษานั้นผ่าน CMS
+
+หลัง merge ชุดบทความใหม่ ให้ import แบบ idempotent ตาม target:
+
+```bash
+PORTFOLIO_CMS_SCHEMA=portfolio_cms_prod \
+DATABASE_URL='postgresql://USER:PASSWORD@HOST:5432/DB?schema=portfolio_cms_prod' \
+npm run cms:import
+```
+
+Importer จะ skip document ที่มีอยู่แล้วและสร้างเฉพาะ baseline document ที่ยังไม่มี
+จึงไม่ overwrite revision ที่ถูกแก้ผ่าน CMS อยู่ก่อนแล้ว หลัง import ให้ตรวจ
+`/sitemap.xml`, topic hubs และ canonical/noindex ของทั้ง `/th/notes/*` และ `/notes/*`.
+
 ## Portfolio Storage namespace
 
 ตรวจ inventory ก่อนเสมอ แล้วตรวจหรือสร้างเฉพาะ bucket `portfolio-cms` ด้วย

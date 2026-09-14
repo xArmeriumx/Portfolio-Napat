@@ -7,16 +7,24 @@ import { buildPageMetadata } from "@/lib/metadata";
 import type { SiteLocale } from "../page";
 import { getNotesListSeoMeta } from "@/config/seo.js";
 import { getContentRepository } from "@/content/repository";
-import { toPresentationNote, toPresentationProfile } from "@/content/presentation";
+import { getNoteLocales, toPresentationNote, toPresentationProfile } from "@/content/presentation";
 
 export const revalidate = 1800;
 
 export async function metadataNotesPage(locale: SiteLocale = "en"): Promise<Metadata> {
   const repository = await getContentRepository();
-  const profile = toPresentationProfile(await repository.getPublishedProfile());
+  const [rawProfile, rawNotes] = await Promise.all([
+    repository.getPublishedProfile(),
+    repository.listPublishedNotes(),
+  ]);
+  const profile = toPresentationProfile(rawProfile);
   const notesSeo = getNotesListSeoMeta(profile, locale);
+  const availableLocales = (["en", "th"] as const).filter((language) =>
+    rawNotes.some((note) => getNoteLocales(note).includes(language)),
+  );
 
   return buildPageMetadata({
+    availableLocales,
     title: notesSeo.title,
     description: notesSeo.description,
     ogTitle: notesSeo.title,
@@ -68,7 +76,7 @@ export async function renderNotesPage(locale: SiteLocale = "en") {
           </div>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
-            {notes.map((note, index) => (
+            {translatedNotes.map((note, index) => (
               <Link key={note.slug} href={locale === "th" ? `/th/notes/${note.slug}` : `/notes/${note.slug}`} className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-1 hover:border-[#c43c3c]/30 hover:shadow-[0_16px_35px_rgba(0,0,0,0.08)]">
                 <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.18em] text-gray-400">
                   <span>{String(index + 1).padStart(2, "0")}</span>
