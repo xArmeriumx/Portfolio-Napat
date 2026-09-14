@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { profile as sourceProfile } from "../data/profile.js";
 import { projects as sourceProjects } from "../data/projects.js";
+import { getNoteCatalogEntry } from "../data/note-catalog.js";
 import {
   noteContentSchema,
   profileContentSchema,
@@ -163,16 +164,32 @@ function readStaticNotes(): NoteContent[] {
       const slug = file.replace(/\.md$/, "");
       const name = formatFileName(file);
       const bodyMarkdown = fs.readFileSync(path.join(getNotesDirectory(), file), "utf8");
+      const catalog = getNoteCatalogEntry(slug);
+      const generatedDescription = getNoteDescription(bodyMarkdown, name);
+      const revision = catalog?.publishedAt
+        ? {
+            ...publishedRevision,
+            publishedAt: catalog.publishedAt,
+            updatedAt: catalog.updatedAt || catalog.publishedAt,
+          }
+        : publishedRevision;
       return noteContentSchema.parse({
         id: slug,
-        revision: publishedRevision,
+        revision,
         slug,
-        title: toLocalizedText(name, name),
+        title: catalog?.title || toLocalizedText(name, name),
         bodyMarkdown,
-        excerpt: toLocalizedText(getNoteDescription(bodyMarkdown, name), getNoteDescription(bodyMarkdown, name)),
+        ...(catalog?.sourceLocale
+          ? { bodyMarkdownByLocale: { [catalog.sourceLocale]: bodyMarkdown } }
+          : {}),
+        excerpt: catalog?.excerpt || toLocalizedText(generatedDescription, generatedDescription),
         order,
         rawName: file,
-        seo: { title: null, description: null },
+        seo: {
+          title: catalog?.seo?.title || null,
+          description: catalog?.seo?.description || null,
+          keywords: catalog?.seo?.keywords || [],
+        },
       });
     });
 }
