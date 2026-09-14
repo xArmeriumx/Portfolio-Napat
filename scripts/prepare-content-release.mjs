@@ -20,6 +20,10 @@ if (!isVercelProduction && !manualSync) {
   process.exit(0);
 }
 
+if (storage !== "database") {
+  throw new Error("Content release requires database storage");
+}
+
 const schema = process.env.PORTFOLIO_CMS_SCHEMA;
 const databaseUrl = process.env.DATABASE_URL;
 
