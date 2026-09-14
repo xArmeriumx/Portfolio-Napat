@@ -39,11 +39,22 @@ describe("StaticContentRepository contract", () => {
     expect((await repository.getPublishedProjectBySlug("missing-project"))).toBeNull();
   });
 
-  it("preserves note markdown, order, and slug lookup", async () => {    const notes = await repository.listPublishedNotes();
+  it("preserves note markdown, deterministic order, and slug lookup", async () => {
+    const notes = await repository.listPublishedNotes();
 
-    expect(notes).toHaveLength(4);
-    expect(notes[0].bodyMarkdown).toContain("#");
-    expect(notes.map((note) => note.order)).toEqual([0, 1, 2, 3]);
+    expect(notes.length).toBeGreaterThanOrEqual(17);
+    expect(notes.every((note) => note.bodyMarkdown.includes("#"))).toBe(true);
+    expect(notes.map((note) => note.order)).toEqual(
+      notes.map((_, index) => index),
+    );
+    expect(notes.map((note) => note.slug)).toEqual(
+      expect.arrayContaining([
+        "odoo-automated-action-store-attr",
+        "playwright-thai-guide",
+        "nextjs-server-actions-security",
+        "prisma-transaction-nextjs",
+      ]),
+    );
     expect((await repository.getPublishedNoteBySlug(notes[0].slug))?.rawName).toBe(notes[0].rawName);
     expect((await repository.getPublishedNoteBySlug("missing-note"))).toBeNull();
   });
