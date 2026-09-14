@@ -10,14 +10,11 @@ const storage =
   process.env.CONTENT_STORAGE ||
   (isVercelProduction || manualSync ? "database" : "static");
 
-if (storage !== "database" || (!isVercel && !manualSync)) {
+if (!isVercelProduction && !manualSync) {
   console.log(
     JSON.stringify({
       contentRelease: "skipped",
-      reason:
-        storage !== "database"
-          ? "content storage is not database"
-          : "not a Vercel release and manual sync is disabled",
+      reason: "automatic content preparation skipped for this environment",
     }),
   );
   process.exit(0);
