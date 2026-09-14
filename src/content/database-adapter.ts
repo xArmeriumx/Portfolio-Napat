@@ -1,4 +1,5 @@
 import type { ContentRevision, PrismaClient } from "@prisma/client";
+import { getNoteCatalogEntry } from "../data/note-catalog.js";
 import {
   noteContentSchema,
   profileContentSchema,
@@ -26,6 +27,23 @@ function canonicalNoteSlug(slug: string) {
 function normalizeNoteSlug(note: NoteContent): NoteContent {
   const slug = canonicalNoteSlug(note.slug);
   return slug === note.slug ? note : { ...note, slug };
+}
+
+function hydrateKnownSourceLocale(note: NoteContent): NoteContent {
+  const hasExplicitLocale = Boolean(
+    note.bodyMarkdownByLocale?.en?.trim() || note.bodyMarkdownByLocale?.th?.trim(),
+  );
+  if (hasExplicitLocale) return note;
+
+  const catalog = getNoteCatalogEntry(canonicalNoteSlug(note.slug));
+  if (!catalog?.sourceLocale) return note;
+
+  return {
+    ...note,
+    bodyMarkdownByLocale: {
+      [catalog.sourceLocale]: note.bodyMarkdown,
+    },
+  };
 }
 
 type PublishedDocument = {
@@ -73,11 +91,12 @@ function mapProject(document: PublishedDocument): ProjectContent {
 
 function mapNote(document: PublishedDocument): NoteContent {
   if (!document.publishedRevision) throw new Error("Published Note has no selected revision");
-  return noteContentSchema.parse({
+  const note = noteContentSchema.parse({
     ...payloadRecord(document.publishedRevision),
     id: document.id,
     revision: publishedRevision(document.publishedRevision),
   });
+  return hydrateKnownSourceLocale(note);
 }
 
 const publishedRevisionInclude = { publishedRevision: true } as const;
