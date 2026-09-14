@@ -84,7 +84,15 @@ export async function metadataNotePage(slug: string, locale: SiteLocale = "en"):
     publishedTime: note.publishedAt,
     modifiedTime: note.updatedAt || note.publishedAt,
     path: `${notesBase(locale)}/${note.slug}`,
-    keywords: [note.name, `Napatdev ${note.name}`, `Napat Pamornsut ${note.name}`, `ณภัทร ภมรสูตร ${note.name}`, "developer notes", "technical cheatsheet"],
+    keywords: [
+      ...(note.seo?.keywords || []),
+      note.name,
+      `Napatdev ${note.name}`,
+      `Napat Pamornsut ${note.name}`,
+      `ณภัทร ภมรสูตร ${note.name}`,
+      "developer notes",
+      "technical cheatsheet",
+    ],
     locale,
   });
 }
@@ -166,7 +174,12 @@ export async function renderNotePage(slug: string, locale: SiteLocale = "en") {
 
   const profile = toPresentationProfile(rawProfile);
   const note = toPresentationNote(rawNote, locale);
-  const notes = rawNotes.map((note) => toPresentationNote(note, locale));
+  const localizedNotes = rawNotes
+    .filter((candidate) => getNoteLocales(candidate).includes(locale))
+    .map((candidate) => toPresentationNote(candidate, locale));
+  const notes = note.isFallback
+    ? [note, ...localizedNotes.filter((candidate) => candidate.slug !== note.slug)]
+    : localizedNotes;
   const relatedProjects = getRelatedProjects(note, rawProjects.map(toPresentationProject));
 
   return (
