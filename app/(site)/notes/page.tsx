@@ -7,16 +7,24 @@ import { buildPageMetadata } from "@/lib/metadata";
 import type { SiteLocale } from "../page";
 import { getNotesListSeoMeta } from "@/config/seo.js";
 import { getContentRepository } from "@/content/repository";
-import { toPresentationNote, toPresentationProfile } from "@/content/presentation";
+import { getNoteLocales, toPresentationNote, toPresentationProfile } from "@/content/presentation";
 
 export const revalidate = 1800;
 
 export async function metadataNotesPage(locale: SiteLocale = "en"): Promise<Metadata> {
   const repository = await getContentRepository();
-  const profile = toPresentationProfile(await repository.getPublishedProfile());
+  const [rawProfile, rawNotes] = await Promise.all([
+    repository.getPublishedProfile(),
+    repository.listPublishedNotes(),
+  ]);
+  const profile = toPresentationProfile(rawProfile);
   const notesSeo = getNotesListSeoMeta(profile, locale);
+  const availableLocales = (["en", "th"] as const).filter((language) =>
+    rawNotes.some((note) => getNoteLocales(note).includes(language)),
+  );
 
   return buildPageMetadata({
+    availableLocales,
     title: notesSeo.title,
     description: notesSeo.description,
     ogTitle: notesSeo.title,
