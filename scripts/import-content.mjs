@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { PrismaClient } from "@prisma/client";
 import { profile } from "../src/data/profile.js";
 import { projects } from "../src/data/projects.js";
+import { getNoteCatalogEntry } from "../src/data/note-catalog.js";
 
 const allowedSchemas = new Set(["portfolio_cms_dev", "portfolio_cms_preview", "portfolio_cms_prod"]);
 const schema = process.env.PORTFOLIO_CMS_SCHEMA;
@@ -120,15 +121,23 @@ function notePayload(file, order) {
   const bodyMarkdown = fs.readFileSync(path.join(notesDirectory, file), "utf8");
   const description = noteDescription(bodyMarkdown, name);
   const slug = file.replace(/\.md$/, "");
+  const catalog = getNoteCatalogEntry(slug);
   return {
     id: slug,
     slug,
-    title: localized(name, name),
+    title: catalog?.title || localized(name, name),
     bodyMarkdown,
-    excerpt: localized(description, description),
+    ...(catalog?.sourceLocale
+      ? { bodyMarkdownByLocale: { [catalog.sourceLocale]: bodyMarkdown } }
+      : {}),
+    excerpt: catalog?.excerpt || localized(description, description),
     order,
     rawName: file,
-    seo: { title: null, description: null },
+    seo: {
+      title: catalog?.seo?.title || null,
+      description: catalog?.seo?.description || null,
+      keywords: catalog?.seo?.keywords || [],
+    },
   };
 }
 
