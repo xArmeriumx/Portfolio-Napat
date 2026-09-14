@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { StaticContentRepository } from "./static-adapter";
 import { getContentRepository, resetContentRepositoryForTests } from "./repository";
+import { getPublishedContentCacheVersion } from "./cached-repository";
 import { projectContentSchema, resolveLocalizedText } from "./schema";
 
 afterEach(() => {
