@@ -120,6 +120,7 @@ export function getNoteSchema(note: Note, profile: PresentationProfile, locale: 
         image: absoluteUrl(buildOgImageUrl("note", seo.schemaTitle, "โน้ตความรู้โดย Napat Pamornsut")),
         inLanguage: locale,
         wordCount: getNoteWordCount(note),
+        ...(note.seo?.keywords?.length ? { keywords: note.seo.keywords.join(", ") } : {}),
         author: {
           "@id": PERSON_ID,
           "@type": "Person",
