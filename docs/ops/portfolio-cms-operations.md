@@ -36,16 +36,17 @@ node scripts/inventory-portfolio.mjs
 Production and Preview runtime both use PostgreSQL as the content SSOT. A successful
 application build alone is therefore not sufficient evidence that public content exists.
 
-Vercel releases now run a guarded baseline content preparation step before `next build`:
+Vercel Production releases now run a guarded baseline content preparation step before `next build`:
 
-1. Resolve the target environment from `VERCEL_ENV`.
-2. Require the matching schema:
-   - Production -> `portfolio_cms_prod`
-   - Preview -> `portfolio_cms_preview`
-   - Development -> `portfolio_cms_dev`
+1. Require `VERCEL_ENV=production`.
+2. Require `portfolio_cms_prod` and the matching `DATABASE_URL?schema=portfolio_cms_prod`.
 3. Run the create-only baseline importer.
 4. Verify every source-controlled Note has a Published document/revision.
 5. Fail the deployment if a baseline Note is missing or not Published.
+
+Preview deployments stay read-only by default and do not mutate any database during PR builds.
+A Preview database sync must be explicitly opted in with `PORTFOLIO_CMS_AUTO_IMPORT=true`
+and a Preview-scoped `portfolio_cms_preview` connection.
 
 The importer remains non-destructive: an existing CMS document is not overwritten.
 Legacy Note slugs are resolved before insert so the rollout does not create duplicate
