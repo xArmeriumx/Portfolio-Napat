@@ -3,13 +3,14 @@ import type { PresentationNote, PresentationProject } from "@/content/presentati
 // Canonical topic keys. Alias groups let a note about "Next.js" match a
 // project built with "react", or an "SQL" note match "PostgreSQL"/"Prisma".
 const TECH_ALIASES: Record<string, string[]> = {
-  nextjs: ["next.js", "nextjs", "react"],
+  nextjs: ["next.js", "nextjs", "react", "server-actions", "server actions", "prisma"],
   typescript: ["typescript"],
-  sql: ["sql", "postgresql", "postgres", "prisma", "mysql"],
-  testing: ["playwright", "vitest", "qa", "testing", "test", "uat", "automation", "testcase", "test-case"],
+  sql: ["sql", "postgresql", "postgres", "mysql"],
+  testing: ["playwright", "vitest", "qa", "testing", "test", "uat", "automation", "testcase", "test-case", "cypress"],
+  odoo: ["odoo", "qweb", "safe_eval", "safe-eval", "automated", "studio", "erp"],
 };
 
-export type NoteTopicKey = "nextjs" | "typescript" | "sql" | "testing";
+export type NoteTopicKey = "nextjs" | "typescript" | "sql" | "testing" | "odoo";
 
 export const NOTE_TOPICS: Record<
   NoteTopicKey,
@@ -20,7 +21,7 @@ export const NOTE_TOPICS: Record<
     title: "Next.js Guides & Cheatsheets",
     description:
       "Practical Next.js guides by Napat Pamornsut — App Router, Server Components, routing, Server Actions and data fetching. คู่มือ Next.js ฉบับใช้งานจริง",
-    notes: ["nextjs-app-router-guide"],
+    notes: ["nextjs-app-router-guide", "nextjs-server-actions", "nextjs-server-actions-security", "nextjs-prisma-transaction"],
   },
   typescript: {
     label: "TypeScript",
@@ -41,7 +42,14 @@ export const NOTE_TOPICS: Record<
     title: "Software Testing Guides",
     description:
       "Software testing guides by Napat Pamornsut — Playwright automation, UAT and QA practices. คู่มือทดสอบซอฟต์แวร์",
-    notes: [],
+    notes: ["playwright-thai-guide", "playwright-page-object-model"],
+  },
+  odoo: {
+    label: "Odoo",
+    title: "Odoo Technical Guides",
+    description:
+      "Practical Odoo guides by Napat Pamornsut — QWeb PDF reports, Automated Actions, safe_eval troubleshooting and Odoo 19 certification. คู่มือ Odoo ฉบับใช้งานจริง",
+    notes: ["odoo-qweb-report-page-break", "odoo-qweb-table-border", "odoo-automated-action-store-attr", "odoo-automated-action-import-name", "odoo-19-certification-guide"],
   },
 };
 
@@ -140,10 +148,11 @@ export function isNoteTopicKey(value: string): value is NoteTopicKey {
 export function getLocalizedTopic(key: NoteTopicKey, locale: "en" | "th") {
   const topic = NOTE_TOPICS[key];
   const th = {
-    nextjs: { title: "คู่มือ Next.js จากงานพัฒนาเว็บ", description: "โน้ต Next.js เรื่อง App Router, Server Components และการจัดการข้อมูล พร้อมเชื่อมโยงกับผลงานพัฒนาเว็บ" },
+    nextjs: { title: "คู่มือ Next.js จากงานพัฒนาเว็บ", description: "โน้ต Next.js เรื่อง App Router, Server Components, Server Actions, Prisma และการจัดการข้อมูล พร้อมเชื่อมโยงกับผลงานพัฒนาเว็บ" },
     typescript: { title: "คู่มือ TypeScript และการออกแบบชนิดข้อมูล", description: "โน้ต TypeScript เรื่อง types, generics และรูปแบบการเขียนโค้ดที่ใช้ในการพัฒนาเว็บ" },
     sql: { title: "พื้นฐาน SQL และตัวอย่าง Query", description: "เรียนรู้การอ่านและจัดการข้อมูลด้วย SQL ผ่านตัวอย่าง query และผลลัพธ์" },
-    testing: { title: "การทดสอบซอฟต์แวร์และ QA Automation", description: "แนวทางตรวจสอบคุณภาพซอฟต์แวร์ ตั้งแต่ test cases และ UAT ไปจนถึงการทดสอบอัตโนมัติ" },
+    testing: { title: "การทดสอบซอฟต์แวร์และ QA Automation", description: "แนวทางตรวจสอบคุณภาพซอฟต์แวร์ ตั้งแต่ test cases และ UAT ไปจนถึง Playwright และ CI" },
+    odoo: { title: "คู่มือ Odoo ฉบับใช้งานจริง", description: "โน้ต Odoo เรื่อง QWeb PDF Report, Automated Action, safe_eval และการเตรียมสอบ Odoo 19 Certification" },
   };
   return locale === "th" ? { ...topic, ...th[key] } : { ...topic, description: topic.description.split(/ คู่มือ| เอกสาร| สรุป/)[0] };
 }

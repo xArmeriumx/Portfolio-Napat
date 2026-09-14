@@ -40,10 +40,16 @@ describe("StaticContentRepository contract", () => {
   });
 
   it("preserves note markdown, order, and slug lookup", async () => {    const notes = await repository.listPublishedNotes();
+    const bySlug = new Map(notes.map((note) => [note.slug, note]));
 
-    expect(notes).toHaveLength(4);
+    expect(notes).toHaveLength(14);
     expect(notes[0].bodyMarkdown).toContain("#");
-    expect(notes.map((note) => note.order)).toEqual([0, 1, 2, 3]);
+    // P0 SEO clusters carry explicit frontmatter orders; legacy
+    // single-body notes without frontmatter sort after them.
+    expect(bySlug.get("odoo-automated-action-store-attr")?.order).toBe(10);
+    expect(bySlug.get("playwright-thai-guide")?.order).toBe(15);
+    expect(bySlug.get("nextjs-prisma-transaction")?.order).toBe(19);
+    expect((bySlug.get("sql-basics")?.order ?? 0)).toBeGreaterThanOrEqual(100);
     expect((await repository.getPublishedNoteBySlug(notes[0].slug))?.rawName).toBe(notes[0].rawName);
     expect((await repository.getPublishedNoteBySlug("missing-note"))).toBeNull();
   });

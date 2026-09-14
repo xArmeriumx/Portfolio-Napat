@@ -101,12 +101,49 @@ function projectPayload(project, order) {
   };
 }
 
-function formatFileName(file) {
-  return file
-    .replace(/\.md$/, "")
+function formatSlugName(slug) {
+  return slug
+    .replace(/\.(en|th)$/, "")
     .split(/[-_]/)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
+}
+
+// Mirrors src/content/static-adapter.ts: `<slug>.en.md` / `<slug>.th.md`
+// carry one locale each (optional frontmatter: title, excerpt, seo_title,
+// seo_description, order). Plain `<slug>.md` stays a legacy single body.
+function parseNoteFrontmatter(raw) {
+  if (!raw.startsWith("---")) return { meta: {}, body: raw };
+  const end = raw.indexOf("\n---", 3);
+  if (end === -1) return { meta: {}, body: raw };
+  const block = raw.slice(3, end).replace(/^\r?\n/, "");
+  const body = raw.slice(end + 4).replace(/^\r?\n/, "");
+  const meta = {};
+  for (const line of block.split(/\r?\n/)) {
+    const separator = line.indexOf(":");
+    if (separator === -1) continue;
+    const key = line.slice(0, separator).trim();
+    let value = line.slice(separator + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"') && value.length >= 2) ||
+      (value.startsWith("'") && value.endsWith("'") && value.length >= 2)
+    ) {
+      value = value.slice(1, -1);
+    }
+    if (key === "order") {
+      const parsed = Number.parseInt(value, 10);
+      if (Number.isFinite(parsed)) meta.order = parsed;
+    } else if (["title", "excerpt", "seo_title", "seo_description"].includes(key)) {
+      meta[key] = value;
+    }
+  }
+  return { meta, body };
+}
+
+function extractFirstH1(markdown) {
+  const match = String(markdown).match(/^#{1}\s+(.+)$/m);
+  if (!match) return null;
+  return match[1].replace(/[#*`_[\]()]/g, "").replace(/\s+/g, " ").trim() || null;
 }
 
 function noteDescription(markdown, name) {
@@ -114,22 +151,62 @@ function noteDescription(markdown, name) {
   return plainText || `Developer notes and cheatsheet document for ${name}.`;
 }
 
-function notePayload(file, order) {
+function notePayloads() {
   const notesDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../src/data/notes");
-  const name = formatFileName(file);
-  const bodyMarkdown = fs.readFileSync(path.join(notesDirectory, file), "utf8");
-  const description = noteDescription(bodyMarkdown, name);
-  const slug = file.replace(/\.md$/, "");
-  return {
-    id: slug,
-    slug,
-    title: localized(name, name),
-    bodyMarkdown,
-    excerpt: localized(description, description),
-    order,
-    rawName: file,
-    seo: { title: null, description: null },
-  };
+  const files = fs.readdirSync(notesDirectory).filter((file) => file.endsWith(".md")).sort((a, b) => a.localeCompare(b));
+  const groups = new Map();
+  for (const file of files) {
+    const localeMatch = file.match(/^(.+)\.(en|th)\.md$/);
+    if (localeMatch) {
+      const slug = localeMatch[1];
+      const locale = localeMatch[2];
+      const { meta, body } = parseNoteFrontmatter(fs.readFileSync(path.join(notesDirectory, file), "utf8"));
+      const group = groups.get(slug) ?? {};
+      group[locale] = { body, meta, file };
+      groups.set(slug, group);
+    } else {
+      const slug = file.replace(/\.md$/, "");
+      const group = groups.get(slug) ?? {};
+      group.legacy = { body: fs.readFileSync(path.join(notesDirectory, file), "utf8"), file };
+      groups.set(slug, group);
+    }
+  }
+  return [...groups.keys()].sort((a, b) => a.localeCompare(b)).map((slug, index) => {
+    const group = groups.get(slug);
+    const fallbackName = formatSlugName(slug);
+    const enBody = group.en?.body;
+    const thBody = group.th?.body;
+    const legacyBody = group.legacy?.body;
+    const bodyMarkdown = enBody ?? thBody ?? legacyBody ?? "";
+    const titleEn = group.en?.meta.title?.trim() || (enBody ? extractFirstH1(enBody) : null) || fallbackName;
+    const titleTh = group.th?.meta.title?.trim() || (thBody ? extractFirstH1(thBody) : null) || fallbackName;
+    const excerptEn =
+      group.en?.meta.excerpt?.trim() || (enBody ? noteDescription(enBody, titleEn) : null) || noteDescription(bodyMarkdown, titleEn);
+    const excerptTh =
+      group.th?.meta.excerpt?.trim() || (thBody ? noteDescription(thBody, titleTh) : null) || noteDescription(bodyMarkdown, titleTh);
+    const bodyMarkdownByLocale = {};
+    if (enBody?.trim()) bodyMarkdownByLocale.en = enBody;
+    if (thBody?.trim()) bodyMarkdownByLocale.th = thBody;
+    const seoTitleEn = group.en?.meta.seo_title?.trim() || group.th?.meta.seo_title?.trim() || null;
+    const seoTitleTh = group.th?.meta.seo_title?.trim() || group.en?.meta.seo_title?.trim() || null;
+    const seoDescriptionEn = group.en?.meta.seo_description?.trim() || group.th?.meta.seo_description?.trim() || null;
+    const seoDescriptionTh = group.th?.meta.seo_description?.trim() || group.en?.meta.seo_description?.trim() || null;
+    return {
+      id: slug,
+      slug,
+      title: localized(titleEn, titleTh),
+      bodyMarkdown,
+      ...(Object.keys(bodyMarkdownByLocale).length > 0 ? { bodyMarkdownByLocale } : {}),
+      excerpt: localized(excerptEn, excerptTh),
+      // Explicit frontmatter orders sort first; legacy notes sort after.
+      order: group.en?.meta.order ?? group.th?.meta.order ?? 100 + index,
+      rawName: `${slug}.md`,
+      seo: {
+        title: seoTitleEn || seoTitleTh ? localized(seoTitleEn || "", seoTitleTh || "") : null,
+        description: seoDescriptionEn || seoDescriptionTh ? localized(seoDescriptionEn || "", seoDescriptionTh || "") : null,
+      },
+    };
+  });
 }
 
 async function importDocument(tx, { id, contentType, slug, displayOrder, featured, payload }) {
@@ -169,8 +246,6 @@ async function main() {
   if (expectedDatabase && target[0]?.database !== expectedDatabase) throw new Error("Connected database verification failed");
   if (target[0]?.schema !== schema) throw new Error(`Connected schema verification failed for ${schema}`);
 
-  const notesDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../src/data/notes");
-  const noteFiles = fs.readdirSync(notesDirectory).filter((file) => file.endsWith(".md")).sort((a, b) => a.localeCompare(b));
   const results = await prisma.$transaction(async (tx) => {
     const imported = [];
     imported.push(await importDocument(tx, {
@@ -191,14 +266,14 @@ async function main() {
         payload: projectPayload(project, order),
       }));
     }
-    for (const [order, file] of noteFiles.entries()) {
+    for (const payload of notePayloads()) {
       imported.push(await importDocument(tx, {
-        id: file.replace(/\.md$/, ""),
+        id: payload.id,
         contentType: "NOTE",
-        slug: file.replace(/\.md$/, ""),
-        displayOrder: order,
+        slug: payload.slug,
+        displayOrder: payload.order,
         featured: false,
-        payload: notePayload(file, order),
+        payload,
       }));
     }
     return imported;
