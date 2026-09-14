@@ -31,6 +31,41 @@ PORTFOLIO_INVENTORY_OUTPUT=artifacts/portfolio-supabase-inventory.json \
 node scripts/inventory-portfolio.mjs
 ```
 
+## Release contract for database-backed content
+
+Production and Preview runtime both use PostgreSQL as the content SSOT. A successful
+application build alone is therefore not sufficient evidence that public content exists.
+
+Vercel Production releases now run a guarded baseline content preparation step before `next build`:
+
+1. Require `VERCEL_ENV=production`.
+2. Require `portfolio_cms_prod` and the matching `DATABASE_URL?schema=portfolio_cms_prod`.
+3. Run the create-only baseline importer.
+4. Verify every source-controlled Note has a Published document/revision.
+5. Fail the deployment if a baseline Note is missing or not Published.
+
+Preview deployments stay read-only by default and do not mutate any database during PR builds.
+A Preview database sync must be explicitly opted in with `PORTFOLIO_CMS_AUTO_IMPORT=true`
+and a Preview-scoped `portfolio_cms_preview` connection.
+
+The importer remains non-destructive: an existing CMS document is not overwritten.
+Legacy Note slugs are resolved before insert so the rollout does not create duplicate
+canonical/legacy documents.
+
+Published-content cache keys are deployment-scoped using the Vercel commit/deployment
+identity and have a five-minute safety TTL. A new deployment therefore cannot reuse a
+stale empty Notes cache from the previous release.
+
+Outside Vercel, an operator can run the same guarded preparation explicitly:
+
+```bash
+PORTFOLIO_CMS_AUTO_IMPORT=true \
+CONTENT_STORAGE=database \
+PORTFOLIO_CMS_SCHEMA=portfolio_cms_preview \
+DATABASE_URL='postgresql://USER:PASSWORD@HOST:5432/DB?schema=portfolio_cms_preview' \
+npm run cms:prepare-release
+```
+
 ## SEO Notes rollout
 
 ไฟล์ Markdown ใต้ `src/data/notes` เป็น source-controlled baseline แต่ Production runtime ใช้

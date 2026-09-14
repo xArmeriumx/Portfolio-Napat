@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { StaticContentRepository } from "./static-adapter";
 import { getContentRepository, resetContentRepositoryForTests } from "./repository";
+import { getPublishedContentCacheVersion } from "./cached-repository";
 import { projectContentSchema, resolveLocalizedText } from "./schema";
 
 afterEach(() => {
@@ -104,5 +105,7 @@ describe("StaticContentRepository contract", () => {
     const repository = await getContentRepository();
 
     expect(repository).toBeInstanceOf(StaticContentRepository);
+    vi.stubEnv("VERCEL_GIT_COMMIT_SHA", "release-test");
+    expect(getPublishedContentCacheVersion()).toBe("release-test");
   });
 });

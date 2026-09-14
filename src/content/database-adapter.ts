@@ -1,5 +1,6 @@
 import type { ContentRevision, PrismaClient } from "@prisma/client";
 import { getNoteCatalogEntry } from "../data/note-catalog.js";
+import { canonicalNoteSlug, legacyNoteSlug } from "../data/note-slugs.js";
 import {
   noteContentSchema,
   profileContentSchema,
@@ -9,20 +10,6 @@ import {
   type ProjectContent,
 } from "./schema";
 import type { ContentRepository } from "./repository";
-
-// URLs already exposed by older fixture-based builds. Resolve only when the
-// counterpart actually exists in the published database; never redirect to 404.
-const noteSlugPairs: Record<string, string> = {
-  "nextjs-app-router-guide": "NEXTJS_ARCHITECTURE",
-  "typescript-reference-guide": "TYPESCRIPT_REFERENCE",
-  "sql-basics": "sql_basics_with_examples_easy",
-  "sql-query-examples": "sql_code_and_response_tables",
-};
-
-function canonicalNoteSlug(slug: string) {
-  if (noteSlugPairs[slug]) return slug;
-  return Object.entries(noteSlugPairs).find(([, legacySlug]) => legacySlug === slug)?.[0] ?? slug;
-}
 
 function normalizeNoteSlug(note: NoteContent): NoteContent {
   const slug = canonicalNoteSlug(note.slug);
@@ -195,7 +182,7 @@ export class DatabaseContentRepository implements ContentRepository {
 
   async getPublishedNoteBySlug(slug: string) {
     const canonicalSlug = canonicalNoteSlug(slug);
-    const legacySlug = noteSlugPairs[canonicalSlug];
+    const legacySlug = legacyNoteSlug(canonicalSlug);
 
     let document = await this.db.contentDocument.findFirst({
       where: {

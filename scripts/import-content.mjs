@@ -7,6 +7,7 @@ import { PrismaClient } from "@prisma/client";
 import { profile } from "../src/data/profile.js";
 import { projects } from "../src/data/projects.js";
 import { getNoteCatalogEntry } from "../src/data/note-catalog.js";
+import { canonicalNoteSlug, legacyNoteSlug } from "../src/data/note-slugs.js";
 
 const allowedSchemas = new Set(["portfolio_cms_dev", "portfolio_cms_preview", "portfolio_cms_prod"]);
 const schema = process.env.PORTFOLIO_CMS_SCHEMA;
@@ -141,9 +142,17 @@ function notePayload(file, order) {
   };
 }
 
-async function importDocument(tx, { id, contentType, slug, displayOrder, featured, payload }) {
-  const existing = await tx.contentDocument.findUnique({ where: { id } });
-  if (existing) return { status: "skipped", id };
+async function importDocument(tx, { id, contentType, slug, displayOrder, featured, payload, slugAliases = [] }) {
+  const lookup = [{ id }];
+  if (slug) {
+    lookup.push({ contentType, slug });
+    for (const alias of slugAliases) {
+      if (alias) lookup.push({ contentType, slug: alias });
+    }
+  }
+
+  const existing = await tx.contentDocument.findFirst({ where: { OR: lookup } });
+  if (existing) return { status: "skipped", id: existing.id, requestedId: id };
 
   const document = await tx.contentDocument.create({
     data: {
@@ -201,10 +210,12 @@ async function main() {
       }));
     }
     for (const [order, file] of noteFiles.entries()) {
+      const slug = file.replace(/\.md$/, "");
       imported.push(await importDocument(tx, {
-        id: file.replace(/\.md$/, ""),
+        id: slug,
         contentType: "NOTE",
-        slug: file.replace(/\.md$/, ""),
+        slug,
+        slugAliases: [legacyNoteSlug(slug)].filter(Boolean),
         displayOrder: order,
         featured: false,
         payload: notePayload(file, order),
@@ -213,7 +224,38 @@ async function main() {
     return imported;
   });
 
-  console.log(JSON.stringify({ schema, imported: results.filter((item) => item.status === "imported").length, skipped: results.filter((item) => item.status === "skipped").length, total: results.length }));
+  const expectedNoteSlugs = noteFiles.map((file) => file.replace(/\.md$/, ""));
+  const publishedNotes = await prisma.contentDocument.findMany({
+    where: {
+      contentType: "NOTE",
+      status: "PUBLISHED",
+      publishedRevisionId: { not: null },
+    },
+    select: { slug: true },
+  });
+  const publishedCanonicalSlugs = new Set(
+    publishedNotes
+      .map((document) => canonicalNoteSlug(document.slug || ""))
+      .filter(Boolean),
+  );
+  const missingPublishedNotes = expectedNoteSlugs.filter(
+    (slug) => !publishedCanonicalSlugs.has(slug),
+  );
+
+  if (missingPublishedNotes.length) {
+    throw new Error(
+      `Baseline Note verification failed: ${missingPublishedNotes.join(", ")}`,
+    );
+  }
+
+  console.log(JSON.stringify({
+    schema,
+    imported: results.filter((item) => item.status === "imported").length,
+    skipped: results.filter((item) => item.status === "skipped").length,
+    total: results.length,
+    expectedPublishedNotes: expectedNoteSlugs.length,
+    verifiedPublishedNotes: expectedNoteSlugs.length,
+  }));
 }
 
 main().catch((error) => {
