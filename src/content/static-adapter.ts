@@ -120,11 +120,65 @@ function mapProject(source: SourceProject, order: number): ProjectContent {
 }
 
 function formatFileName(filePath: string) {
-  const filename = path.basename(filePath).replace(/\.md$/, "");
+  const filename = path.basename(filePath).replace(/\.md$/, "").replace(/\.(en|th)$/, "");
   return filename
     .split(/[-_]/)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
+}
+
+export type NoteLocale = "en" | "th";
+
+export type NoteFileMeta = {
+  title?: string;
+  excerpt?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  order?: number;
+};
+
+// Minimal frontmatter reader (no extra dependency). Supported keys:
+// title, excerpt, seo_title, seo_description, order. Everything after the
+// closing `---` is the Markdown body for one locale file (`<slug>.en.md`
+// or `<slug>.th.md`). Files without frontmatter keep working as before.
+export function parseNoteFrontmatter(raw: string): { meta: NoteFileMeta; body: string } {
+  if (!raw.startsWith("---")) return { meta: {}, body: raw };
+  const end = raw.indexOf("\n---", 3);
+  if (end === -1) return { meta: {}, body: raw };
+  const block = raw.slice(3, end).replace(/^\r?\n/, "");
+  const body = raw.slice(end + 4).replace(/^\r?\n/, "");
+  const meta: NoteFileMeta = {};
+  for (const line of block.split(/\r?\n/)) {
+    const separator = line.indexOf(":");
+    if (separator === -1) continue;
+    const key = line.slice(0, separator).trim();
+    let value = line.slice(separator + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"') && value.length >= 2) ||
+      (value.startsWith("'") && value.endsWith("'") && value.length >= 2)
+    ) {
+      value = value.slice(1, -1);
+    }
+    if (key === "order") {
+      const parsed = Number.parseInt(value, 10);
+      if (Number.isFinite(parsed)) meta.order = parsed;
+    } else if (key === "title") {
+      meta.title = value;
+    } else if (key === "excerpt") {
+      meta.excerpt = value;
+    } else if (key === "seo_title") {
+      meta.seoTitle = value;
+    } else if (key === "seo_description") {
+      meta.seoDescription = value;
+    }
+  }
+  return { meta, body };
+}
+
+function extractFirstH1(markdown: string): string | null {
+  const match = markdown.match(/^#{1}\s+(.+)$/m);
+  if (!match) return null;
+  return match[1].replace(/[#*`_[\]()]/g, "").replace(/\s+/g, " ").trim() || null;
 }
 
 function getNotesDirectory() {
@@ -151,25 +205,78 @@ function getNoteDescription(markdown: string, name: string) {
   return plainText || `Developer notes and cheatsheet document for ${name}.`;
 }
 
+type LocaleNoteFile = { body: string; meta: NoteFileMeta; file: string };
+
 function readStaticNotes(): NoteContent[] {
-  return fs
+  const files = fs
     .readdirSync(getNotesDirectory())
     .filter((file) => file.endsWith(".md"))
-    .sort((a, b) => a.localeCompare(b))
-    .map((file, order) => {
+    .sort((a, b) => a.localeCompare(b));
+  const groups = new Map<string, { en?: LocaleNoteFile; th?: LocaleNoteFile; legacy?: { body: string; file: string } }>();
+  for (const file of files) {
+    const localeMatch = file.match(/^(.+)\.(en|th)\.md$/);
+    if (localeMatch) {
+      const slug = localeMatch[1];
+      const locale = localeMatch[2] as NoteLocale;
+      const { meta, body } = parseNoteFrontmatter(
+        fs.readFileSync(path.join(getNotesDirectory(), file), "utf8"),
+      );
+      const group = groups.get(slug) ?? {};
+      group[locale] = { body, meta, file };
+      groups.set(slug, group);
+    } else {
       const slug = file.replace(/\.md$/, "");
-      const name = formatFileName(file);
-      const bodyMarkdown = fs.readFileSync(path.join(getNotesDirectory(), file), "utf8");
+      const group = groups.get(slug) ?? {};
+      group.legacy = {
+        body: fs.readFileSync(path.join(getNotesDirectory(), file), "utf8"),
+        file,
+      };
+      groups.set(slug, group);
+    }
+  }
+  return [...groups.keys()]
+    .sort((a, b) => a.localeCompare(b))
+    .map((slug, index) => {
+      const group = groups.get(slug)!;
+      const fallbackName = formatFileName(slug);
+      const enBody = group.en?.body;
+      const thBody = group.th?.body;
+      const legacyBody = group.legacy?.body;
+      const bodyMarkdown = enBody ?? thBody ?? legacyBody ?? "";
+      const titleEn = group.en?.meta.title?.trim() || (enBody ? extractFirstH1(enBody) : null) || fallbackName;
+      const titleTh = group.th?.meta.title?.trim() || (thBody ? extractFirstH1(thBody) : null) || fallbackName;
+      const excerptEn =
+        group.en?.meta.excerpt?.trim() || (enBody ? getNoteDescription(enBody, titleEn) : null) || getNoteDescription(bodyMarkdown, titleEn);
+      const excerptTh =
+        group.th?.meta.excerpt?.trim() || (thBody ? getNoteDescription(thBody, titleTh) : null) || getNoteDescription(bodyMarkdown, titleTh);
+      const bodyMarkdownByLocale: { en?: string; th?: string } = {};
+      if (enBody?.trim()) bodyMarkdownByLocale.en = enBody;
+      if (thBody?.trim()) bodyMarkdownByLocale.th = thBody;
+      const seoTitleEn = group.en?.meta.seoTitle?.trim() || group.th?.meta.seoTitle?.trim() || null;
+      const seoTitleTh = group.th?.meta.seoTitle?.trim() || group.en?.meta.seoTitle?.trim() || null;
+      const seoDescriptionEn =
+        group.en?.meta.seoDescription?.trim() || group.th?.meta.seoDescription?.trim() || null;
+      const seoDescriptionTh =
+        group.th?.meta.seoDescription?.trim() || group.en?.meta.seoDescription?.trim() || null;
       return noteContentSchema.parse({
         id: slug,
         revision: publishedRevision,
         slug,
-        title: toLocalizedText(name, name),
+        title: toLocalizedText(titleEn, titleTh),
         bodyMarkdown,
-        excerpt: toLocalizedText(getNoteDescription(bodyMarkdown, name), getNoteDescription(bodyMarkdown, name)),
-        order,
-        rawName: file,
-        seo: { title: null, description: null },
+        ...(Object.keys(bodyMarkdownByLocale).length > 0 ? { bodyMarkdownByLocale } : {}),
+        excerpt: toLocalizedText(excerptEn, excerptTh),
+        // Explicit frontmatter orders (10-19 for the P0 SEO clusters) sort
+        // first; legacy single-body notes without frontmatter sort after.
+        order: group.en?.meta.order ?? group.th?.meta.order ?? 100 + index,
+        rawName: `${slug}.md`,
+        seo: {
+          title: seoTitleEn || seoTitleTh ? toLocalizedText(seoTitleEn || "", seoTitleTh || "") : null,
+          description:
+            seoDescriptionEn || seoDescriptionTh
+              ? toLocalizedText(seoDescriptionEn || "", seoDescriptionTh || "")
+              : null,
+        },
       });
     });
 }

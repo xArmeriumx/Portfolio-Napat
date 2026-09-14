@@ -110,7 +110,8 @@ describe("topic hubs", () => {
     expect(isNoteTopicKey("nextjs")).toBe(true);
     expect(isNoteTopicKey("testing")).toBe(true);
     expect(isNoteTopicKey("nope")).toBe(false);
-    expect(NOTE_TOPICS.testing.notes).toEqual([]);
+    expect(NOTE_TOPICS.testing.notes).toEqual(["playwright-thai-guide", "playwright-page-object-model"]);
+    expect(NOTE_TOPICS.odoo.notes).toContain("odoo-qweb-report-page-break");
   });
 });
 
