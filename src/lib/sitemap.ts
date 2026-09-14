@@ -62,7 +62,11 @@ export async function buildSitemap(repository: ContentRepository): Promise<Metad
   add("/about", ["en", "th"], profile.revision.publishedAt);
   add("/contact", ["en", "th"], profile.revision.publishedAt);
   add("/projects", ["en", "th"], latestProject);
-  add("/notes", ["en", "th"], latestNote);
+
+  const noteIndexLocales = (["en", "th"] as const).filter((locale) =>
+    notes.some((note) => getNoteLocales(note).includes(locale)),
+  );
+  add("/notes", [...noteIndexLocales], latestNote);
 
   for (const project of projects) {
     add(
