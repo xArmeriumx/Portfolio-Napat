@@ -18,11 +18,11 @@ export function cachePublishedRepository(repository: ContentRepository): Content
   const options = { revalidate: 300, tags: [PUBLISHED_CONTENT_TAG] };
   const key = (scope: string) => [PUBLISHED_CONTENT_TAG, version, scope];
   return {
-    getPublishedProfile: unstable_cache(() => repository.getPublishedProfile(), [PUBLISHED_CONTENT_TAG, "profile"], options),
-    listPublishedProjects: unstable_cache(() => repository.listPublishedProjects(), [PUBLISHED_CONTENT_TAG, "projects"], options),
-    getPublishedProjectBySlug: unstable_cache((slug: string) => repository.getPublishedProjectBySlug(slug), [PUBLISHED_CONTENT_TAG, "project"], options),
-    listPublishedNotes: unstable_cache(() => repository.listPublishedNotes(), [PUBLISHED_CONTENT_TAG, "notes"], options),
-    getPublishedNoteBySlug: unstable_cache((slug: string) => repository.getPublishedNoteBySlug(slug), [PUBLISHED_CONTENT_TAG, "note"], options),
-    getPublishedSlugRedirect: unstable_cache((type: "NOTE" | "PROJECT", slug: string) => repository.getPublishedSlugRedirect(type, slug), [PUBLISHED_CONTENT_TAG, "redirect"], options),
+    getPublishedProfile: unstable_cache(() => repository.getPublishedProfile(), key("profile"), options),
+    listPublishedProjects: unstable_cache(() => repository.listPublishedProjects(), key("projects"), options),
+    getPublishedProjectBySlug: unstable_cache((slug: string) => repository.getPublishedProjectBySlug(slug), key("project"), options),
+    listPublishedNotes: unstable_cache(() => repository.listPublishedNotes(), key("notes"), options),
+    getPublishedNoteBySlug: unstable_cache((slug: string) => repository.getPublishedNoteBySlug(slug), key("note"), options),
+    getPublishedSlugRedirect: unstable_cache((type: "NOTE" | "PROJECT", slug: string) => repository.getPublishedSlugRedirect(type, slug), key("redirect"), options),
   };
 }
