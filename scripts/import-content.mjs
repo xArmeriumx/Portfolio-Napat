@@ -210,10 +210,12 @@ async function main() {
       }));
     }
     for (const [order, file] of noteFiles.entries()) {
+      const slug = file.replace(/\.md$/, "");
       imported.push(await importDocument(tx, {
-        id: file.replace(/\.md$/, ""),
+        id: slug,
         contentType: "NOTE",
-        slug: file.replace(/\.md$/, ""),
+        slug,
+        slugAliases: [legacyNoteSlug(slug)].filter(Boolean),
         displayOrder: order,
         featured: false,
         payload: notePayload(file, order),
