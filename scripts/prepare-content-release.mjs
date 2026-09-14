@@ -4,9 +4,11 @@ import { spawnSync } from "node:child_process";
 
 const isVercel = process.env.VERCEL === "1";
 const vercelEnv = process.env.VERCEL_ENV || "";
-const storage =
-  process.env.CONTENT_STORAGE || (isVercel ? "database" : "static");
+const isVercelProduction = isVercel && vercelEnv === "production";
 const manualSync = process.env.PORTFOLIO_CMS_AUTO_IMPORT === "true";
+const storage =
+  process.env.CONTENT_STORAGE ||
+  (isVercelProduction || manualSync ? "database" : "static");
 
 if (storage !== "database" || (!isVercel && !manualSync)) {
   console.log(
