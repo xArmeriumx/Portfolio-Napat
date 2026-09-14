@@ -44,20 +44,17 @@ test.describe("Portfolio CMS published lifecycle", () => {
     await expect(page.locator('script[type="application/ld+json"]')).not.toHaveCount(0);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /.+/);
 
-    await page.goto("/notes");
-    await expect(page.getByRole("heading", { name: "Developer & QA Notes", exact: true })).toBeVisible();
-    const noteLink = page.getByRole("link", { name: /Read note/i }).first();
+    await page.goto("/th/notes");
+    await expect(
+      page.getByRole("heading", { name: "โน้ตพัฒนาเว็บและทดสอบซอฟต์แวร์", exact: true }),
+    ).toBeVisible();
+    const noteLink = page.getByRole("link", { name: /อ่านโน้ต/i }).first();
     await expect(noteLink).toBeVisible();
     const noteHref = await noteLink.getAttribute("href");
-    expect(noteHref).toMatch(/^\/notes\//);
-    await page.goto(noteHref || "/notes");
-    const fallback = page.getByRole("status").filter({ hasText: /translation is not available/ });
-    if (await fallback.count()) {
-      await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
-      await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(0);
-    } else {
-      await expect(page.locator('script[type="application/ld+json"]')).not.toHaveCount(0);
-    }
+    expect(noteHref).toMatch(/^\/th\/notes\//);
+    await page.goto(noteHref || "/th/notes");
+    await expect(page.locator('script[type="application/ld+json"]')).not.toHaveCount(0);
+    await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute("content", /noindex/);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /.+/);
 
     await page.goto("/search?q=TypeScript");
@@ -68,8 +65,9 @@ test.describe("Portfolio CMS published lifecycle", () => {
     expect(sitemap.ok()).toBeTruthy();
     const sitemapText = await sitemap.text();
     expect(sitemapText).toContain("https://napatdev.com/projects/");
-    expect(sitemapText).toContain("https://napatdev.com/notes</loc>");
-    // Explicitly translated notes are covered by the locale sitemap contract test.
+    expect(sitemapText).toContain("https://napatdev.com/th/notes</loc>");
+    expect(sitemapText).not.toContain("<loc>https://napatdev.com/notes</loc>");
+    // Locale-specific notes are covered by the locale sitemap contract test.
   });
 
   test("admin validation, draft isolation, exact preview, publish, and derived consumers", async ({ page, request }) => {

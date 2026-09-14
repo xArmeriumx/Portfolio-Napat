@@ -30,19 +30,35 @@ function normalizeNoteSlug(note: NoteContent): NoteContent {
 }
 
 function hydrateKnownSourceLocale(note: NoteContent): NoteContent {
-  const hasExplicitLocale = Boolean(
-    note.bodyMarkdownByLocale?.en?.trim() || note.bodyMarkdownByLocale?.th?.trim(),
-  );
-  if (hasExplicitLocale) return note;
-
   const catalog = getNoteCatalogEntry(canonicalNoteSlug(note.slug));
   if (!catalog?.sourceLocale) return note;
 
+  const sourceLocale = catalog.sourceLocale as "en" | "th";
+  const otherLocale = sourceLocale === "th" ? "en" : "th";
+  const localizedBodies = {
+    ...(note.bodyMarkdownByLocale || {}),
+  };
+
+  // The catalog defines the editorial source language for source-controlled
+  // legacy notes. Production revisions may still contain an older mirrored
+  // locale field, so always restore the real source body when it is missing.
+  if (!localizedBodies[sourceLocale]?.trim()) {
+    localizedBodies[sourceLocale] = note.bodyMarkdown;
+  }
+
+  // An old importer/editor revision may have copied the legacy body verbatim
+  // into the opposite locale. Exact duplicate bodies are not translations and
+  // must not create a false hreflang/indexable locale.
+  if (
+    localizedBodies[otherLocale]?.trim() &&
+    localizedBodies[otherLocale]?.trim() === note.bodyMarkdown.trim()
+  ) {
+    delete localizedBodies[otherLocale];
+  }
+
   return {
     ...note,
-    bodyMarkdownByLocale: {
-      [catalog.sourceLocale]: note.bodyMarkdown,
-    },
+    bodyMarkdownByLocale: localizedBodies,
   };
 }
 
