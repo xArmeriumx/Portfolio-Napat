@@ -36,6 +36,19 @@ test.describe("public SEO", () => {
     expect(html).toContain('noindex');
     expect(html).not.toMatch(/<link[^>]+hreflang=/);
   });
+  test("empty English notes collection is noindex while Thai collection is canonical", async ({ page }) => {
+    await page.goto('/notes');
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+
+    await page.goto('/th/notes');
+    await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute('content', /noindex/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://napatdev.com/th/notes',
+    );
+  });
+
   test("Thai-only note keeps its English fallback readable but noindex", async ({ page }) => {
     await page.goto('/notes/sql-query-examples');
     await expect(page.locator('h1')).toHaveCount(1);
@@ -77,6 +90,8 @@ test.describe("public SEO", () => {
     expect(xml).toContain('https://napatdev.com/th/notes/odoo');
     expect(xml).toContain('https://napatdev.com/th/notes/testing');
     expect(xml).toContain('https://napatdev.com/th/notes/prisma');
+    expect(xml).toContain('<loc>https://napatdev.com/th/notes</loc>');
+    expect(xml).not.toContain('<loc>https://napatdev.com/notes</loc>');
     expect(xml).not.toContain(
       '<loc>https://napatdev.com/notes/odoo-automated-action-store-attr</loc>',
     );
