@@ -40,20 +40,26 @@ describe("StaticContentRepository contract", () => {
     expect((await repository.getPublishedProjectBySlug("missing-project"))).toBeNull();
   });
 
-  it("preserves note markdown, deterministic order, and slug lookup", async () => {
+  it("preserves note markdown, order, and slug lookup", async () => {
     const notes = await repository.listPublishedNotes();
+    const bySlug = new Map(notes.map((note) => [note.slug, note]));
 
-    expect(notes.length).toBeGreaterThanOrEqual(17);
+    // 8 legacy single-file notes + 10 bilingual paired-file notes.
+    expect(notes).toHaveLength(18);
     expect(notes.every((note) => note.bodyMarkdown.includes("#"))).toBe(true);
-    expect(notes.map((note) => note.order)).toEqual(
-      notes.map((_, index) => index),
-    );
+    // Bilingual pairs carry explicit frontmatter orders; notes without
+    // frontmatter sort after them.
+    expect(bySlug.get("odoo-automated-action-store-attr")?.order).toBe(10);
+    expect(bySlug.get("nextjs-server-actions")?.order).toBe(17);
+    expect(bySlug.get("prisma-transaction-nextjs")?.order).toBe(19);
+    expect(bySlug.get("sql-basics")?.order ?? 0).toBeGreaterThanOrEqual(100);
     expect(notes.map((note) => note.slug)).toEqual(
       expect.arrayContaining([
         "odoo-automated-action-store-attr",
         "playwright-thai-guide",
         "nextjs-server-actions-security",
         "prisma-transaction-nextjs",
+        "nextjs-server-actions",
       ]),
     );
     expect((await repository.getPublishedNoteBySlug(notes[0].slug))?.rawName).toBe(notes[0].rawName);

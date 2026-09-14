@@ -22,7 +22,7 @@ export const NOTE_TOPICS: Record<
     title: "Next.js Guides & Cheatsheets",
     description:
       "Practical Next.js guides by Napat Pamornsut — App Router, Server Components, routing, Server Actions and data fetching. คู่มือ Next.js ฉบับใช้งานจริง",
-    notes: ["nextjs-app-router-guide", "nextjs-server-actions-security", "nextjs-server-actions-revalidation"],
+    notes: ["nextjs-app-router-guide", "nextjs-server-actions", "nextjs-server-actions-security", "nextjs-server-actions-revalidation"],
   },
   typescript: {
     label: "TypeScript",
