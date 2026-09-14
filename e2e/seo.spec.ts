@@ -36,12 +36,50 @@ test.describe("public SEO", () => {
     expect(html).toContain('noindex');
     expect(html).not.toMatch(/<link[^>]+hreflang=/);
   });
-  test("legacy note remains readable, has one H1 and crawlable navigation", async ({ page }) => {
+  test("Thai-only note keeps its English fallback readable but noindex", async ({ page }) => {
     await page.goto('/notes/sql-query-examples');
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
     await expect(page.getByRole('status')).toContainText('translation');
     expect(await page.locator('a[href^="/notes/"]').count()).toBeGreaterThan(0);
+  });
+
+  test("Thai SEO note is canonical, indexable and advertises only its real locale", async ({ page }) => {
+    await page.goto('/th/notes/odoo-automated-action-store-attr');
+
+    await expect(
+      page.getByRole('heading', { level: 1, name: /Odoo Automated Action.*STORE_ATTR/i }),
+    ).toBeVisible();
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://napatdev.com/th/notes/odoo-automated-action-store-attr',
+    );
+    await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute('content', /noindex/);
+    await expect(page.locator('link[hreflang="th"]')).toHaveAttribute(
+      'href',
+      'https://napatdev.com/th/notes/odoo-automated-action-store-attr',
+    );
+    await expect(page.locator('link[hreflang="x-default"]')).toHaveAttribute(
+      'href',
+      'https://napatdev.com/th/notes/odoo-automated-action-store-attr',
+    );
+    await expect(page.locator('link[hreflang="en"]')).toHaveCount(0);
+  });
+
+  test("sitemap includes Thai SEO clusters and excludes untranslated English duplicates", async ({ request }) => {
+    const response = await request.get('/sitemap.xml');
+    expect(response.ok()).toBe(true);
+
+    const xml = await response.text();
+    expect(xml).toContain(
+      'https://napatdev.com/th/notes/odoo-automated-action-store-attr',
+    );
+    expect(xml).toContain('https://napatdev.com/th/notes/odoo');
+    expect(xml).toContain('https://napatdev.com/th/notes/testing');
+    expect(xml).toContain('https://napatdev.com/th/notes/prisma');
+    expect(xml).not.toContain(
+      '<loc>https://napatdev.com/notes/odoo-automated-action-store-attr</loc>',
+    );
   });
   test("public graph on Thai about uses Thai page URL and one stable person entity", async ({ page }) => {
     await page.goto('/th/about');
