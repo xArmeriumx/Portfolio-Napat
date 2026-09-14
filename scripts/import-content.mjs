@@ -7,6 +7,7 @@ import { PrismaClient } from "@prisma/client";
 import { profile } from "../src/data/profile.js";
 import { projects } from "../src/data/projects.js";
 import { getNoteCatalogEntry } from "../src/data/note-catalog.js";
+import { canonicalNoteSlug, legacyNoteSlug } from "../src/data/note-slugs.js";
 
 const allowedSchemas = new Set(["portfolio_cms_dev", "portfolio_cms_preview", "portfolio_cms_prod"]);
 const schema = process.env.PORTFOLIO_CMS_SCHEMA;
