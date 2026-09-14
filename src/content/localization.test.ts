@@ -131,6 +131,13 @@ describe("published note language contract", () => {
       }
     }
 
+    expect(
+      sitemap.some((entry) => entry.url === "https://napatdev.com/th/notes"),
+    ).toBe(true);
+    expect(
+      sitemap.some((entry) => entry.url === "https://napatdev.com/notes"),
+    ).toBe(false);
+
     for (const topic of ["odoo", "testing", "nextjs", "prisma", "sql", "typescript"]) {
       expect(
         sitemap.some(
