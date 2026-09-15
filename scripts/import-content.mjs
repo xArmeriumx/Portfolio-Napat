@@ -262,6 +262,9 @@ async function main() {
   if (target[0]?.schema !== schema) throw new Error(`Connected schema verification failed for ${schema}`);
 
   const notePayloadList = notePayloads();
+  // Vercel runs this guarded release sync during the production build. The
+  // complete portfolio payload can take longer than Prisma's 5s default
+  // transaction timeout, especially on a cold database connection.
   const results = await prisma.$transaction(async (tx) => {
     const imported = [];
     imported.push(await importDocument(tx, {
@@ -294,7 +297,7 @@ async function main() {
       }));
     }
     return imported;
-  });
+  }, { maxWait: 30000, timeout: 120000 });
 
   const expectedNoteSlugs = notePayloadList.map((payload) => payload.slug);
   const publishedNotes = await prisma.contentDocument.findMany({
