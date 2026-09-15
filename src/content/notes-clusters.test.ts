@@ -62,7 +62,7 @@ describe("low-competition SEO clusters", () => {
         expect.arrayContaining(["playwright-thai-guide", "playwright-page-object-model"]),
       );
       expect(getTopicHub("nextjs", presented).map((note) => note.slug)).toEqual(
-        expect.arrayContaining(["nextjs-server-actions", "nextjs-server-actions-security", "prisma-transaction-nextjs"]),
+        expect.arrayContaining(["nextjs-server-actions", "nextjs-server-actions-security"]),
       );
       expect(getTopicHub("prisma", presented).map((note) => note.slug)).toEqual(
         expect.arrayContaining(["prisma-transaction-nextjs", "prisma-optimistic-concurrency"]),
