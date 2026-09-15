@@ -59,7 +59,7 @@ export const NAVIGATION_ITEMS = [
     href: "/notes",
     description: "Searchable developer notes and technical cheatsheets.",
     description_th: "โน้ตความรู้และชีทสรุปด้านเทคนิคสำหรับนักพัฒนา",
-    searchTerms: ["Developer Notes", "Cheatsheet", "โน้ต", "คู่มือ", "Next.js", "TypeScript", "SQL"],
+    searchTerms: ["Developer Notes", "Cheatsheet", "โน้ต", "คู่มือ", "Next.js", "TypeScript", "SQL", "Odoo", "Playwright", "Server Actions", "Prisma"],
   },
   {
     key: "search",
@@ -245,8 +245,8 @@ export function getNotesListSeoMeta(profile, locale = "en") {
     ogImageAlt: th ? `โน้ตความรู้ของ ${profile.name}` : `${profile.name} developer notes`,
     path: th ? "/th/notes" : "/notes",
     keywords: th
-      ? ["โน้ตความรู้ ณภัทร ภมรสูตร", "Napatdev developer notes", "ชีทสรุป Next.js", "คู่มือ TypeScript", "ตัวอย่าง SQL"]
-      : ["Napatdev developer notes", "ณภัทร ภมรสูตร โน้ตความรู้", "Next.js cheatsheet", "TypeScript reference", "SQL examples"],
+      ? ["โน้ตความรู้ ณภัทร ภมรสูตร", "Napatdev developer notes", "ชีทสรุป Next.js", "คู่มือ TypeScript", "ตัวอย่าง SQL", "คู่มือ Odoo ภาษาไทย", "Playwright ภาษาไทย", "Next.js Server Actions", "Prisma transaction"]
+      : ["Napatdev developer notes", "ณภัทร ภมรสูตร โน้ตความรู้", "Next.js cheatsheet", "TypeScript reference", "SQL examples", "Odoo QWeb guide", "Playwright Thai guide", "Next.js Server Actions security", "Prisma transaction patterns"],
   };
 }
 

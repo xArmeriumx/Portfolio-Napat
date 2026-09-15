@@ -264,6 +264,29 @@ export const NOTE_CATALOG = {
     },
     publishedAt: "2026-09-14T00:00:00.000Z",
   },
+  "nextjs-server-actions": {
+    sourceLocale: "th",
+    title: {
+      en: "Next.js Server Actions explained: when to use them vs Route Handlers",
+      th: "Next.js Server Actions คืออะไร? ใช้เมื่อไร และต่างจาก Route Handler อย่างไร",
+    },
+    excerpt: {
+      en: "Server Actions are server-running functions callable directly from forms and event handlers without an API route. Learn when to use them and when Route Handlers fit better.",
+      th: "Server Actions คือฟังก์ชันที่รันบน server แต่เรียกจาก form หรือ event ได้โดยตรงโดยไม่ต้องสร้าง API route มาดูว่าใช้เมื่อไร และเมื่อไรควรใช้ Route Handler แทน",
+    },
+    seo: {
+      title: {
+        en: "Next.js Server Actions vs Route Handlers",
+        th: "Next.js Server Actions คืออะไร ใช้เมื่อไร",
+      },
+      description: {
+        en: "What are Next.js Server Actions, when to use them, and how they differ from Route Handlers, with a contact-form example and selection criteria.",
+        th: "Next.js Server Actions คืออะไร? ใช้เมื่อไร และต่างจาก Route Handler อย่างไร พร้อมตัวอย่างฟอร์มติดต่อและเกณฑ์เลือกให้เหมาะกับงาน",
+      },
+      keywords: ["Next.js Server Actions", "Server Actions คือ", "Next.js Route Handler", "Next.js form mutation", "use server"],
+    },
+    publishedAt: "2026-09-14T00:00:00.000Z",
+  },
   "prisma-transaction-nextjs": {
     sourceLocale: "th",
     title: {

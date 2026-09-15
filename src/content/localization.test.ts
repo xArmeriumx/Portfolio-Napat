@@ -31,7 +31,7 @@ describe("published note language contract", () => {
   it("emits indexable Thai metadata and noindex English metadata for Thai-only notes", async () => {
     const repository = new StaticContentRepository();
     const note = (await repository.listPublishedNotes()).find(
-      (item) => item.slug === "playwright-thai-guide",
+      (item) => item.slug === "playwright-authentication",
     )!;
 
     const th = buildPageMetadata({
@@ -51,14 +51,48 @@ describe("published note language contract", () => {
 
     expect(th.robots).toMatchObject({ index: true, follow: true });
     expect(th.alternates?.canonical).toBe(
-      "https://napatdev.com/th/notes/playwright-thai-guide",
+      "https://napatdev.com/th/notes/playwright-authentication",
     );
     expect(th.alternates?.languages).toEqual({
-      th: "https://napatdev.com/th/notes/playwright-thai-guide",
-      "x-default": "https://napatdev.com/th/notes/playwright-thai-guide",
+      th: "https://napatdev.com/th/notes/playwright-authentication",
+      "x-default": "https://napatdev.com/th/notes/playwright-authentication",
     });
     expect(en.robots).toMatchObject({ index: false, follow: false });
     expect(en.alternates).toBeUndefined();
+  });
+
+  it("emits reciprocal indexable metadata for bilingual paired notes", async () => {
+    const repository = new StaticContentRepository();
+    const note = (await repository.listPublishedNotes()).find(
+      (item) => item.slug === "playwright-thai-guide",
+    )!;
+
+    expect(getNoteLocales(note)).toEqual(["en", "th"]);
+
+    const th = buildPageMetadata({
+      title: note.title.th,
+      description: note.excerpt.th,
+      path: `/th/notes/${note.slug}`,
+      availableLocales: getNoteLocales(note),
+      locale: "th",
+    });
+    const en = buildPageMetadata({
+      title: note.title.en,
+      description: note.excerpt.en,
+      path: `/notes/${note.slug}`,
+      availableLocales: getNoteLocales(note),
+      locale: "en",
+    });
+
+    expect(th.robots).toMatchObject({ index: true, follow: true });
+    expect(en.robots).toMatchObject({ index: true, follow: true });
+    expect(th.alternates?.canonical).toBe(
+      "https://napatdev.com/th/notes/playwright-thai-guide",
+    );
+    expect(en.alternates?.canonical).toBe(
+      "https://napatdev.com/notes/playwright-thai-guide",
+    );
+    expect(th.alternates?.languages).toEqual(en.alternates?.languages);
   });
 
   it("resolves explicit bilingual content and marks neither locale as fallback", async () => {
@@ -136,7 +170,7 @@ describe("published note language contract", () => {
     ).toBe(true);
     expect(
       sitemap.some((entry) => entry.url === "https://napatdev.com/notes"),
-    ).toBe(false);
+    ).toBe(true);
 
     for (const topic of ["odoo", "testing", "nextjs", "prisma", "sql", "typescript"]) {
       expect(
@@ -153,8 +187,9 @@ describe("published note language contract", () => {
         "https://napatdev.com/th/notes/playwright-thai-guide",
     );
     expect(playwright?.alternates?.languages).toEqual({
+      en: "https://napatdev.com/notes/playwright-thai-guide",
       th: "https://napatdev.com/th/notes/playwright-thai-guide",
-      "x-default": "https://napatdev.com/th/notes/playwright-thai-guide",
+      "x-default": "https://napatdev.com/notes/playwright-thai-guide",
     });
     expect(playwright?.lastModified).toEqual(
       new Date("2026-09-14T00:00:00.000Z"),

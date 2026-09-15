@@ -66,7 +66,7 @@ test.describe("Portfolio CMS published lifecycle", () => {
     const sitemapText = await sitemap.text();
     expect(sitemapText).toContain("https://napatdev.com/projects/");
     expect(sitemapText).toContain("https://napatdev.com/th/notes</loc>");
-    expect(sitemapText).not.toContain("<loc>https://napatdev.com/notes</loc>");
+    expect(sitemapText).toContain("<loc>https://napatdev.com/notes</loc>");
     // Locale-specific notes are covered by the locale sitemap contract test.
   });
 
