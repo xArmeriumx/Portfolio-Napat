@@ -36,10 +36,13 @@ test.describe("public SEO", () => {
     expect(html).toContain('noindex');
     expect(html).not.toMatch(/<link[^>]+hreflang=/);
   });
-  test("empty English notes collection is noindex while Thai collection is canonical", async ({ page }) => {
+  test("bilingual notes collection is indexable in both locales", async ({ page }) => {
     await page.goto('/notes');
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
-    await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+    await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute('content', /noindex/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://napatdev.com/notes',
+    );
 
     await page.goto('/th/notes');
     await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute('content', /noindex/);
@@ -57,7 +60,7 @@ test.describe("public SEO", () => {
     expect(await page.locator('a[href^="/notes/"]').count()).toBeGreaterThan(0);
   });
 
-  test("Thai SEO note is canonical, indexable and advertises only its real locale", async ({ page }) => {
+  test("bilingual SEO note is canonical, indexable and advertises both locales", async ({ page }) => {
     await page.goto('/th/notes/odoo-automated-action-store-attr');
 
     await expect(
@@ -74,12 +77,15 @@ test.describe("public SEO", () => {
     );
     await expect(page.locator('link[hreflang="x-default"]')).toHaveAttribute(
       'href',
-      'https://napatdev.com/th/notes/odoo-automated-action-store-attr',
+      'https://napatdev.com/notes/odoo-automated-action-store-attr',
     );
-    await expect(page.locator('link[hreflang="en"]')).toHaveCount(0);
+    await expect(page.locator('link[hreflang="en"]')).toHaveAttribute(
+      'href',
+      'https://napatdev.com/notes/odoo-automated-action-store-attr',
+    );
   });
 
-  test("sitemap includes Thai SEO clusters and excludes untranslated English duplicates", async ({ request }) => {
+  test("sitemap includes both locales for bilingual SEO clusters", async ({ request }) => {
     const response = await request.get('/sitemap.xml');
     expect(response.ok()).toBe(true);
 
@@ -91,8 +97,8 @@ test.describe("public SEO", () => {
     expect(xml).toContain('https://napatdev.com/th/notes/testing');
     expect(xml).toContain('https://napatdev.com/th/notes/prisma');
     expect(xml).toContain('<loc>https://napatdev.com/th/notes</loc>');
-    expect(xml).not.toContain('<loc>https://napatdev.com/notes</loc>');
-    expect(xml).not.toContain(
+    expect(xml).toContain('<loc>https://napatdev.com/notes</loc>');
+    expect(xml).toContain(
       '<loc>https://napatdev.com/notes/odoo-automated-action-store-attr</loc>',
     );
   });
