@@ -90,7 +90,7 @@ export async function renderContactPage(locale: SiteLocale = "en") {
 
         <div className="relative z-10 mx-auto max-w-4xl">
           <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#c43c3c]">
-            Contact
+            {locale === "th" ? "ติดต่อ" : "Contact"}
           </p>
           <h1 className="text-3xl font-black tracking-tight text-gray-900 md:text-5xl">
             {locale === "th" ? `ติดต่อ ${profile.name_th || profile.name}` : `Contact ${profile.name}`}
@@ -111,9 +111,9 @@ export async function renderContactPage(locale: SiteLocale = "en") {
             </a>
 
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Location</span>
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">{locale === "th" ? "สถานที่" : "Location"}</span>
               <span className="mt-3 block text-lg font-black text-gray-900">
-                {profile.contact.location}
+                {locale === "th" ? profile.contact.location_th || profile.contact.location : profile.contact.location}
               </span>
             </div>
 
@@ -133,9 +133,9 @@ export async function renderContactPage(locale: SiteLocale = "en") {
               href={locale === "th" ? "/th/projects" : "/projects"}
               className="rounded-2xl border border-gray-200 bg-white p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-0.5 hover:border-[#c43c3c]/30 hover:shadow-[0_14px_32px_rgba(0,0,0,0.08)]"
             >
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Portfolio</span>
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">{locale === "th" ? "ผลงาน" : "Portfolio"}</span>
               <span className="mt-3 block text-lg font-black text-gray-900">
-                View Projects
+                {locale === "th" ? "ดูโปรเจค" : "View Projects"}
               </span>
             </Link>
           </div>

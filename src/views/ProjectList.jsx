@@ -61,6 +61,7 @@ function TechChips({ technologies = [], limit = 5 }) {
 }
 
 function ProjectActions({ slug, title, links, onLinkClick, localePrefix = "" }) {
+  const th = localePrefix === "/th";
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Link
@@ -68,7 +69,7 @@ function ProjectActions({ slug, title, links, onLinkClick, localePrefix = "" }) 
         onClick={onLinkClick}
         className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-900 transition-colors hover:text-accent"
       >
-        View case study
+        {th ? "ดูกรณีศึกษา" : "View case study"}
         <ArrowRight className="h-4 w-4" />
       </Link>
       {links?.repo && (
@@ -91,7 +92,7 @@ function ProjectActions({ slug, title, links, onLinkClick, localePrefix = "" }) 
           onClick={onLinkClick}
           className="inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-accent"
         >
-          Live Demo
+          {th ? "ดูเดโม" : "Live Demo"}
           <ExternalLink className="h-3.5 w-3.5" />
         </a>
       )}
@@ -101,6 +102,7 @@ function ProjectActions({ slug, title, links, onLinkClick, localePrefix = "" }) 
 
 function FeaturedProjectCard({ project, localePrefix = "" }) {
   const { getContent } = useTranslation();
+  const th = localePrefix === "/th";
   const router = useRouter();
   const { slug, role, links, images, image, metrics, technologies } = project;
   const title = getContent(project, "title");
@@ -122,7 +124,7 @@ function FeaturedProjectCard({ project, localePrefix = "" }) {
       className="group relative cursor-pointer overflow-hidden rounded-[22px] border border-gray-200 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.05)] transition-[box-shadow] duration-300 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] motion-reduce:transition-none sm:rounded-[28px]"
     >
       <div className="absolute left-5 top-5 z-20 rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-        Featured
+        {th ? "ผลงานเด่น" : "Featured"}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2">
@@ -143,7 +145,7 @@ function FeaturedProjectCard({ project, localePrefix = "" }) {
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
           <div className="absolute bottom-5 left-5 right-5 translate-y-2 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
             <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-gray-900 shadow-lg">
-              View case study
+              {th ? "ดูกรณีศึกษา" : "View case study"}
               <ArrowRight className="h-4 w-4" />
             </span>
           </div>
@@ -287,6 +289,7 @@ function ProjectCard({ project, index, localePrefix = "" }) {
             title={title}
             links={links}
             onLinkClick={stopProp}
+            localePrefix={localePrefix}
           />
         </div>
       </div>
@@ -296,6 +299,7 @@ function ProjectCard({ project, index, localePrefix = "" }) {
 
 export default function ProjectList({ projects = [], locale = "en" }) {
   const localePrefix = locale === "th" ? "/th" : "";
+  const th = locale === "th";
   const featuredIndex = projects.findIndex((project) => project.featured);
   const featured = projects[featuredIndex >= 0 ? featuredIndex : 0];
   const rest = projects.filter((_, index) => index !== (featuredIndex >= 0 ? featuredIndex : 0));
@@ -323,16 +327,17 @@ export default function ProjectList({ projects = [], locale = "en" }) {
             <ScrollReveal width="100%">
               <header className="mb-10 md:mb-14">
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-accent">
-                  Portfolio
+                  {th ? "ผลงาน" : "Portfolio"}
                 </p>
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div>
                     <h1 className="text-3xl font-black tracking-tight text-gray-900 md:text-4xl">
-                      Projects
+                      {th ? "โปรเจคพัฒนาเว็บและทดสอบซอฟต์แวร์" : "Projects"}
                     </h1>
                     <p className="mt-2 max-w-xl text-base font-medium text-gray-500">
-                      Selected work across web development, system design, IoT,
-                      and software testing.
+                      {th
+                        ? "รวมผลงานด้านการพัฒนาเว็บ การออกแบบระบบ IoT และการทดสอบซอฟต์แวร์"
+                        : "Selected work across web development, system design, IoT, and software testing."}
                     </p>
                   </div>
                   <div className="flex gap-6 text-sm font-semibold text-gray-500">
@@ -340,7 +345,7 @@ export default function ProjectList({ projects = [], locale = "en" }) {
                       <strong className="text-2xl font-black text-gray-900">
                         {projects.length}
                       </strong>
-                      <span className="ml-1.5">projects</span>
+                      <span className="ml-1.5">{th ? "โปรเจค" : "projects"}</span>
                     </span>
                   </div>
                 </div>

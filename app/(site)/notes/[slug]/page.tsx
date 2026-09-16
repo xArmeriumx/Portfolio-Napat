@@ -172,24 +172,26 @@ export async function renderNotePage(slug: string, locale: SiteLocale = "en") {
     notFound();
   }
 
+  const availableLocales = getNoteLocales(rawNote);
+  if (!availableLocales.includes(locale)) {
+    const targetLocale = availableLocales[0];
+    if (targetLocale) {
+      permanentRedirect(`${notesBase(targetLocale)}/${encodeURIComponent(rawNote.slug)}`);
+    }
+    notFound();
+  }
+
   const profile = toPresentationProfile(rawProfile);
   const note = toPresentationNote(rawNote, locale);
-  const localizedNotes = rawNotes
+  const notes = rawNotes
     .filter((candidate) => getNoteLocales(candidate).includes(locale))
     .map((candidate) => toPresentationNote(candidate, locale));
-  const notes = note.isFallback
-    ? [note, ...localizedNotes.filter((candidate) => candidate.slug !== note.slug)]
-    : localizedNotes;
   const relatedProjects = getRelatedProjects(note, rawProjects.map(toPresentationProject));
 
   return (
     <>
-      {!note.isFallback && <JsonLd data={getNoteSchema(note, profile, locale)} />}
+      <JsonLd data={getNoteSchema(note, profile, locale)} />
       <div className="relative z-10 mx-auto max-w-5xl px-4 pt-24">
-        {note.isFallback && <p role="status" className="rounded border border-amber-200 bg-amber-50 p-3 text-sm">
-          {locale === "th" ? "ยังไม่มีฉบับภาษาไทย เนื้อหาที่แสดงเป็นฉบับต้นฉบับ" : "This translation is not available. Showing the original content."}
-          {note.contentLocale ? ` (${note.contentLocale.toUpperCase()})` : " — language review pending"}
-        </p>}
         <nav aria-label="Article languages" className="flex gap-4 py-2">
           {note.availableLocales.map((language) => <a key={language} href={`${notesBase(language)}/${note.slug}`} hrefLang={language}>{language.toUpperCase()}</a>)}
         </nav>

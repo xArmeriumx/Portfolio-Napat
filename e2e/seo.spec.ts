@@ -52,12 +52,25 @@ test.describe("public SEO", () => {
     );
   });
 
-  test("Thai-only note keeps its English fallback readable but noindex", async ({ page }) => {
-    await page.goto('/notes/sql-query-examples');
-    await expect(page.locator('h1')).toHaveCount(1);
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
-    await expect(page.getByRole('status')).toContainText('translation');
-    expect(await page.locator('a[href^="/notes/"]').count()).toBeGreaterThan(0);
+  test("Thai-only note permanently redirects from the English route to its real locale", async ({ request }) => {
+    const response = await request.get('/notes/sql-query-examples', { maxRedirects: 0 });
+    expect([301, 308]).toContain(response.status());
+    expect(response.headers().location).toBe('/th/notes/sql-query-examples');
+  });
+
+  test("Thai core pages render localized primary content", async ({ page }) => {
+    await page.goto('/th/about');
+    await expect(page.getByRole('heading', { level: 1, name: /ณภัทร ภมรสูตร/ })).toBeVisible();
+    await expect(page.getByText('การศึกษา', { exact: true })).toBeVisible();
+    await expect(page.getByText('กรุงเทพฯ ประเทศไทย', { exact: true }).first()).toBeVisible();
+
+    await page.goto('/th/projects');
+    await expect(page.getByRole('heading', { level: 1, name: 'โปรเจคพัฒนาเว็บและทดสอบซอฟต์แวร์' })).toBeVisible();
+    await expect(page.getByText('ผลงานเด่น', { exact: true })).toBeVisible();
+
+    await page.goto('/th/contact');
+    await expect(page.getByText('กรุงเทพฯ ประเทศไทย', { exact: true })).toBeVisible();
+    await expect(page.getByText('ดูโปรเจค', { exact: true })).toBeVisible();
   });
 
   test("bilingual SEO note is canonical, indexable and advertises both locales", async ({ page }) => {

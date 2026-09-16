@@ -37,7 +37,7 @@ function BentoCard({ children, className = "" }) {
   );
 }
 
-function CopyEmailRow({ email }) {
+function CopyEmailRow({ email, isThai = false }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -68,12 +68,12 @@ function CopyEmailRow({ email }) {
         {copied ? (
           <>
             <Check className="h-3.5 w-3.5" />
-            Copied
+            {isThai ? "คัดลอกแล้ว" : "Copied"}
           </>
         ) : (
           <>
             <Copy className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            Copy
+            {isThai ? "คัดลอก" : "Copy"}
           </>
         )}
       </span>
@@ -81,7 +81,7 @@ function CopyEmailRow({ email }) {
   );
 }
 
-function SkillGroup({ category, skills }) {
+function SkillGroup({ category, skills, isThai = false }) {
   return (
     <div>
       <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-gray-400">
@@ -90,7 +90,7 @@ function SkillGroup({ category, skills }) {
       <div className="flex flex-wrap gap-2">
         {skills.map((skill) => (
           <div
-            key={skill.name}
+            key={isThai ? skill.name_th || skill.name : skill.name}
             className="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50/80 px-3 py-2 transition-colors hover:border-gray-200 hover:bg-white"
           >
             <img
@@ -110,7 +110,7 @@ function SkillGroup({ category, skills }) {
 }
 
 export default function About({ profile }) {
-  const { getContent } = useTranslation();
+  const { getContent, isThai } = useTranslation();
 
   useEffect(() => {
     import("./ProjectList.jsx");
@@ -158,7 +158,7 @@ export default function About({ profile }) {
                 </div>
                 <div className="text-center md:text-left">
                   <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-accent">
-                    About
+                    {isThai ? "เกี่ยวกับ" : "About"}
                   </p>
                   <h1 className="text-3xl font-black tracking-tight text-gray-900 md:text-4xl">
                     {getContent(profile, "name")}
@@ -177,7 +177,7 @@ export default function About({ profile }) {
                     ))}
                     <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600">
                       <MapPin className="h-3 w-3" />
-                      {profile.contact.location}
+                      {isThai ? profile.contact.location_th || profile.contact.location : profile.contact.location}
                     </span>
                   </div>
                 </div>
@@ -189,12 +189,12 @@ export default function About({ profile }) {
               {/* About Me */}
               <ScrollReveal width="100%" className="md:col-span-2">
                 <BentoCard>
-                  <SectionLabel number="01" title="About Me" />
+                  <SectionLabel number="01" title={isThai ? "เกี่ยวกับฉัน" : "About Me"} />
                   <p className="text-base font-medium leading-relaxed text-gray-600 md:text-[17px] md:leading-loose">
                     <AnimatedText>{aboutText}</AnimatedText>
                   </p>
                   <p className="mt-5 border-t border-gray-100 pt-5 text-sm font-medium leading-relaxed text-gray-500">
-                    <AnimatedText>{profile.tagline}</AnimatedText>
+                    <AnimatedText>{isThai ? profile.tagline_th || profile.tagline : profile.tagline}</AnimatedText>
                   </p>
                 </BentoCard>
               </ScrollReveal>
@@ -202,7 +202,7 @@ export default function About({ profile }) {
               {/* Education */}
               <ScrollReveal width="100%" delay={0.05}>
                 <BentoCard>
-                  <SectionLabel number="02" title="Education" />
+                  <SectionLabel number="02" title={isThai ? "การศึกษา" : "Education"} />
                   <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-red-50">
                     <GraduationCap className="h-5 w-5 text-accent" />
                   </div>
@@ -227,7 +227,7 @@ export default function About({ profile }) {
               {/* Contact */}
               <ScrollReveal width="100%" delay={0.1} className="scroll-mt-24">
                 <BentoCard>
-                  <SectionLabel number="03" title="Contact" />
+                  <SectionLabel number="03" title={isThai ? "ติดต่อ" : "Contact"} />
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/80 px-4 py-3">
                       <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white border border-gray-100">
@@ -235,14 +235,14 @@ export default function About({ profile }) {
                       </span>
                       <div>
                         <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                          Location
+                          {isThai ? "สถานที่" : "Location"}
                         </p>
                         <p className="text-sm font-bold text-gray-900">
                           {profile.contact.location}
                         </p>
                       </div>
                     </div>
-                    <CopyEmailRow email={profile.links.email} />
+                    <CopyEmailRow email={profile.links.email} isThai={isThai} />
                     {profile.links.github && profile.links.github !== "#" && (
                       <a
                         href={profile.links.github}
@@ -273,7 +273,7 @@ export default function About({ profile }) {
                       download
                       className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-accent"
                     >
-                      Download CV
+                      {isThai ? "ดาวน์โหลด CV" : "Download CV"}
                     </a>
                   </div>
                 </BentoCard>
@@ -282,13 +282,14 @@ export default function About({ profile }) {
               {/* Skills */}
               <ScrollReveal width="100%" delay={0.15} className="md:col-span-2">
                 <BentoCard>
-                  <SectionLabel number="04" title="Skills & Tools" />
+                  <SectionLabel number="04" title={isThai ? "ทักษะและเครื่องมือ" : "Skills & Tools"} />
                   <div className="space-y-7">
                     {profile.skillCategories.map((cat) => (
                       <SkillGroup
                         key={cat.category}
                         category={getContent(cat, "category")}
                         skills={cat.skills}
+                        isThai={isThai}
                       />
                     ))}
                   </div>

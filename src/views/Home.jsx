@@ -7,17 +7,18 @@ import ScrollReveal from "../components/ui/ScrollReveal.jsx";
 import PageTransition from "../components/ui/PageTransition.jsx";
 
 function ProfileIde({ profile, locale }) {
+  const th = locale === "th";
   const lines = [
     <><span className="syntax-keyword">const</span> <span className="syntax-property">profile</span> <span className="text-gray-500">= &#123;</span></>,
-    <><span className="syntax-property">  name</span><span className="text-gray-500">: </span><span className="syntax-string">&quot;{profile.name}&quot;</span><span className="text-gray-500">,</span></>,
-    <><span className="syntax-property">  role</span><span className="text-gray-500">: </span><span className="syntax-string">&quot;Web Developer&quot;</span><span className="text-gray-500">,</span></>,
-    <><span className="syntax-property">  location</span><span className="text-gray-500">: </span><span className="syntax-string">&quot;{profile.contact.location}&quot;</span><span className="text-gray-500">,</span></>,
+    <><span className="syntax-property">  name</span><span className="text-gray-500">: </span><span className="syntax-string">&quot;{th ? profile.name_th || profile.name : profile.name}&quot;</span><span className="text-gray-500">,</span></>,
+    <><span className="syntax-property">  role</span><span className="text-gray-500">: </span><span className="syntax-string">&quot;{th ? "นักพัฒนาเว็บ" : "Web Developer"}&quot;</span><span className="text-gray-500">,</span></>,
+    <><span className="syntax-property">  location</span><span className="text-gray-500">: </span><span className="syntax-string">&quot;{th ? profile.contact.location_th || profile.contact.location : profile.contact.location}&quot;</span><span className="text-gray-500">,</span></>,
     <><span className="syntax-property">  strengths</span><span className="text-gray-500">: [</span></>,
-    <><span className="text-gray-500">    </span><span className="syntax-string">&quot;reliable web apps&quot;</span><span className="text-gray-500">,</span></>,
-    <><span className="text-gray-500">    </span><span className="syntax-string">&quot;quality-focused testing&quot;</span><span className="text-gray-500">,</span></>,
-    <><span className="text-gray-500">    </span><span className="syntax-string">&quot;practical solutions&quot;</span></>,
+    <><span className="text-gray-500">    </span><span className="syntax-string">&quot;{th ? "เว็บแอปที่เชื่อถือได้" : "reliable web apps"}&quot;</span><span className="text-gray-500">,</span></>,
+    <><span className="text-gray-500">    </span><span className="syntax-string">&quot;{th ? "การทดสอบที่เน้นคุณภาพ" : "quality-focused testing"}&quot;</span><span className="text-gray-500">,</span></>,
+    <><span className="text-gray-500">    </span><span className="syntax-string">&quot;{th ? "โซลูชันที่ใช้งานได้จริง" : "practical solutions"}&quot;</span></>,
     <><span className="text-gray-500">  ],</span></>,
-    <><span className="syntax-property">  approach</span><span className="text-gray-500">: </span><span className="syntax-string">&quot;build, test, improve&quot;</span></>,
+    <><span className="syntax-property">  approach</span><span className="text-gray-500">: </span><span className="syntax-string">&quot;{th ? "พัฒนา ทดสอบ ปรับปรุง" : "build, test, improve"}&quot;</span></>,
     <><span className="text-gray-500">&#125;;</span></>,
     <></>,
     <><span className="syntax-keyword">export default</span> <span className="syntax-property">profile</span><span className="text-gray-500">;</span></>,
@@ -35,7 +36,7 @@ function ProfileIde({ profile, locale }) {
           <div className="ml-5 flex h-full items-center border-b-2 border-accent px-3 text-[11px] font-bold text-gray-700">
             about.tsx
           </div>
-          <span className="ml-auto font-mono text-[10px] text-gray-400">personal profile</span>
+          <span className="ml-auto font-mono text-[10px] text-gray-400">{th ? "โปรไฟล์ส่วนตัว" : "personal profile"}</span>
         </div>
 
         <div className="grid min-h-[330px] grid-cols-[2.5rem_1fr] py-6 font-mono text-[11px] leading-[2] sm:grid-cols-[3.5rem_1fr] sm:text-xs">
@@ -122,7 +123,7 @@ export default function Home({ profile, selectedProjects = [], locale = "en" }) 
 
               <div className="pt-2 lg:pt-0">
                 <div className="mb-4 flex items-center justify-between px-1 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
-                  <span>About me</span>
+                  <span>{th ? "เกี่ยวกับฉัน" : "About me"}</span>
 
                 </div>
                 <ProfileIde profile={profile} locale={locale} />
