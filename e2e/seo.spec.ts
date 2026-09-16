@@ -62,7 +62,7 @@ test.describe("public SEO", () => {
     await page.goto('/th/about');
     await expect(page.getByRole('heading', { level: 1, name: /ณภัทร ภมรสูตร/ })).toBeVisible();
     await expect(page.getByText('การศึกษา', { exact: true })).toBeVisible();
-    await expect(page.getByText('กรุงเทพฯ ประเทศไทย', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText('กรุงเทพฯ ประเทศไทย', { exact: true })).toHaveCount(2);
 
     await page.goto('/th/projects');
     await expect(page.getByRole('heading', { level: 1, name: 'โปรเจคพัฒนาเว็บและทดสอบซอฟต์แวร์' })).toBeVisible();

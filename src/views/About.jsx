@@ -238,7 +238,7 @@ export default function About({ profile }) {
                           {isThai ? "สถานที่" : "Location"}
                         </p>
                         <p className="text-sm font-bold text-gray-900">
-                          {profile.contact.location}
+                          {isThai ? profile.contact.location_th || profile.contact.location : profile.contact.location}
                         </p>
                       </div>
                     </div>

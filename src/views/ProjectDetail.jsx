@@ -102,7 +102,7 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
             </div>
 
             <Link
-              href="/projects"
+              href={locale === "th" ? "/th/projects" : "/projects"}
               className="inline-block px-8 py-3 bg-gray-900 text-white font-medium rounded-full hover:bg-gray-700 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg shadow-gray-200"
             >
               {locale === "th" ? "กลับไปหน้าผลงาน" : "Return to Projects"}
