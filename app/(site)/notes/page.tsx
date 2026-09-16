@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/utils/JsonLd";
 import { getNotesCollectionSchema, getNoteDescription } from "@/lib/notes";
-import { NOTE_TOPICS, isNoteTopicKey, getTopicHub } from "@/lib/related";
+import { NOTE_TOPICS, isNoteTopicKey, getLocalizedTopic, getTopicHub } from "@/lib/related";
 import { buildPageMetadata } from "@/lib/metadata";
 import type { SiteLocale } from "../page";
 import { getNotesListSeoMeta } from "@/config/seo.js";
@@ -70,7 +70,7 @@ export async function renderNotesPage(locale: SiteLocale = "en") {
                 href={locale === "th" ? `/th/notes/${topic}` : `/notes/${topic}`}
                 className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-bold text-gray-700 transition-colors hover:border-[#c43c3c]/40 hover:text-[#c43c3c]"
               >
-                {NOTE_TOPICS[topic].label}
+                {getLocalizedTopic(topic, locale).label}
               </Link>
             ))}
           </div>
@@ -82,7 +82,6 @@ export async function renderNotesPage(locale: SiteLocale = "en") {
                   <span>{String(index + 1).padStart(2, "0")}</span>
                   <span className="text-[#c43c3c]">{locale === "th" ? "อ่านโน้ต" : "Read note"}</span>
                 </div>
-                {note.isFallback && <p className="mt-3 text-xs text-amber-700">{locale === "th" ? "ต้นฉบับ — รอตรวจภาษา" : "Original — translation pending"}</p>}
                 <h2 className="mt-7 text-xl font-black leading-tight tracking-tight text-gray-900 transition-colors group-hover:text-[#c43c3c]">{note.displayTitle}</h2>
                 <p className="mt-3 line-clamp-3 text-sm font-medium leading-relaxed text-gray-500">{getNoteDescription(note)}</p>
               </Link>

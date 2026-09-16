@@ -93,19 +93,19 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
               className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight font-sans"
               style={{ fontFamily: '"Space Grotesk", sans-serif' }}
             >
-              Project Not Found
+              {locale === "th" ? "ไม่พบโปรเจค" : "Project Not Found"}
             </h2>
 
             <div className="font-mono text-gray-500 text-sm md:text-base mb-8 max-w-md mx-auto leading-relaxed">
-              <p>&gt; The requested project ID ({slug}) is invalid.</p>
-              <p>&gt; Status: TERMINATED_OR_MISSING</p>
+              <p>&gt; {locale === "th" ? `ไม่พบรหัสโปรเจคที่ร้องขอ (${slug})` : `The requested project ID (${slug}) is invalid.`}</p>
+              <p>&gt; {locale === "th" ? "สถานะ: ไม่พบข้อมูล" : "Status: TERMINATED_OR_MISSING"}</p>
             </div>
 
             <Link
               href="/projects"
               className="inline-block px-8 py-3 bg-gray-900 text-white font-medium rounded-full hover:bg-gray-700 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg shadow-gray-200"
             >
-              Return to Projects
+              {locale === "th" ? "กลับไปหน้าผลงาน" : "Return to Projects"}
             </Link>
           </div>
         </div>
@@ -339,7 +339,7 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
                   <ScrollReveal width="100%" delay={0.4}>
                     <div className="pt-8 border-t border-gray-100">
                       <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">
-                        Project Links
+                        {locale === "th" ? "ลิงก์โปรเจค" : "Project Links"}
                       </h4>
                       <div className="flex flex-col gap-3">
                         {links.demo && (
@@ -372,7 +372,7 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
                             rel="noreferrer"
                             className="group flex items-center justify-between w-full px-6 py-4 bg-gray-50 text-gray-900 font-bold rounded-xl hover:bg-gray-100 transition-all border border-gray-200"
                           >
-                            <span>Repository</span>
+                            <span>{labels.repo}</span>
                             <svg
                               className="w-5 h-5 text-gray-400 group-hover:text-gray-900 transition-colors"
                               fill="currentColor"
@@ -390,7 +390,7 @@ export default function ProjectDetail({ slug, project, relatedNotes = [], locale
                     <ScrollReveal width="100%" delay={0.5}>
                       <div className="pt-8 border-t border-gray-100">
                         <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">
-                          Related Notes
+                          {locale === "th" ? "โน้ตที่เกี่ยวข้อง" : "Related Notes"}
                         </h4>
                         <div className="flex flex-col gap-3">
                           {relatedNotes.map((note) => (

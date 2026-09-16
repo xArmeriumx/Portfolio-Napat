@@ -167,7 +167,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
         <div className="p-4 border-b border-gray-100 flex items-center justify-between text-gray-800">
           <div className="flex items-center gap-2">
             <FolderTree size={18} className="text-red-500" />
-            <span className="font-bold uppercase tracking-wider text-sm">Explorer</span>
+            <span className="font-bold uppercase tracking-wider text-sm">{locale === "th" ? "บทความ" : "Explorer"}</span>
           </div>
         </div>
 
@@ -179,7 +179,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
           >
             <div className="flex items-center gap-2 text-gray-400 group-hover:text-red-500 transition-colors">
               <Search size={14} />
-              <span className="text-gray-500 font-medium">Search guides...</span>
+              <span className="text-gray-500 font-medium">{locale === "th" ? "ค้นหาบทความ..." : "Search guides..."}</span>
             </div>
             <div className="flex gap-1">
               <kbd className="hidden md:inline-block px-1.5 py-0.5 text-[10px] bg-gray-50 border border-gray-200 rounded text-gray-400 font-mono tracking-widest shadow-sm">⌘K</kbd>
@@ -191,7 +191,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
         <div className="p-2 flex-1 overflow-y-auto scrollbar-hide">
           <div className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-2 mb-2 mt-2 flex items-center gap-1">
             <ChevronRight size={14} />
-            <span>DOCS</span>
+            <span>{locale === "th" ? "เอกสาร" : "DOCS"}</span>
           </div>
 
           <ul className="space-y-0.5 relative before:absolute before:inset-y-0 before:left-3.5 before:w-px before:bg-gray-100 ml-4 pb-8">
@@ -222,7 +222,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
               </li>
             ))}
             {notes.length === 0 && (
-              <li className="text-xs text-gray-400 pl-6 italic py-2">No files found.</li>
+              <li className="text-xs text-gray-400 pl-6 italic py-2">{locale === "th" ? "ไม่พบบทความ" : "No files found."}</li>
             )}
           </ul>
         </div>
@@ -269,7 +269,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
               <div className="mb-8 flex flex-wrap items-center gap-x-2 gap-y-1 border-y border-line py-4 text-sm text-gray-500">
                 <span>{locale === "th" ? "เขียนโดย" : "Written by"}</span>
                 <Link href={`${localePrefix}/about`} className="font-semibold text-gray-900 transition-colors hover:text-accent">
-                  Napat Pamornsut
+                  {locale === "th" ? "ณภัทร ภมรสูตร" : "Napat Pamornsut"}
                 </Link>
                 {publishedDate && (
                   <>
@@ -319,7 +319,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
                     className="flex flex-col items-start p-4 border border-gray-200 rounded-lg hover:border-red-400 hover:shadow-sm focus:ring-1 focus:ring-red-400 transition-all w-full sm:w-[48%] bg-white group"
                   >
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
-                      <ArrowLeft size={12} /> Previous
+                      <ArrowLeft size={12} /> {locale === "th" ? "ก่อนหน้า" : "Previous"}
                     </span>
                     <span className="font-medium text-gray-800 truncate w-full text-left">{prevNote.displayTitle || prevNote.name}</span>
                   </Link>
@@ -331,7 +331,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
                     className="flex flex-col items-end p-4 border border-gray-200 rounded-lg hover:border-red-400 hover:shadow-sm focus:ring-1 focus:ring-red-400 transition-all w-full sm:w-[48%] bg-white group text-right"
                   >
                     <span className="text-xs text-gray-400 uppercase font-semibold mb-1 flex items-center gap-1 group-hover:text-red-500 transition-colors">
-                      Next <ArrowRight size={12} />
+                      {locale === "th" ? "ถัดไป" : "Next"} <ArrowRight size={12} />
                     </span>
                     <span className="font-medium text-gray-800 truncate w-full">{nextNote.displayTitle || nextNote.name}</span>
                   </Link>
@@ -342,7 +342,7 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
               {relatedProjects.length > 0 && (
                 <div className="mt-12 rounded-2xl border border-gray-200 bg-gray-50/60 p-6">
                   <h2 className="text-sm font-black uppercase tracking-[0.18em] text-gray-500">
-                    Related projects / โปรเจคที่เกี่ยวข้อง
+                    {locale === "th" ? "โปรเจคที่เกี่ยวข้อง" : "Related projects"}
                   </h2>
                   <ul className="mt-4 space-y-3">
                     {relatedProjects.map((project) => (
@@ -373,14 +373,14 @@ export default function Notes({ initialNotes = [], slug, relatedProjects = [], l
           ) : (
             <div className="flex flex-col items-center justify-center w-full min-h-[50vh] text-gray-400 opacity-50 space-y-4">
               <BookOpen size={64} />
-              <p className="text-lg">Select a file from the explorer to view</p>
+              <p className="text-lg">{locale === "th" ? "เลือกบทความเพื่ออ่าน" : "Select a file from the explorer to view"}</p>
             </div>
           )}
 
           {/* 3) Right Sidebar: Table of Contents (TOC) */}
           {activeNote && headings.length > 0 && (
             <aside className="hidden xl:block w-56 shrink-0 px-5 py-8 border-l border-line bg-canvas h-[calc(100vh-112px)] sticky top-28 overflow-y-auto">
-              <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4 flex items-center gap-1.5"><List size={14} className="text-gray-400" /> On this page</h3>
+              <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4 flex items-center gap-1.5"><List size={14} className="text-gray-400" /> {locale === "th" ? "สารบัญ" : "On this page"}</h3>
               <ul className="space-y-2.5 text-sm text-gray-500">
                 {headings.map((heading, i) => {
                   const isActive = activeHeadingId === heading.id;

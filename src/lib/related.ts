@@ -167,12 +167,12 @@ export function isNoteTopicKey(value: string): value is NoteTopicKey {
 export function getLocalizedTopic(key: NoteTopicKey, locale: "en" | "th") {
   const topic = NOTE_TOPICS[key];
   const th = {
-    nextjs: { title: "คู่มือ Next.js จากงานพัฒนาเว็บ", description: "โน้ต Next.js เรื่อง App Router, Server Components และการจัดการข้อมูล พร้อมเชื่อมโยงกับผลงานพัฒนาเว็บ" },
-    typescript: { title: "คู่มือ TypeScript และการออกแบบชนิดข้อมูล", description: "โน้ต TypeScript เรื่อง types, generics และรูปแบบการเขียนโค้ดที่ใช้ในการพัฒนาเว็บ" },
-    sql: { title: "พื้นฐาน SQL และตัวอย่าง Query", description: "เรียนรู้การอ่านและจัดการข้อมูลด้วย SQL ผ่านตัวอย่าง query และผลลัพธ์" },
-    testing: { title: "Playwright และการทดสอบซอฟต์แวร์", description: "คู่มือ E2E testing ด้วย Playwright ตั้งแต่ locator, authentication, Page Object Model ไปจนถึงแนวทางลด flaky test" },
-    odoo: { title: "คู่มือ Odoo Technical ภาษาไทย", description: "รวมแนวทางแก้ปัญหา Odoo Automated Actions, safe_eval, QWeb PDF และการเตรียมสอบ Odoo 19 Certification" },
-    prisma: { title: "Prisma ORM สำหรับงาน Production", description: "แนวทางใช้ Prisma transaction และ optimistic concurrency กับ Next.js เพื่อรักษาความถูกต้องของข้อมูลเมื่อมีหลาย mutation" },
+    nextjs: { label: "Next.js", title: "คู่มือ Next.js จากงานพัฒนาเว็บ", description: "โน้ต Next.js เรื่อง App Router, Server Components และการจัดการข้อมูล พร้อมเชื่อมโยงกับผลงานพัฒนาเว็บ" },
+    typescript: { label: "TypeScript", title: "คู่มือ TypeScript และการออกแบบชนิดข้อมูล", description: "โน้ต TypeScript เรื่อง types, generics และรูปแบบการเขียนโค้ดที่ใช้ในการพัฒนาเว็บ" },
+    sql: { label: "SQL", title: "พื้นฐาน SQL และตัวอย่าง Query", description: "เรียนรู้การอ่านและจัดการข้อมูลด้วย SQL ผ่านตัวอย่าง query และผลลัพธ์" },
+    testing: { label: "การทดสอบ", title: "Playwright และการทดสอบซอฟต์แวร์", description: "คู่มือ E2E testing ด้วย Playwright ตั้งแต่ locator, authentication, Page Object Model ไปจนถึงแนวทางลด flaky test" },
+    odoo: { label: "Odoo", title: "คู่มือ Odoo Technical ภาษาไทย", description: "รวมแนวทางแก้ปัญหา Odoo Automated Actions, safe_eval, QWeb PDF และการเตรียมสอบ Odoo 19 Certification" },
+    prisma: { label: "Prisma", title: "Prisma ORM สำหรับงาน Production", description: "แนวทางใช้ Prisma transaction และ optimistic concurrency กับ Next.js เพื่อรักษาความถูกต้องของข้อมูลเมื่อมีหลาย mutation" },
   };
   return locale === "th" ? { ...topic, ...th[key] } : { ...topic, description: topic.description.split(/ คู่มือ| เอกสาร| สรุป/)[0] };
 }
