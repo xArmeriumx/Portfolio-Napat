@@ -74,7 +74,7 @@ test.describe("public SEO", () => {
 
     await page.goto('/th/notes/odoo');
     await expect(page.getByText('อ่านโน้ต', { exact: true }).first()).toBeVisible();
-    await expect(page.getByText('โน้ตทั้งหมด', { exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: /โน้ตทั้งหมด/ })).toBeVisible();
   });
 
   test("bilingual SEO note is canonical, indexable and advertises both locales", async ({ page }) => {

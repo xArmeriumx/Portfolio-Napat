@@ -27,10 +27,11 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     await page.keyboard.press('Escape');
     await expect(page.getByRole('button', { name: 'Close', exact: true })).toHaveCount(0);
     await page.goto('/notes/sql-query-examples');
+    await expect(page).toHaveURL(/\/th\/notes\/sql-query-examples$/);
     await expect(page.locator('.notes-reading main')).toHaveCSS('overflow-y', 'visible');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     if (viewport.width < 1024) {
-      await page.getByText('On this page', { exact: true }).first().click();
+      await page.getByText('สารบัญ', { exact: true }).first().click();
       await expect(page.locator('details a').first()).toBeVisible();
     }
   });
